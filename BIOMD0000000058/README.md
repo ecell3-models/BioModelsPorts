@@ -15,7 +15,7 @@ Description from BioModels
 
 ### Reference Publication
 
-* **Publication ID:** 12779457
+* **Publication ID:** [12779457](http://www.ncbi.nlm.nih.gov/pubmed/12779457)
 * Bindschadler M, Sneyd J.  
 A bifurcation analysis of two coupled calcium oscillators.  
 Chaos 2001 Mar; 11(1): 237-246  
