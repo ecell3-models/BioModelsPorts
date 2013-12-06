@@ -1,6 +1,6 @@
 [BIOMD0000000008](http://www.ebi.ac.uk/biomodels-main/BIOMD0000000008)
 ----------------------------------------------------------------------
-BIOMD0000000008 - Gardner1998 - Cell Cycle Goldbeter
+Gardner1998 - Cell Cycle Goldbeter
 ======================================================================
 
 Model
