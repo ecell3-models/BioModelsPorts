@@ -1,3 +1,5 @@
+## EM の作成
+
 以下のようなエラーが出る場合の対処
 
     RuntimeError: IllegalOperation: System[System:/:cell]: SIZE variable is not associated (System[System:/:cell])
@@ -26,3 +28,8 @@ Stepper DiscreteTimeStepper( DT ) {}
 
 ##### Model Entities #####
 ```
+
+## README の作成
+1. BioModelsの Model ページをコピペして `README.txt` などとして保存。（末尾のBioModelsに関するクレジット表記は除外）
+2. Jedit X で `JeditX用-README-複数一括置換設定.txt` を利用して変換。
+3. Note を整形
