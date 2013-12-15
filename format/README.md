@@ -12,7 +12,9 @@ $ ecell3-session-monitor -f BIOMD0000000xxx.eml
 
 * 以下のようなエラーが出る場合の対処
 
-    RuntimeError: IllegalOperation: System[System:/:cell]: SIZE variable is not associated (System[System:/:cell])
+```
+RuntimeError: IllegalOperation: System[System:/:cell]: SIZE variable is not associated (System[System:/:cell])
+```
 
 * 原因１：SBML中に初期値が未確定の値がある。
     * 対応：EM中では「Unknown」になっているので、手計算あるいは適当な初期値を与えた後の１ステップ走らせて初期値を得る。
