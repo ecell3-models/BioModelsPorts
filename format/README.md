@@ -7,6 +7,7 @@
 
 ### Header
 
+```
 # created by eml2em program
 # from file: BIOMD0000000003.eml, date: Sun Dec 15 15:39:00 2013
 #
@@ -24,4 +25,4 @@ Stepper FixedODE1Stepper( DE ) {}
 Stepper DiscreteTimeStepper( DT ) {}
 
 ##### Model Entities #####
-
+```
