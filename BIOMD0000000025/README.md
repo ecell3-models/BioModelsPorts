@@ -29,9 +29,3 @@ Department of Neurobiology and Anatomy, W. M. Keck Center for the Neurobiology o
 set #1	
 bqbiol:is	KEGG Pathway dme04710
 bqbiol:isVersionOf	Gene Ontology circadian rhythm
-
-### Notes
-
-This model originates from BioModels Database: A Database of Annotated Published Models. It is copyright (c) 2005-2010 The BioModels Team.  
-For more information see the terms of use .  
-To cite BioModels Database, please use Le Novère N., Bornstein B., Broicher A., Courtot M., Donizelli M., Dharuri H., Li L., Sauro H., Schilstra M., Shapiro B., Snoep J.L., Hucka M. (2006) BioModels Database: A Free, Centralized Database of Curated, Published, Quantitative Kinetic Models of Biochemical and Cellular Systems Nucleic Acids Res., 34: D689-D691.  
