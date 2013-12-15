@@ -1,10 +1,20 @@
 ## EM の作成
 
-以下のようなエラーが出る場合の対処
+1. 以下のように自動変換。
+```
+$ ecell3-sbml2eml BIOMD0000000xxx.xml 
+$ ecell3-eml2em BIOMD0000000xxx.eml 
+$ ecell3-em2eml BIOMD0000000xxx.eml
+$ ecell3-session-monitor -f BIOMD0000000xxx.eml
+```
+
+2. Jedit X で `JeditX用-EM-複数一括置換設定.txt` を利用して整形。
+
+* 以下のようなエラーが出る場合の対処
 
     RuntimeError: IllegalOperation: System[System:/:cell]: SIZE variable is not associated (System[System:/:cell])
 
-* 原因１：SBML中に初期値が未確定の値がある。  
+* 原因１：SBML中に初期値が未確定の値がある。
     * 対応：EM中では「Unknown」になっているので、手計算あるいは適当な初期値を与えた後の１ステップ走らせて初期値を得る。
 
 ### Header
@@ -29,7 +39,8 @@ Stepper DiscreteTimeStepper( DT ) {}
 ##### Model Entities #####
 ```
 
-## README の作成
+## README.md の作成
+
 1. BioModelsの Model ページをコピペして `README.txt` などとして保存。（末尾のBioModelsに関するクレジット表記は除外）
 2. Jedit X で `JeditX用-README-複数一括置換設定.txt` を利用して変換。
 3. Note を整形
