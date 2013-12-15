@@ -1,0 +1,1 @@
+(\t\tVariableReferenceList\t.*?)(\[\s\w+\sVariable\:[\/\w]+\:\w+\s\-?\d+\s\]\;?)\s*\n	\1\n\t\t\t\2\n
