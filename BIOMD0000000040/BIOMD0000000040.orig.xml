@@ -241,13 +241,12 @@
         </listOfReactants>
         <listOfProducts>
           <speciesReference species="Br" metaid="_106790">
-<!--
             <stoichiometryMath metaid="_106802">
               <math xmlns="http://www.w3.org/1998/Math/MathML">              
                 <ci> f </ci>
               </math>
             </stoichiometryMath>
--->          </speciesReference>
+          </speciesReference>
         </listOfProducts>
         <kineticLaw metaid="_106814">
           <math xmlns="http://www.w3.org/1998/Math/MathML">          
