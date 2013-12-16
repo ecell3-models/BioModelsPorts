@@ -1,41 +1,8 @@
-(BIOMD\d+)\s\-\s(.+?)\n[\s\S]+^Publication\sID\:\s(\d+)\n([\s\S]+)\s*\[more\]\n[\s\S]+^Original\sModel\:\sBIOMD\d+\.xml\.origin\n[\s\S]*^Submitter\:\s(.+)\n[\s\S]*^Encoders\:\s([\s\S]+)\nset\s[\s\S]*^Notes\n([\s\S]*)	[\1](http://www.ebi.ac.uk/biomodels-main/\1)
-----------------------------------------------------------------------
-\2
-======================================================================
-
-Model
------
-
-* **Model File:** \1.em
-* **Submitter:** Yasuhiro Naito
-* **Encoders:** Yasuhiro Naito
-
-Description from BioModels
---------------------------
-
-### Reference Publication
-
-* **Publication ID:** [\3](http://www.ncbi.nlm.nih.gov/pubmed/\3)
-* \4
-
-### Model
-
-* **Original Model:** [\1.xml.origin](http://www.ebi.ac.uk/biomodels/models-main/publ/\1/\1.xml.origin)
-* **Submitter:** \5
-* **Encoders:** \6
-
-### Notes
-
-\7
-(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3
-
-### Notes
-(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3, \4
-
-### Notes
-(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)\n^\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3, \4, \5
-
-### Notes
-(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)\n^\s+(.+)\n^\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3, \4, \5, \6
-
-### Notes
+(BIOMD\d+)\s\-\s(.+?)\n[\s\S]+^Publication\sID\:\s(\d+)\n([\s\S]+)\s*\[more\]\n[\s\S]+^Original\sModel\:\sBIOMD\d+\.xml\.origin\n[\s\S]*^Submitter\:\s(.+)\n[\s\S]*^Encoders\:\s([\s\S]+)\nset\s[\s\S]*^Notes\n([\s\S]*)	[\1](http://www.ebi.ac.uk/biomodels-main/\1)\n----------------------------------------------------------------------\n\2\n======================================================================\n\nModel\n-----\n\n* **Model File:** \1.em\n* **Submitter:** Yasuhiro Naito\n* **Encoders:** Yasuhiro Naito\n\nDescription from BioModels\n--------------------------\n\n### Reference Publication\n\n* **Publication ID:** [\3](http://www.ncbi.nlm.nih.gov/pubmed/\3)\n* \4\n\n### Model\n\n* **Original Model:** [\1.xml.origin](http://www.ebi.ac.uk/biomodels/models-main/publ/\1/\1.xml.origin)\n* **Submitter:** \5\n* **Encoders:** \6\n\n### Notes\n\n\7
+(BIOMD\d+)\s\-\s(.+?)\n[\s\S]+^Publication\sID\:\s(\d+)\n([\s\S]+)\s*\[more\]\n[\s\S]+^Original\sModel\:\s(.+)\n[\s\S]*^Submitter\:\s(.+)\n[\s\S]*^Encoders\:\s([\s\S]+)\nset\s[\s\S]*^Notes\n([\s\S]*)	[\1](http://www.ebi.ac.uk/biomodels-main/\1)\n----------------------------------------------------------------------\n\2\n======================================================================\n\nModel\n-----\n\n* **Model File:** \1.em\n* **Submitter:** Yasuhiro Naito\n* **Encoders:** Yasuhiro Naito\n\nDescription from BioModels\n--------------------------\n\n### Reference Publication\n\n* **Publication ID:** [\3](http://www.ncbi.nlm.nih.gov/pubmed/\3)\n* \4\n\n### Model\n\n* **Original Model:** [\5](###FIXME_ORIGINAL_MODEL_LINK###)\n* **Submitter:** \6\n* **Encoders:** \7\n\n### Notes\n\n\8
+(BIOMD\d+)\s\-\s(.+?)\n[\s\S]+^Publication\sID\:\s(.+?)\.\.\.\n([\s\S]+)\s*\[more\]\n[\s\S]+^Original\sModel\:\sBIOMD\d+\.xml\.origin\n[\s\S]*^Submitter\:\s(.+)\n[\s\S]*^Encoders\:\s([\s\S]+)\nset\s[\s\S]*^Notes\n([\s\S]*)	[\1](http://www.ebi.ac.uk/biomodels-main/\1)\n----------------------------------------------------------------------\n\2\n======================================================================\n\nModel\n-----\n\n* **Model File:** \1.em\n* **Submitter:** Yasuhiro Naito\n* **Encoders:** Yasuhiro Naito\n\nDescription from BioModels\n--------------------------\n\n### Reference Publication\n\n* **Publication ID (DOI):** [\3](http://dx.doi.org/\3)\n* \4\n\n### Model\n\n* **Original Model:** [\1.xml.origin](http://www.ebi.ac.uk/biomodels/models-main/publ/\1/\1.xml.origin)\n* **Submitter:** \5\n* **Encoders:** \6\n\n### Notes\n\n\7
+(BIOMD\d+)\s\-\s(.+?)\n[\s\S]+^Publication\sID\:\s(.+?)\.\.\.\n([\s\S]+)\s*\[more\]\n[\s\S]+^Original\sModel\:\s(.+)\n[\s\S]*^Submitter\:\s(.+)\n[\s\S]*^Encoders\:\s([\s\S]+)\nset\s[\s\S]*^Notes\n([\s\S]*)	[\1](http://www.ebi.ac.uk/biomodels-main/\1)\n----------------------------------------------------------------------\n\2\n======================================================================\n\nModel\n-----\n\n* **Model File:** \1.em\n* **Submitter:** Yasuhiro Naito\n* **Encoders:** Yasuhiro Naito\n\nDescription from BioModels\n--------------------------\n\n### Reference Publication\n\n* **Publication ID (DOI):** [\3](http://dx.doi.org/\3)\n* \4\n\n### Model\n\n* **Original Model:** [\5](###FIXME_ORIGINAL_MODEL_LINK###)\n* **Submitter:** \6\n* **Encoders:** \7\n\n### Notes\n\n\8
+(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3\n\n### Notes
+(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3, \4\n\n### Notes
+(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)\n^\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3, \4, \5\n\n### Notes
+(\#\#\#\sModel[\s\S]+)^\*\s\*\*Encoders\:\*\*\s+(.+)\n^\s+(.+)\n^\s+(.+)\n^\s+(.+)\n^\s+(.+)[\s\S]*^\#\#\#\sNotes	\1* **Encoders:** \2, \3, \4, \5, \6\n\n### Notes
