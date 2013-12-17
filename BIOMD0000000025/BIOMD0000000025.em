@@ -1,6 +1,6 @@
 
 # created by eml2em program
-# from file: ./BIOMD0000000025.eml, date: Mon Dec 16 22:40:18 2013
+# from file: BIOMD0000000025.eml, date: Mon Dec 16 22:40:18 2013
 #
 # BIOMD0000000025 - Smolen2002_CircClock
 # 
