@@ -1,12 +1,21 @@
 
 # created by eml2em program
-# from file: ../BIOMD0000000166/BIOMD0000000166.eml, date: Mon Dec 16 22:55:38 2013
+# from file: BIOMD0000000166.eml, date: Mon Dec 16 22:55:38 2013
 #
+# BIOMD0000000166 - Zhu2007_TF_modulated_by_Calcium
+# 
+# Zhu CL, Zheng Y, Jia Y. 
+# A theoretical study on activation of transcription factor modulated by intracellular Ca2+ oscillations. 
+# Biophys. Chem. 2007 Aug; 129(1): 49-55 
+# Department of Physics, Jianghan University, Wuhan 430056, China.
 
-Stepper ODEStepper( DE )
-{
-	# no property
-}
+
+##### Steppers #####
+
+Stepper FixedODE1Stepper( DE ) {}
+Stepper DiscreteTimeStepper( DT ) {}
+
+##### Model Entities #####
 
 System System( / )
 {
@@ -17,7 +26,11 @@ System System( / )
 	{
 		Name	"TF Synthesis";
 		Expression	"Param0.Value * pow(P0.Value / cytoplasm.Value, 2) / (pow(P0.Value / cytoplasm.Value, 2) + Param1.Value)";
-		VariableReferenceList	[ P0 Variable:/cytoplasm:X 1 ] [ Param0 Variable:/SBMLParameter:kf 0 ] [ cytoplasm Variable:/cytoplasm:SIZE 0 ] [ Param1 Variable:/SBMLParameter:Kd 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/cytoplasm:X 1 ]
+			[ Param0 Variable:/SBMLParameter:kf 0 ]
+			[ cytoplasm Variable:/cytoplasm:SIZE 0 ]
+			[ Param1 Variable:/SBMLParameter:Kd 0 ];
 	}
 	
 	Process ExpressionFluxProcess( TF_degradation )
@@ -25,7 +38,9 @@ System System( / )
 		Name	"TF degradation";
 		kd	1.0;
 		Expression	"kd * (S0.Value / cytoplasm.Value)";
-		VariableReferenceList	[ S0 Variable:/cytoplasm:X -1 ] [ cytoplasm Variable:/cytoplasm:SIZE 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/cytoplasm:X -1 ]
+			[ cytoplasm Variable:/cytoplasm:SIZE 0 ];
 	}
 	
 	Process ExpressionFluxProcess( TF_synthesis_basal )
@@ -33,7 +48,8 @@ System System( / )
 		Name	TF_synthesis_basal;
 		Rbas	0.1;
 		Expression	Rbas;
-		VariableReferenceList	[ P0 Variable:/cytoplasm:X 1 ];
+		VariableReferenceList	
+			[ P0 Variable:/cytoplasm:X 1 ];
 	}
 	
 	Process ExpressionFluxProcess( Calcium_Influx )
@@ -41,7 +57,8 @@ System System( / )
 		Name	Calcium_Influx;
 		v0	1.0;
 		Expression	v0;
-		VariableReferenceList	[ P0 Variable:/cytoplasm:Z 1 ];
+		VariableReferenceList	
+			[ P0 Variable:/cytoplasm:Z 1 ];
 	}
 	
 	Process ExpressionFluxProcess( Calcium_Influx_stimulation )
@@ -50,7 +67,8 @@ System System( / )
 		v1	5.7;
 		beta	0.3;
 		Expression	"v1 * beta";
-		VariableReferenceList	[ P0 Variable:/cytoplasm:Z 1 ];
+		VariableReferenceList	
+			[ P0 Variable:/cytoplasm:Z 1 ];
 	}
 	
 	Process ExpressionFluxProcess( Calcium_into_store )
@@ -60,7 +78,10 @@ System System( / )
 		K2	0.5;
 		n	2.0;
 		Expression	"Vm2 * pow(S0.Value / cytoplasm.Value, n) / (pow(K2, n) + pow(S0.Value / cytoplasm.Value, n))";
-		VariableReferenceList	[ S0 Variable:/cytoplasm:Z -1 ] [ P0 Variable:/store:Y 1 ] [ cytoplasm Variable:/cytoplasm:SIZE 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/cytoplasm:Z -1 ]
+			[ P0 Variable:/store:Y 1 ]
+			[ cytoplasm Variable:/cytoplasm:SIZE 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Calcium_into_cytoplasm )
@@ -72,7 +93,10 @@ System System( / )
 		m	2.0;
 		p	4.0;
 		Expression	"Vm3 * pow(S0.Value / store.Value, m) / (pow(Kr, m) + pow(S0.Value / store.Value, m)) * pow(P0.Value / store.Value, p) / (pow(K_A, p) + pow(P0.Value / store.Value, p))";
-		VariableReferenceList	[ S0 Variable:/store:Y -1 ] [ P0 Variable:/cytoplasm:Z 1 ] [ store Variable:/store:SIZE 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/store:Y -1 ]
+			[ P0 Variable:/cytoplasm:Z 1 ]
+			[ store Variable:/store:SIZE 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Leakage )
@@ -80,7 +104,10 @@ System System( / )
 		Name	"Calcium Leakage";
 		k1	0.7;
 		Expression	"k1 * (S0.Value / store.Value)";
-		VariableReferenceList	[ S0 Variable:/store:Y -1 ] [ P0 Variable:/cytoplasm:Z 1 ] [ store Variable:/store:SIZE 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/store:Y -1 ]
+			[ P0 Variable:/cytoplasm:Z 1 ]
+			[ store Variable:/store:SIZE 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Leakage_from_cytoplasm )
@@ -88,7 +115,9 @@ System System( / )
 		Name	"Leakage from cytoplasm";
 		k	10.0;
 		Expression	"k * (S0.Value / cytoplasm.Value)";
-		VariableReferenceList	[ S0 Variable:/cytoplasm:Z -1 ] [ cytoplasm Variable:/cytoplasm:SIZE 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/cytoplasm:Z -1 ]
+			[ cytoplasm Variable:/cytoplasm:SIZE 0 ];
 	}
 	
 	
@@ -161,13 +190,13 @@ System System( /SBMLParameter )
 	Variable Variable( kf )
 	{
 		Name	kf;
-		Value	Unknown;
+		Value	8.90757086485;  ## Calculated
 	}
 	
 	Variable Variable( Kd )
 	{
 		Name	Kd;
-		Value	Unknown;
+		Value	9.46156095095;  ## Calculated
 	}
 	
 	Variable Variable( kf0 )
@@ -208,18 +237,29 @@ System System( /SBMLParameter )
 System System( /SBMLRule )
 {
 	Name	"System for SBML Rule";
-	StepperID	DE;
+	StepperID	DT;
 
 	Process ExpressionAssignmentProcess( Rule1 )
 	{
 		Expression	"P1.Value * (1 + P2.Value * pow(V0.Value / cytoplasm.Value, 4) / (pow(P3.Value, 4) + pow(V0.Value / cytoplasm.Value, 4)))";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:kf 1 ] [ P1 Variable:/SBMLParameter:kf0 0 ] [ P2 Variable:/SBMLParameter:gamma 0 ] [ V0 Variable:/cytoplasm:Z 0 ] [ cytoplasm Variable:/cytoplasm:SIZE 0 ] [ P3 Variable:/SBMLParameter:Ka 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/SBMLParameter:kf 1 ]
+			[ P1 Variable:/SBMLParameter:kf0 0 ]
+			[ P2 Variable:/SBMLParameter:gamma 0 ]
+			[ V0 Variable:/cytoplasm:Z 0 ]
+			[ cytoplasm Variable:/cytoplasm:SIZE 0 ]
+			[ P3 Variable:/SBMLParameter:Ka 0 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule2 )
 	{
 		Expression	"P1.Value / (1 + pow(V0.Value / cytoplasm.Value, 4) / pow(P2.Value, 4))";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:Kd 1 ] [ P1 Variable:/SBMLParameter:Kd0 0 ] [ V0 Variable:/cytoplasm:Z 0 ] [ cytoplasm Variable:/cytoplasm:SIZE 0 ] [ P2 Variable:/SBMLParameter:Kb 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/SBMLParameter:Kd 1 ]
+			[ P1 Variable:/SBMLParameter:Kd0 0 ]
+			[ V0 Variable:/cytoplasm:Z 0 ]
+			[ cytoplasm Variable:/cytoplasm:SIZE 0 ]
+			[ P2 Variable:/SBMLParameter:Kb 0 ];
 	}
 	
 	
