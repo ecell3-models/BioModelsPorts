@@ -1,12 +1,21 @@
 
 # created by eml2em program
-# from file: ../BIOMD0000000067/BIOMD0000000067.eml, date: Mon Dec 16 22:54:57 2013
+# from file: BIOMD0000000067.eml, date: Mon Dec 16 22:54:57 2013
 #
+# BIOMD0000000067 - Fung2005_Metabolic_Oscillator
+# 
+# Fung E, Wong WW, Suen JK, Bulter T, Lee SG, Liao JC. 
+# A synthetic gene-metabolic oscillator. 
+# Nature 2005 May; 435(7038): 118-122 
+# Department of Chemical Engineering, University of California-Los Angeles, Los Angeles, California 90095, USA.
 
-Stepper ODEStepper( DE )
-{
-	# no property
-}
+
+##### Steppers #####
+
+Stepper FixedODE1Stepper( DE ) { StepInterval 1.0E-6; }
+# Stepper DiscreteTimeStepper( DT ) {}
+
+##### Model Entities #####
 
 System System( / )
 {
@@ -17,91 +26,154 @@ System System( / )
 	{
 		Name	"Glycolytic flux";
 		Expression	"compartment.Value * Param0.Value";
-		VariableReferenceList	[ P0 Variable:/compartment:AcCoA 1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:S0 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/compartment:AcCoA 1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:S0 0 ];
 	}
 	
 	Process ExpressionFluxProcess( V_TCA )
 	{
 		Name	"Flux to TCA cycle";
 		Expression	"compartment.Value * Param0.Value * (S0.Value / compartment.Value)";
-		VariableReferenceList	[ S0 Variable:/compartment:AcCoA -1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:kTCA 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:AcCoA -1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:kTCA 0 ];
 	}
 	
 	Process ExpressionFluxProcess( V_out )
 	{
 		Name	"Intercellular transport of Acetate";
 		Expression	"compartment.Value * Param0.Value * (S0.Value / compartment.Value - P0.Value / compartment.Value)";
-		VariableReferenceList	[ S0 Variable:/compartment:HOAc -1 ] [ P0 Variable:/compartment:HOAc_E 1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:k3 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:HOAc -1 ]
+			[ P0 Variable:/compartment:HOAc_E 1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:k3 0 ];
 	}
 	
 	Process ExpressionFluxProcess( V_Pta )
 	{
 		Name	"Phosphate acetyl transferase flux";
 		Expression	"compartment.Value * Param0.Value * (C0.Value / compartment.Value) * (S0.Value / compartment.Value) / (Param1.Value + S0.Value / compartment.Value)";
-		VariableReferenceList	[ S0 Variable:/compartment:AcCoA -1 ] [ P0 Variable:/compartment:AcP 1 ] [ C0 Variable:/compartment:Pta 0 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:k1 0 ] [ Param1 Variable:/SBMLParameter:KM1 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:AcCoA -1 ]
+			[ P0 Variable:/compartment:AcP 1 ]
+			[ C0 Variable:/compartment:Pta 0 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:k1 0 ]
+			[ Param1 Variable:/SBMLParameter:KM1 0 ];
 	}
 	
 	Process ExpressionFluxProcess( V_Ack )
 	{
 		Name	"Acetate kinase";
 		Expression	"compartment.Value * (Param0.Value * (S0.Value / compartment.Value) - Param1.Value * (P0.Value / compartment.Value))";
-		VariableReferenceList	[ S0 Variable:/compartment:AcP -1 ] [ P0 Variable:/compartment:OAc 1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:kAck_f 0 ] [ Param1 Variable:/SBMLParameter:kAck_r 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:AcP -1 ]
+			[ P0 Variable:/compartment:OAc 1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:kAck_f 0 ]
+			[ Param1 Variable:/SBMLParameter:kAck_r 0 ];
 	}
 	
 	Process ExpressionFluxProcess( V_Acs )
 	{
 		Name	"Acetyl-CoA synthase flux";
 		Expression	"compartment.Value * Param0.Value * (C0.Value / compartment.Value) * (S0.Value / compartment.Value) / (Param1.Value + S0.Value / compartment.Value)";
-		VariableReferenceList	[ S0 Variable:/compartment:OAc -1 ] [ P0 Variable:/compartment:AcCoA 1 ] [ C0 Variable:/compartment:Acs 0 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:k2 0 ] [ Param1 Variable:/SBMLParameter:KM2 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:OAc -1 ]
+			[ P0 Variable:/compartment:AcCoA 1 ]
+			[ C0 Variable:/compartment:Acs 0 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:k2 0 ]
+			[ Param1 Variable:/SBMLParameter:KM2 0 ];
 	}
 	
 	Process ExpressionFluxProcess( V_Ace )
 	{
 		Name	"Acid-base equilibrium";
 		Expression	"compartment.Value * Param0.Value * (S0.Value / compartment.Value * Param1.Value - Param2.Value * (P0.Value / compartment.Value))";
-		VariableReferenceList	[ S0 Variable:/compartment:OAc -1 ] [ P0 Variable:/compartment:HOAc 1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:C 0 ] [ Param1 Variable:/SBMLParameter:H 0 ] [ Param2 Variable:/SBMLParameter:Keq 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:OAc -1 ]
+			[ P0 Variable:/compartment:HOAc 1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:C 0 ]
+			[ Param1 Variable:/SBMLParameter:H 0 ]
+			[ Param2 Variable:/SBMLParameter:Keq 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R_LacI )
 	{
 		Name	"LacI synthesis";
 		Expression	"compartment.Value * (Param0.Value * pow(C0.Value / compartment.Value / Param1.Value, Param2.Value) / (1 + pow(C0.Value / compartment.Value / Param1.Value, Param2.Value)) + Param3.Value)";
-		VariableReferenceList	[ P0 Variable:/compartment:LacI 1 ] [ C0 Variable:/compartment:AcP 0 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:alpha1 0 ] [ Param1 Variable:/SBMLParameter:Kg1 0 ] [ Param2 Variable:/SBMLParameter:n 0 ] [ Param3 Variable:/SBMLParameter:alpha0 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/compartment:LacI 1 ]
+			[ C0 Variable:/compartment:AcP 0 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:alpha1 0 ]
+			[ Param1 Variable:/SBMLParameter:Kg1 0 ]
+			[ Param2 Variable:/SBMLParameter:n 0 ]
+			[ Param3 Variable:/SBMLParameter:alpha0 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R_Acs )
 	{
 		Name	"Acetyl-CoA synthase synthesis";
 		Expression	"compartment.Value * (Param0.Value * pow(C0.Value / compartment.Value / Param1.Value, Param2.Value) / (1 + pow(C0.Value / compartment.Value / Param1.Value, Param2.Value)) + Param3.Value)";
-		VariableReferenceList	[ P0 Variable:/compartment:Acs 1 ] [ C0 Variable:/compartment:AcP 0 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:alpha2 0 ] [ Param1 Variable:/SBMLParameter:Kg2 0 ] [ Param2 Variable:/SBMLParameter:n 0 ] [ Param3 Variable:/SBMLParameter:alpha0 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/compartment:Acs 1 ]
+			[ C0 Variable:/compartment:AcP 0 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:alpha2 0 ]
+			[ Param1 Variable:/SBMLParameter:Kg2 0 ]
+			[ Param2 Variable:/SBMLParameter:n 0 ]
+			[ Param3 Variable:/SBMLParameter:alpha0 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R_Pta )
 	{
 		Name	"Phosphate acetyl transferase synthase";
 		Expression	"Param0.Value / (1 + pow(C0.Value / compartment.Value / Param1.Value, Param2.Value)) + Param3.Value";
-		VariableReferenceList	[ P0 Variable:/compartment:Pta 1 ] [ C0 Variable:/compartment:LacI 0 ] [ Param0 Variable:/SBMLParameter:alpha3 0 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param1 Variable:/SBMLParameter:Kg3 0 ] [ Param2 Variable:/SBMLParameter:n 0 ] [ Param3 Variable:/SBMLParameter:alpha0 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/compartment:Pta 1 ]
+			[ C0 Variable:/compartment:LacI 0 ]
+			[ Param0 Variable:/SBMLParameter:alpha3 0 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param1 Variable:/SBMLParameter:Kg3 0 ]
+			[ Param2 Variable:/SBMLParameter:n 0 ]
+			[ Param3 Variable:/SBMLParameter:alpha0 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R_dLacI )
 	{
 		Name	"LacI degradation";
 		Expression	"compartment.Value * Param0.Value * (S0.Value / compartment.Value)";
-		VariableReferenceList	[ S0 Variable:/compartment:LacI -1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:kd 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:LacI -1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:kd 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R_dAcs )
 	{
 		Name	"Acs degradation";
 		Expression	"compartment.Value * Param0.Value * (S0.Value / compartment.Value)";
-		VariableReferenceList	[ S0 Variable:/compartment:Acs -1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:kd 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:Acs -1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:kd 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R_dPta )
 	{
 		Name	"Pta degradation";
 		Expression	"compartment.Value * Param0.Value * (S0.Value / compartment.Value)";
-		VariableReferenceList	[ S0 Variable:/compartment:Pta -1 ] [ compartment Variable:/compartment:SIZE 0 ] [ Param0 Variable:/SBMLParameter:kd 0 ];
+		VariableReferenceList	
+			[ S0 Variable:/compartment:Pta -1 ]
+			[ compartment Variable:/compartment:SIZE 0 ]
+			[ Param0 Variable:/SBMLParameter:kd 0 ];
 	}
 	
 	
