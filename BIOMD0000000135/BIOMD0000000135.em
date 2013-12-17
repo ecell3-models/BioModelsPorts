@@ -1,12 +1,21 @@
 
 # created by eml2em program
-# from file: ../BIOMD0000000135/BIOMD0000000135.eml, date: Mon Dec 16 22:55:29 2013
+# from file: BIOMD0000000135.eml, date: Mon Dec 16 22:55:29 2013
 #
+# BIOMD0000000135 - Izhikevich2004_SpikingNeurons_subthresholdOscillations
+# 
+# Izhikevich EM. 
+# Which model to use for cortical spiking neurons? 
+# IEEE Trans Neural Netw 2004 Sep; 15(5): 1063-1070 
+# The Neurosciences Institute, San Diego, CA 92121, USA.
 
-Stepper ODEStepper( DE )
-{
-	# no property
-}
+
+##### Steppers #####
+
+Stepper FixedODE1Stepper( DE ) {}
+# Stepper DiscreteTimeStepper( DT ) {}
+
+##### Model Entities #####
 
 System System( / )
 {
@@ -93,13 +102,20 @@ System System( /SBMLRule )
 	Process ExpressionFluxProcess( Rule1 )
 	{
 		Expression	"P1.Value * (P2.Value * P3.Value - P0.Value)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:u 0 ] [ P1 Variable:/SBMLParameter:a 0 ] [ P2 Variable:/SBMLParameter:b 0 ] [ P3 Variable:/SBMLParameter:v 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/SBMLParameter:u 0 ]
+			[ P1 Variable:/SBMLParameter:a 0 ]
+			[ P2 Variable:/SBMLParameter:b 0 ]
+			[ P3 Variable:/SBMLParameter:v 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Rule2 )
 	{
 		Expression	"0.04 * pow(P0.Value, 2) + 5 * P0.Value + 140 - P1.Value + P2.Value";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:v 0 ] [ P1 Variable:/SBMLParameter:u 0 ] [ P2 Variable:/SBMLParameter:i 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/SBMLParameter:v 0 ]
+			[ P1 Variable:/SBMLParameter:u 0 ]
+			[ P2 Variable:/SBMLParameter:i 0 ];
 	}
 	
 	
