@@ -547,3 +547,31 @@ System System( /SBMLRule )
 	
 }
 
+System System( /SBMLEvent )
+{
+	Name	"System for SBML Event";
+	StepperID	DE;
+
+	Variable Variable( time )
+	{
+		Value	0.0;
+	}
+
+	Process ExpressionFluxProcess( clock )
+	{
+		Expression	"1.0";
+		VariableReferenceList	
+			[ P0 Variable:/SBMLEvent:time 1 ];
+	}
+	
+	Process ExpressionAssignmentProcess( stressCell )
+	{
+		StepperID	DT;
+		Expression	"and( geq( V1.Value, 3600 ), lt( V1.Value, 3660 )) * 25.0";
+		VariableReferenceList	
+			[ V0 Variable:/SBMLParameter:IR 1 ]
+			[ V1 Variable:/SBMLEvent:time 0 ];
+	}
+	
+}
+
