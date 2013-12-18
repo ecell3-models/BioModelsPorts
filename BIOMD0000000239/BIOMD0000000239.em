@@ -1,12 +1,19 @@
 
 # created by eml2em program
-# from file: BIOMD239.eml, date: Sun Dec 15 02:34:57 2013
+# from file: BIOMD0000000239.eml, date: Sun Dec 15 02:34:57 2013
 #
+# BIOMD0000000239 - Jiang2007 - GSIS system, Pancreatic Beta Cells
+# 
+# Jiang N, Cox RD, Hancock JM. 
+# A kinetic core model of the glucose-stimulated insulin secretion network of pancreatic beta cells. 
+# Mamm. Genome 2007 Jul; 18(6-7): 508-520 
+# Bioinformatics Group, MRC Mammalian Genetics Unit, Harwell, Oxfordshire, OX11 0RD, UK.
 
-Stepper FixedODE1Stepper( DE )
-{
-	# no property
-}
+##### Steppers #####
+
+Stepper FixedODE1Stepper( DE ) {}
+
+##### Model Entities #####
 
 System System( / )
 {
