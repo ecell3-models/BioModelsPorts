@@ -1,17 +1,39 @@
 
 # created by eml2em program
-# from file: ../BIOMD0000000403/BIOMD0000000403.eml, date: Mon Dec 16 23:02:32 2013
+# from file: BIOMD0000000403.eml, date: Mon Dec 16 23:02:32 2013
 #
+# BIOMD0000000403 - Ayati2010_BoneRemodelingDynamics_WithTumour+DrugTreatment
+# 
+# Ayati BP, Edwards CM, Webb GF, Wikswo JP. 
+# A mathematical model of bone remodeling dynamics for normal bone cell populations and myeloma bone disease. 
+# Biol. Direct 2010; 5: 28 
+# Department of Mathematics, University of Iowa, Iowa City, IA 52242, USA.
 
-Stepper ODEStepper( DE )
-{
-	# no property
-}
+
+##### Steppers #####
+
+Stepper FixedODE1Stepper( DE ) {}
+Stepper DiscreteTimeStepper( DT ) {}
+
+##### Model Entities #####
 
 System System( / )
 {
 	StepperID	DE;
 	Name	Default;
+	
+	Variable Variable( time )
+	{
+		Value	0.0;
+	}
+
+	Process ExpressionFluxProcess( clock )
+	{
+		Expression	"1.0";
+		VariableReferenceList	
+			[ P0 Variable:.:time 1 ];
+	}
+
 }
 
 System System( /Compartment )
@@ -68,25 +90,25 @@ System System( /SBMLParameter )
 	Variable Variable( y1 )
 	{
 		Name	y1;
-		Value	Unknown;
+		Value	13.0003104462;  ## Calcurated
 	}
 	
 	Variable Variable( y2 )
 	{
 		Name	y2;
-		Value	Unknown;
+		Value	300.045410177;  ## Calcurated
 	}
 	
 	Variable Variable( C_bar )
 	{
 		Name	C_bar;
-		Value	Unknown;
+		Value	4.99380996157;  ## Calcurated
 	}
 	
 	Variable Variable( B_bar )
 	{
 		Name	B_bar;
-		Value	Unknown;
+		Value	315.901488672;  ## Calcurated
 	}
 	
 	Variable Variable( alpha1 )
@@ -162,7 +184,7 @@ System System( /SBMLParameter )
 	Variable Variable( gamma )
 	{
 		Name	gamma;
-		Value	Unknown;
+		Value	-0.3734;  ## Calcurated
 	}
 	
 	Variable Variable( gammaT )
@@ -210,13 +232,13 @@ System System( /SBMLParameter )
 	Variable Variable( V1 )
 	{
 		Name	V1;
-		Value	Unknown;
+		Value	0.0;
 	}
 	
 	Variable Variable( V2 )
 	{
 		Name	V2;
-		Value	Unknown;
+		Value	0.0;
 	}
 	
 	Variable Variable( v1 )
@@ -244,69 +266,150 @@ System System( /SBMLRule )
 	Process ExpressionFluxProcess( Rule1 )
 	{
 		Expression	"P0.Value * pow(V0.Value / Compartment.Value, P1.Value * (1 + P2.Value * (V1.Value / Compartment.Value) / P3.Value)) * pow(V2.Value / Compartment.Value, P4.Value * (1 + P5.Value * (V1.Value / Compartment.Value) / P3.Value)) - P6.Value * (V0.Value / Compartment.Value)";
-		VariableReferenceList	[ V0 Variable:/Compartment:C 0 ] [ Compartment Variable:/Compartment:SIZE 0 ] [ P0 Variable:/SBMLParameter:alpha1 0 ] [ P1 Variable:/SBMLParameter:g11 0 ] [ P2 Variable:/SBMLParameter:r11 0 ] [ V1 Variable:/Compartment:Tumour 0 ] [ P3 Variable:/SBMLParameter:LT 0 ] [ V2 Variable:/Compartment:B 0 ] [ P4 Variable:/SBMLParameter:g21 0 ] [ P5 Variable:/SBMLParameter:r21 0 ] [ P6 Variable:/SBMLParameter:beta1 0 ];
+		VariableReferenceList	
+			[ V0 Variable:/Compartment:C 1 ]
+			[ Compartment Variable:/Compartment:SIZE 0 ]
+			[ P0 Variable:/SBMLParameter:alpha1 0 ]
+			[ P1 Variable:/SBMLParameter:g11 0 ]
+			[ P2 Variable:/SBMLParameter:r11 0 ]
+			[ V1 Variable:/Compartment:Tumour 0 ]
+			[ P3 Variable:/SBMLParameter:LT 0 ]
+			[ V2 Variable:/Compartment:B 0 ]
+			[ P4 Variable:/SBMLParameter:g21 0 ]
+			[ P5 Variable:/SBMLParameter:r21 0 ]
+			[ P6 Variable:/SBMLParameter:beta1 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Rule2 )
 	{
 		Expression	"P0.Value * pow(V1.Value / Compartment.Value, P1.Value / (1 + P2.Value * (V2.Value / Compartment.Value) / P3.Value)) * pow(V0.Value / Compartment.Value, P4.Value - P5.Value * (V2.Value / Compartment.Value) / P3.Value) - (P6.Value - P7.Value) * (V0.Value / Compartment.Value)";
-		VariableReferenceList	[ V0 Variable:/Compartment:B 0 ] [ Compartment Variable:/Compartment:SIZE 0 ] [ P0 Variable:/SBMLParameter:alpha2 0 ] [ V1 Variable:/Compartment:C 0 ] [ P1 Variable:/SBMLParameter:g12 0 ] [ P2 Variable:/SBMLParameter:r12 0 ] [ V2 Variable:/Compartment:Tumour 0 ] [ P3 Variable:/SBMLParameter:LT 0 ] [ P4 Variable:/SBMLParameter:g22 0 ] [ P5 Variable:/SBMLParameter:r22 0 ] [ P6 Variable:/SBMLParameter:beta2 0 ] [ P7 Variable:/SBMLParameter:V1 0 ];
+		VariableReferenceList	
+			[ V0 Variable:/Compartment:B 1 ]
+			[ Compartment Variable:/Compartment:SIZE 0 ]
+			[ P0 Variable:/SBMLParameter:alpha2 0 ]
+			[ V1 Variable:/Compartment:C 0 ]
+			[ P1 Variable:/SBMLParameter:g12 0 ]
+			[ P2 Variable:/SBMLParameter:r12 0 ]
+			[ V2 Variable:/Compartment:Tumour 0 ]
+			[ P3 Variable:/SBMLParameter:LT 0 ]
+			[ P4 Variable:/SBMLParameter:g22 0 ]
+			[ P5 Variable:/SBMLParameter:r22 0 ]
+			[ P6 Variable:/SBMLParameter:beta2 0 ]
+			[ P7 Variable:/SBMLParameter:V1 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Rule3 )
 	{
 		Expression	"P0.Value * P1.Value - P2.Value * P3.Value";
-		VariableReferenceList	[ V0 Variable:/Compartment:z 1 ] [ Compartment Variable:/Compartment:SIZE 0 ] [ P0 Variable:/SBMLParameter:k2 0 ] [ P1 Variable:/SBMLParameter:y2 0 ] [ P2 Variable:/SBMLParameter:k1 0 ] [ P3 Variable:/SBMLParameter:y1 0 ];
+		VariableReferenceList	
+			[ V0 Variable:/Compartment:z 1 ]
+			[ Compartment Variable:/Compartment:SIZE 0 ]
+			[ P0 Variable:/SBMLParameter:k2 0 ]
+			[ P1 Variable:/SBMLParameter:y2 0 ]
+			[ P2 Variable:/SBMLParameter:k1 0 ]
+			[ P3 Variable:/SBMLParameter:y1 0 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule4 )
 	{
-		Expression	"piecewise(C - C_bar, gt(C, C_bar), 0)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:y1 1 ];
+		StepperID	DT;
+		Expression	"gt(C0.Value, C1.Value)* (C0.Value - C1.Value)";
+		VariableReferenceList	
+			[ C0 Variable:/Compartment:C 0 ]
+			[ C1 Variable:/SBMLParameter:C_bar 0 ]
+			[ P0 Variable:/SBMLParameter:y1 1 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule5 )
 	{
-		Expression	"piecewise(B - B_bar, gt(B, B_bar), 0)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:y2 1 ];
+		StepperID	DT;
+		Expression	"gt(C0.Value, C1.Value)* (C0.Value - C1.Value)";
+		VariableReferenceList	
+			[ C0 Variable:/Compartment:B 0 ]
+			[ C1 Variable:/SBMLParameter:B_bar 0 ]
+			[ P0 Variable:/SBMLParameter:y2 1 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule6 )
 	{
+		StepperID	DT;
 		Expression	"pow(P1.Value / P2.Value, (1 - P3.Value + P4.Value) / P5.Value) * pow(P6.Value / P7.Value, P8.Value * (1 + P9.Value) / P5.Value)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:C_bar 1 ] [ P1 Variable:/SBMLParameter:beta1 0 ] [ P2 Variable:/SBMLParameter:alpha1 0 ] [ P3 Variable:/SBMLParameter:g22 0 ] [ P4 Variable:/SBMLParameter:r22 0 ] [ P5 Variable:/SBMLParameter:gamma 0 ] [ P6 Variable:/SBMLParameter:beta2 0 ] [ P7 Variable:/SBMLParameter:alpha2 0 ] [ P8 Variable:/SBMLParameter:g21 0 ] [ P9 Variable:/SBMLParameter:r21 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/SBMLParameter:C_bar 1 ]
+			[ P1 Variable:/SBMLParameter:beta1 0 ]
+			[ P2 Variable:/SBMLParameter:alpha1 0 ]
+			[ P3 Variable:/SBMLParameter:g22 0 ]
+			[ P4 Variable:/SBMLParameter:r22 0 ]
+			[ P5 Variable:/SBMLParameter:gamma 0 ]
+			[ P6 Variable:/SBMLParameter:beta2 0 ]
+			[ P7 Variable:/SBMLParameter:alpha2 0 ]
+			[ P8 Variable:/SBMLParameter:g21 0 ]
+			[ P9 Variable:/SBMLParameter:r21 0 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule7 )
 	{
+		StepperID	DT;
 		Expression	"pow(P1.Value / P2.Value, P3.Value / (1 + P4.Value) / P5.Value) * pow(P6.Value / P7.Value, (1 - P8.Value * (1 + P9.Value)) / P5.Value)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:B_bar 1 ] [ P1 Variable:/SBMLParameter:beta1 0 ] [ P2 Variable:/SBMLParameter:alpha1 0 ] [ P3 Variable:/SBMLParameter:g12 0 ] [ P4 Variable:/SBMLParameter:r12 0 ] [ P5 Variable:/SBMLParameter:gamma 0 ] [ P6 Variable:/SBMLParameter:beta2 0 ] [ P7 Variable:/SBMLParameter:alpha2 0 ] [ P8 Variable:/SBMLParameter:g11 0 ] [ P9 Variable:/SBMLParameter:r11 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/SBMLParameter:B_bar 1 ]
+			[ P1 Variable:/SBMLParameter:beta1 0 ]
+			[ P2 Variable:/SBMLParameter:alpha1 0 ]
+			[ P3 Variable:/SBMLParameter:g12 0 ]
+			[ P4 Variable:/SBMLParameter:r12 0 ]
+			[ P5 Variable:/SBMLParameter:gamma 0 ]
+			[ P6 Variable:/SBMLParameter:beta2 0 ]
+			[ P7 Variable:/SBMLParameter:alpha2 0 ]
+			[ P8 Variable:/SBMLParameter:g11 0 ]
+			[ P9 Variable:/SBMLParameter:r11 0 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule8 )
 	{
+		StepperID	DT;
 		Expression	"P1.Value / (1 + P2.Value) * P3.Value * (1 + P4.Value) - (1 - P5.Value * (1 + P6.Value)) * (1 - P7.Value + P8.Value)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:gamma 1 ] [ P1 Variable:/SBMLParameter:g12 0 ] [ P2 Variable:/SBMLParameter:r12 0 ] [ P3 Variable:/SBMLParameter:g21 0 ] [ P4 Variable:/SBMLParameter:r21 0 ] [ P5 Variable:/SBMLParameter:g11 0 ] [ P6 Variable:/SBMLParameter:r11 0 ] [ P7 Variable:/SBMLParameter:g22 0 ] [ P8 Variable:/SBMLParameter:r22 0 ];
+		VariableReferenceList	
+			[ P0 Variable:/SBMLParameter:gamma 1 ]
+			[ P1 Variable:/SBMLParameter:g12 0 ]
+			[ P2 Variable:/SBMLParameter:r12 0 ]
+			[ P3 Variable:/SBMLParameter:g21 0 ]
+			[ P4 Variable:/SBMLParameter:r21 0 ]
+			[ P5 Variable:/SBMLParameter:g11 0 ]
+			[ P6 Variable:/SBMLParameter:r11 0 ]
+			[ P7 Variable:/SBMLParameter:g22 0 ]
+			[ P8 Variable:/SBMLParameter:r22 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Rule9 )
 	{
 		Expression	"(P0.Value - P1.Value) * (V0.Value / Compartment.Value) * log(P2.Value / (V0.Value / Compartment.Value))";
-		VariableReferenceList	[ V0 Variable:/Compartment:Tumour 0 ] [ Compartment Variable:/Compartment:SIZE 0 ] [ P0 Variable:/SBMLParameter:gammaT 0 ] [ P1 Variable:/SBMLParameter:V2 0 ] [ P2 Variable:/SBMLParameter:LT 0 ];
+		VariableReferenceList	
+			[ V0 Variable:/Compartment:Tumour 1 ]
+			[ Compartment Variable:/Compartment:SIZE 0 ]
+			[ P0 Variable:/SBMLParameter:gammaT 0 ]
+			[ P1 Variable:/SBMLParameter:V2 0 ]
+			[ P2 Variable:/SBMLParameter:LT 0 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule10 )
 	{
-		Expression	"piecewise(v1, geq(time, 600), 0)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:V1 1 ];
+		StepperID	DT;
+		Expression	"geq(time.Value, 600.0) * V1.Value";
+		VariableReferenceList	
+			[ V0 Variable:/SBMLParameter:V1 1 ]
+			[ V1 Variable:/SBMLParameter:v1 0 ]
+			[ time Variable:/:time 0 ];
 	}
 	
 	Process ExpressionAssignmentProcess( Rule11 )
 	{
-		Expression	"piecewise(v2, geq(time, 600), 0)";
-		VariableReferenceList	[ P0 Variable:/SBMLParameter:V2 1 ];
+		StepperID	DT;
+		Expression	"geq(time.Value, 600.0) * V1.Value";
+		VariableReferenceList	
+			[ V0 Variable:/SBMLParameter:V2 1 ]
+			[ V1 Variable:/SBMLParameter:v2 0 ]
+			[ time Variable:/:time 0 ];
 	}
-	
-	
+
 }
 
