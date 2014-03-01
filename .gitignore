@@ -3,5 +3,6 @@
 *.ecd
 *.pyc
 *.zip
+*.webloc
 tmp_code_*
 .DS_Store
