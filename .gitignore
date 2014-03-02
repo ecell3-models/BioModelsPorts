@@ -4,5 +4,6 @@
 *.pyc
 *.zip
 *.webloc
+test.sh
 tmp_code_*
 .DS_Store
