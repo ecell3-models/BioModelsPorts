@@ -1,34 +1,25 @@
 
 # created by eml2em program
-# from file: BIOMD0000000004.eml, date: Sun Dec 15 16:11:30 2013
+# from file: BIOMD0000000004.eml, date: Sat Mar  1 16:40:31 2014
 #
-# BIOMD0000000004 - Goldbeter1991 - Min Mit Oscil, Expl Inact
-# 
-# Goldbeter A. 
-# A minimal cascade model for the mitotic oscillator involving cyclin and cdc2 kinase. 
-# Proc. Natl. Acad. Sci. U.S.A. 1991 Oct; 88(20): 9107-9111 
-# Faculté des Sciences, Université Libre de Bruxelles, Belgium.
 
-
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE ) {}
-Stepper DiscreteTimeStepper( DT ) {}
-
-##### Model Entities #####
+Stepper ODEStepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 
 	Process ExpressionFluxProcess( reaction1 )
 	{
 		Name	"creation of cyclin";
 		vi	0.025;
 		Expression	"cell.Value * vi";
-		VariableReferenceList	
-			[ P0 Variable:/cell:C 1 ]
+		VariableReferenceList
+			[ C    Variable:/cell:C    1 ]
 			[ cell Variable:/cell:SIZE 0 ];
 	}
 	
@@ -36,10 +27,10 @@ System System( / )
 	{
 		Name	"default degradation of cyclin";
 		kd	0.01;
-		Expression	"S0.Value / cell.Value * cell.Value * kd";
-		VariableReferenceList	
-			[ S0 Variable:/cell:C -1 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"C.NumberConc * cell.Value * kd";
+		VariableReferenceList
+			[ C    Variable:/cell:C    -1 ]
+			[ cell Variable:/cell:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( reaction3 )
@@ -47,23 +38,23 @@ System System( / )
 		Name	"cdc2 kinase triggered degration of cyclin";
 		vd	0.25;
 		Kd	0.02;
-		Expression	"S0.Value / cell.Value * cell.Value * vd * (C0.Value / cell.Value) * pow(S0.Value / cell.Value + Kd, -1)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:C -1 ]
-			[ C0 Variable:/cell:X 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"C.NumberConc * cell.Value * vd * X.NumberConc * pow(C.NumberConc + Kd, -1)";
+		VariableReferenceList
+			[ C    Variable:/cell:C    -1 ]
+			[ X    Variable:/cell:X    0  ]
+			[ cell Variable:/cell:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( reaction4 )
 	{
 		Name	"activation of cdc2 kinase";
 		K1	0.005;
-		Expression	"cell.Value * (S0.Value / cell.Value) * Param0.Value * pow(K1 + S0.Value / cell.Value, -1)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:MI -1 ]
-			[ P0 Variable:/cell:M 1 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:V1 0 ];
+		Expression	"cell.Value * MI.NumberConc * V1.Value * pow(K1 + MI.NumberConc, -1)";
+		VariableReferenceList
+			[ MI   Variable:/cell:MI          -1 ]
+			[ M    Variable:/cell:M           1  ]
+			[ cell Variable:/cell:SIZE        0  ]
+			[ V1   Variable:/SBMLParameter:V1 0  ];
 	}
 	
 	Process ExpressionFluxProcess( reaction5 )
@@ -71,23 +62,23 @@ System System( / )
 		Name	"deactivation of cdc2 kinase";
 		V2	1.5;
 		K2	0.005;
-		Expression	"cell.Value * (S0.Value / cell.Value) * V2 * pow(K2 + S0.Value / cell.Value, -1)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:M -1 ]
-			[ P0 Variable:/cell:MI 1 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"cell.Value * M.NumberConc * V2 * pow(K2 + M.NumberConc, -1)";
+		VariableReferenceList
+			[ M    Variable:/cell:M    -1 ]
+			[ MI   Variable:/cell:MI   1  ]
+			[ cell Variable:/cell:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( reaction6 )
 	{
 		Name	"activation of cyclin protease";
 		K3	0.005;
-		Expression	"cell.Value * Param0.Value * (S0.Value / cell.Value) * pow(K3 + S0.Value / cell.Value, -1)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:XI -1 ]
-			[ P0 Variable:/cell:X 1 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:V3 0 ];
+		Expression	"cell.Value * V3.Value * XI.NumberConc * pow(K3 + XI.NumberConc, -1)";
+		VariableReferenceList
+			[ XI   Variable:/cell:XI          -1 ]
+			[ X    Variable:/cell:X           1  ]
+			[ cell Variable:/cell:SIZE        0  ]
+			[ V3   Variable:/SBMLParameter:V3 0  ];
 	}
 	
 	Process ExpressionFluxProcess( reaction7 )
@@ -95,11 +86,11 @@ System System( / )
 		Name	"deactivation of cyclin protease";
 		K4	0.005;
 		V4	0.5;
-		Expression	"cell.Value * V4 * (S0.Value / cell.Value) * pow(K4 + S0.Value / cell.Value, -1)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:X -1 ]
-			[ P0 Variable:/cell:XI 1 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"cell.Value * V4 * X.NumberConc * pow(K4 + X.NumberConc, -1)";
+		VariableReferenceList
+			[ X    Variable:/cell:X    -1 ]
+			[ XI   Variable:/cell:XI   1  ]
+			[ cell Variable:/cell:SIZE 0  ];
 	}
 	
 	
@@ -107,7 +98,7 @@ System System( / )
 
 System System( /cell )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	cell;
 
 	Variable Variable( Dimensions )
@@ -124,35 +115,35 @@ System System( /cell )
 	Variable Variable( C )
 	{
 		Name	Cyclin;
-		Value	0.01;
+		NumberConc	0.01;
 		Fixed	0;
 	}
 	
 	Variable Variable( M )
 	{
 		Name	"Active CDC-2 Kinase";
-		Value	0.01;
+		NumberConc	0.01;
 		Fixed	0;
 	}
 	
 	Variable Variable( X )
 	{
 		Name	"Active Cyclin Protease";
-		Value	0.01;
+		NumberConc	0.01;
 		Fixed	0;
 	}
 	
 	Variable Variable( MI )
 	{
 		Name	"Inactive CDC-2 Kinase";
-		Value	0.99;
+		NumberConc	0.99;
 		Fixed	0;
 	}
 	
 	Variable Variable( XI )
 	{
 		Name	"Inactive Cyclin Protease";
-		Value	0.99;
+		NumberConc	0.99;
 		Fixed	0;
 	}
 	
@@ -161,19 +152,19 @@ System System( /cell )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( V1 )
 	{
 		Name	V1;
-		Value	0.0588235294118;	# Cyclin*VM1*(Cyclin+Kc)^(-1) = V1
+		Value	0.0588235294118;
 	}
 	
 	Variable Variable( V3 )
 	{
 		Name	V3;
-		Value	0.01;	# Active CDC-2 Kinase*VM3 = V3
+		Value	0.01;
 	}
 	
 	Variable Variable( VM1 )
@@ -203,27 +194,29 @@ System System( /SBMLParameter )
 System System( /SBMLRule )
 {
 	Name	"System for SBML Rule";
-	StepperID	DT;
+	StepperID	Default;
 
-	Process ExpressionAssignmentProcess( Rule1 )
+	Process ExpressionAssignmentProcess( Assignment_V1 )
 	{
-		Expression	"V0.Value / cell.Value * P1.Value * pow(V0.Value / cell.Value + P2.Value, -1)";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:V1 1 ]
-			[ V0 Variable:/cell:C 0 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ P1 Variable:/SBMLParameter:VM1 0 ]
-			[ P2 Variable:/SBMLParameter:Kc 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'V1'";
+		Expression	"C.NumberConc * VM1.NumberConc * pow(C.NumberConc + Kc.NumberConc, -1)";
+		VariableReferenceList
+			[ V1  Variable:/SBMLParameter:V1  1 ]
+			[ C   Variable:/cell:C            0 ]
+			[ VM1 Variable:/SBMLParameter:VM1 0 ]
+			[ Kc  Variable:/SBMLParameter:Kc  0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule2 )
+	Process ExpressionAssignmentProcess( Assignment_V3 )
 	{
-		Expression	"V0.Value / cell.Value * P1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:V3 1 ]
-			[ V0 Variable:/cell:M 0 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ P1 Variable:/SBMLParameter:VM3 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'V3'";
+		Expression	"M.NumberConc * VM3.NumberConc";
+		VariableReferenceList
+			[ V3  Variable:/SBMLParameter:V3  1 ]
+			[ M   Variable:/cell:M            0 ]
+			[ VM3 Variable:/SBMLParameter:VM3 0 ];
 	}
 	
 	

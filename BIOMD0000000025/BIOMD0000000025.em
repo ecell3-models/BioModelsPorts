@@ -1,75 +1,66 @@
 
 # created by eml2em program
-# from file: BIOMD0000000025.eml, date: Mon Dec 16 22:40:18 2013
+# from file: BIOMD0000000025.eml, date: Sat Mar  1 16:52:02 2014
 #
-# BIOMD0000000025 - Smolen2002_CircClock
-# 
-# Smolen P, Baxter DA, Byrne JH. 
-# A reduced model clarifies the role of feedback loops and time delays in the Drosophila circadian oscillator. 
-# Biophys. J. 2002 Nov; 83(5): 2349-2359 
-# Department of Neurobiology and Anatomy, W. M. Keck Center for the Neurobiology of Learning and Memory, The University of Texas-Houston Medical School, Houston, TX 77225, USA.
 
-
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE ) {}
-Stepper DiscreteTimeStepper( DT ) {}
-
-##### Model Entities #####
+Stepper FixedODE1Stepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 
 	Process ExpressionFluxProcess( rPer )
 	{
 		Name	"Per production";
-		Expression	"Param0.Value * (Param1.Value / (Param2.Value + Param1.Value)) * CELL.Value";
-		VariableReferenceList	
-			[ S0 Variable:/CELL:EmptySet 0 ]
-			[ P0 Variable:/CELL:Per 1 ]
-			[ C0 Variable:/CELL:dClkF 0 ]
-			[ Param0 Variable:/SBMLParameter:Vsp 0 ]
-			[ Param1 Variable:/SBMLParameter:dClkF_tau1 0 ]
-			[ Param2 Variable:/SBMLParameter:K1 0 ]
-			[ CELL Variable:/CELL:SIZE 0 ];
+		Expression	"Vsp.Value * (dClkF_tau1.Value / (K1.Value + dClkF_tau1.Value)) * CELL.Value";
+		VariableReferenceList
+			[ EmptySet   Variable:/CELL:EmptySet            0 ]
+			[ Per        Variable:/CELL:Per                 1 ]
+			[ dClkF      Variable:/CELL:dClkF               0 ]
+			[ Vsp        Variable:/SBMLParameter:Vsp        0 ]
+			[ dClkF_tau1 Variable:/SBMLParameter:dClkF_tau1 0 ]
+			[ K1         Variable:/SBMLParameter:K1         0 ]
+			[ CELL       Variable:/CELL:SIZE                0 ];
 	}
 	
 	Process ExpressionFluxProcess( rdClk )
 	{
 		Name	"dClk production";
-		Expression	"CELL.Value * Param0.Value * (Param1.Value / (Param1.Value + Param2.Value))";
-		VariableReferenceList	
-			[ S0 Variable:/CELL:EmptySet 0 ]
-			[ P0 Variable:/CELL:dClk 1 ]
-			[ C0 Variable:/CELL:dClkF 0 ]
-			[ CELL Variable:/CELL:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:Vsc 0 ]
-			[ Param1 Variable:/SBMLParameter:K2 0 ]
-			[ Param2 Variable:/SBMLParameter:dClkF_tau2 0 ];
+		Expression	"CELL.Value * Vsc.Value * (K2.Value / (K2.Value + dClkF_tau2.Value))";
+		VariableReferenceList
+			[ EmptySet   Variable:/CELL:EmptySet            0 ]
+			[ dClk       Variable:/CELL:dClk                1 ]
+			[ dClkF      Variable:/CELL:dClkF               0 ]
+			[ CELL       Variable:/CELL:SIZE                0 ]
+			[ Vsc        Variable:/SBMLParameter:Vsc        0 ]
+			[ K2         Variable:/SBMLParameter:K2         0 ]
+			[ dClkF_tau2 Variable:/SBMLParameter:dClkF_tau2 0 ];
 	}
 	
 	Process ExpressionFluxProcess( rPerD )
 	{
 		Name	"Per degradation";
-		Expression	"Param0.Value * (S0.Value / CELL.Value) * CELL.Value";
-		VariableReferenceList	
-			[ S0 Variable:/CELL:Per -1 ]
-			[ P0 Variable:/CELL:EmptySet 0 ]
-			[ Param0 Variable:/SBMLParameter:kdc 0 ]
-			[ CELL Variable:/CELL:SIZE 0 ];
+		Expression	"kdc.Value * Per.NumberConc * CELL.Value";
+		VariableReferenceList
+			[ Per      Variable:/CELL:Per          -1 ]
+			[ EmptySet Variable:/CELL:EmptySet     0  ]
+			[ kdc      Variable:/SBMLParameter:kdc 0  ]
+			[ CELL     Variable:/CELL:SIZE         0  ];
 	}
 	
 	Process ExpressionFluxProcess( rdClkD )
 	{
 		Name	"dClk degradation";
-		Expression	"Param0.Value * (S0.Value / CELL.Value) * CELL.Value";
-		VariableReferenceList	
-			[ S0 Variable:/CELL:dClk -1 ]
-			[ P0 Variable:/CELL:EmptySet 0 ]
-			[ Param0 Variable:/SBMLParameter:kdp 0 ]
-			[ CELL Variable:/CELL:SIZE 0 ];
+		Expression	"kdp.Value * dClk.NumberConc * CELL.Value";
+		VariableReferenceList
+			[ dClk     Variable:/CELL:dClk         -1 ]
+			[ EmptySet Variable:/CELL:EmptySet     0  ]
+			[ kdp      Variable:/SBMLParameter:kdp 0  ]
+			[ CELL     Variable:/CELL:SIZE         0  ];
 	}
 	
 	
@@ -77,7 +68,7 @@ System System( / )
 
 System System( /CELL )
 {
-	StepperID	DE;
+	StepperID	Default;
 
 	Variable Variable( Dimensions )
 	{
@@ -92,26 +83,26 @@ System System( /CELL )
 	
 	Variable Variable( EmptySet )
 	{
-		Value	0.0;
+		NumberConc	0.0;
 		Fixed	1;
 	}
 	
 	Variable Variable( Per )
 	{
-		Value	5e-31;
+		NumberConc	5e-16;
 		Fixed	0;
 	}
 	
 	Variable Variable( dClk )
 	{
-		Value	1e-31;
+		NumberConc	1e-16;
 		Fixed	0;
 	}
 	
 	Variable Variable( dClkF )
 	{
 		Name	"free dClk";
-		Value	0.0;
+		NumberConc	0.0;
 		Fixed	0;
 	}
 	
@@ -120,19 +111,19 @@ System System( /CELL )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( dClkF_tau1 )
 	{
 		Name	dClkF_tau1;
-		Value	0.0;  ####FIXME_INITIAL_VALUE####
+		Value	0.0;
 	}
 	
 	Variable Variable( dClkF_tau2 )
 	{
 		Name	dClkF_tau2;
-		Value	0.0;  ####FIXME_INITIAL_VALUE####
+		Value	0.0;
 	}
 	
 	Variable Variable( tau1 )
@@ -197,36 +188,41 @@ System System( /SBMLParameter )
 System System( /SBMLRule )
 {
 	Name	"System for SBML Rule";
-	StepperID	DT;
+	StepperID	Default;
 
-	Process ExpressionAssignmentProcess( Rule1 )
+	Process ExpressionAssignmentProcess( Assignment_dClkF )
 	{
-		Expression	"geq(E0.Value - E1.Value, 0) * (E0.Value - E1.Value)";
-		VariableReferenceList	
-			[ V0 Variable:/CELL:dClkF 1 ]
-			[ E0 Variable:/CELL:dClk 0 ]
-			[ E1 Variable:/CELL:Per 0 ]
-			[ CELL Variable:/CELL:SIZE 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'dClkF'";
+		Expression	"piecewise(0, lt(dClk.NumberConc - Per.NumberConc, 0), dClk.NumberConc - Per.NumberConc)";
+		VariableReferenceList
+			[ dClkF Variable:/CELL:dClkF 1 ]
+			[ dClk  Variable:/CELL:dClk  0 ]
+			[ Per   Variable:/CELL:Per   0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule2 )
+	Process ExpressionAssignmentProcess( Assignment_dClkF_tau1 )
 	{
-		Expression	"geq(delay(E0.Value, E2.Value) - delay(E1.Value, E2.Value), 0) * ( delay(E0.Value, E2.Value) - delay(E1.Value, E2.Value)))";
-		VariableReferenceList	
-			[ E0 Variable:/CELL:dClk 0 ]
-			[ E1 Variable:/CELL:Per 0 ]
-			[ E2 Variable:/SBMLParameter:tau1 0 ]
-			[ P0 Variable:/SBMLParameter:dClkF_tau1 1 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'dClkF_tau1'";
+		Expression	"piecewise(0, lt(delay(dClk.NumberConc, tau1.NumberConc) - delay(Per.NumberConc, tau1.NumberConc), 0), delay(dClk.NumberConc, tau1.NumberConc) - delay(Per.NumberConc, tau1.NumberConc))";
+		VariableReferenceList
+			[ dClkF_tau1 Variable:/SBMLParameter:dClkF_tau1 1 ]
+			[ dClk       Variable:/CELL:dClk                0 ]
+			[ tau1       Variable:/SBMLParameter:tau1       0 ]
+			[ Per        Variable:/CELL:Per                 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule3 )
+	Process ExpressionAssignmentProcess( Assignment_dClkF_tau2 )
 	{
-		Expression	"piecewise(0, lt(delay(E0.Value, E2.Value) - delay(E1.Value, E2.Value), 0), delay(E0.Value, E2.Value) - delay(E1.Value, E2.Value))";
-		VariableReferenceList	
-			[ E0 Variable:/CELL:dClk 0 ]
-			[ E1 Variable:/CELL:Per 0 ]
-			[ E2 Variable:/SBMLParameter:tau2 0 ]
-			[ P0 Variable:/SBMLParameter:dClkF_tau2 1 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'dClkF_tau2'";
+		Expression	"piecewise(0, lt(delay(dClk.NumberConc, tau2.NumberConc) - delay(Per.NumberConc, tau2.NumberConc), 0), delay(dClk.NumberConc, tau2.NumberConc) - delay(Per.NumberConc, tau2.NumberConc))";
+		VariableReferenceList
+			[ dClkF_tau2 Variable:/SBMLParameter:dClkF_tau2 1 ]
+			[ dClk       Variable:/CELL:dClk                0 ]
+			[ tau2       Variable:/SBMLParameter:tau2       0 ]
+			[ Per        Variable:/CELL:Per                 0 ];
 	}
 	
 	

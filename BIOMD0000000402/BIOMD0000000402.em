@@ -1,30 +1,22 @@
 
 # created by eml2em program
-# from file: ../BIOMD0000000402/BIOMD0000000402.eml, date: Mon Dec 16 23:02:30 2013
+# from file: BIOMD0000000402.eml, date: Sun Mar  2 21:11:20 2014
 #
-# BIOMD0000000402 - Ayati2010_BoneRemodelingDynamics_WithTumour
-# 
-# Ayati BP, Edwards CM, Webb GF, Wikswo JP. 
-# A mathematical model of bone remodeling dynamics for normal bone cell populations and myeloma bone disease. 
-# Biol. Direct 2010; 5: 28 
-# Department of Mathematics, University of Iowa, Iowa City, IA 52242, USA.
 
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE ) {}
-Stepper DiscreteTimeStepper( DT ) {}
-
-##### Model Entities #####
+Stepper FixedODE1Stepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 }
 
 System System( /Compartment )
 {
-	StepperID	DE;
+	StepperID	Default;
 
 	Variable Variable( Dimensions )
 	{
@@ -40,28 +32,28 @@ System System( /Compartment )
 	Variable Variable( C )
 	{
 		Name	Osteoclasts;
-		Value	15.0;
+		NumberConc	15.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( B )
 	{
 		Name	Osteoblasts;
-		Value	316.0;
+		NumberConc	316.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( z )
 	{
 		Name	BoneMass;
-		Value	100.0;
+		NumberConc	100.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( Tumour )
 	{
 		Name	Tumour;
-		Value	1.0;
+		NumberConc	1.0;
 		Fixed	0;
 	}
 	
@@ -70,31 +62,31 @@ System System( /Compartment )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( y1 )
 	{
 		Name	y1;
-		Value	15.0003192715;  ## Calcurated
+		Value	10.0061900384;
 	}
 	
 	Variable Variable( y2 )
 	{
 		Name	y2;
-		Value	316.052993271;  ## Calcurated
+		Value	0.0985113275813;
 	}
 	
 	Variable Variable( C_bar )
 	{
 		Name	C_bar;
-		Value	4.99380996157;  ## Calcurated
+		Value	4.99380996157;
 	}
 	
 	Variable Variable( B_bar )
 	{
 		Name	B_bar;
-		Value	315.901488672;  ## Calcurated
+		Value	315.901488672;
 	}
 	
 	Variable Variable( alpha1 )
@@ -170,7 +162,7 @@ System System( /SBMLParameter )
 	Variable Variable( gamma )
 	{
 		Name	gamma;
-		Value	-0.3734;  ## Calcurated
+		Value	-0.3734;
 	}
 	
 	Variable Variable( gammaT )
@@ -221,132 +213,137 @@ System System( /SBMLParameter )
 System System( /SBMLRule )
 {
 	Name	"System for SBML Rule";
-	StepperID	DE;
+	StepperID	Default;
 
-	Process ExpressionFluxProcess( Rule1 )
+	Process ExpressionFluxProcess( Rate_C )
 	{
-		Expression	"P0.Value * pow(V0.Value / Compartment.Value, P1.Value * (1 + P2.Value * (V1.Value / Compartment.Value) / P3.Value)) * pow(V2.Value / Compartment.Value, P4.Value * (1 + P5.Value * (V1.Value / Compartment.Value) / P3.Value)) - P6.Value * (V0.Value / Compartment.Value)";
-		VariableReferenceList	
-			[ V0 Variable:/Compartment:C 1 ]
-			[ Compartment Variable:/Compartment:SIZE 0 ]
-			[ P0 Variable:/SBMLParameter:alpha1 0 ]
-			[ P1 Variable:/SBMLParameter:g11 0 ]
-			[ P2 Variable:/SBMLParameter:r11 0 ]
-			[ V1 Variable:/Compartment:Tumour 0 ]
-			[ P3 Variable:/SBMLParameter:LT 0 ]
-			[ V2 Variable:/Compartment:B 0 ]
-			[ P4 Variable:/SBMLParameter:g21 0 ]
-			[ P5 Variable:/SBMLParameter:r21 0 ]
-			[ P6 Variable:/SBMLParameter:beta1 0 ];
+		Name	"Rate rule for 'C'";
+		Expression	"alpha1.NumberConc * pow(C.NumberConc, g11.NumberConc * (1 + r11.NumberConc * Tumour.NumberConc / LT.NumberConc)) * pow(B.NumberConc, g21.NumberConc * (1 + r21.NumberConc * Tumour.NumberConc / LT.NumberConc)) - beta1.NumberConc * C.NumberConc";
+		VariableReferenceList
+			[ C      Variable:/Compartment:C        1 ]
+			[ alpha1 Variable:/SBMLParameter:alpha1 0 ]
+			[ g11    Variable:/SBMLParameter:g11    0 ]
+			[ r11    Variable:/SBMLParameter:r11    0 ]
+			[ Tumour Variable:/Compartment:Tumour   0 ]
+			[ LT     Variable:/SBMLParameter:LT     0 ]
+			[ B      Variable:/Compartment:B        0 ]
+			[ g21    Variable:/SBMLParameter:g21    0 ]
+			[ r21    Variable:/SBMLParameter:r21    0 ]
+			[ beta1  Variable:/SBMLParameter:beta1  0 ];
 	}
 	
-	Process ExpressionFluxProcess( Rule2 )
+	Process ExpressionFluxProcess( Rate_B )
 	{
-		Expression	"P0.Value * pow(V1.Value / Compartment.Value, P1.Value / (1 + P2.Value * (V2.Value / Compartment.Value) / P3.Value)) * pow(V0.Value / Compartment.Value, P4.Value - P5.Value * (V2.Value / Compartment.Value) / P3.Value) - P6.Value * (V0.Value / Compartment.Value)";
-		VariableReferenceList	
-			[ V0 Variable:/Compartment:B 1 ]
-			[ Compartment Variable:/Compartment:SIZE 0 ]
-			[ P0 Variable:/SBMLParameter:alpha2 0 ]
-			[ V1 Variable:/Compartment:C 0 ]
-			[ P1 Variable:/SBMLParameter:g12 0 ]
-			[ P2 Variable:/SBMLParameter:r12 0 ]
-			[ V2 Variable:/Compartment:Tumour 0 ]
-			[ P3 Variable:/SBMLParameter:LT 0 ]
-			[ P4 Variable:/SBMLParameter:g22 0 ]
-			[ P5 Variable:/SBMLParameter:r22 0 ]
-			[ P6 Variable:/SBMLParameter:beta2 0 ];
+		Name	"Rate rule for 'B'";
+		Expression	"alpha2.NumberConc * pow(C.NumberConc, g12.NumberConc / (1 + r12.NumberConc * Tumour.NumberConc / LT.NumberConc)) * pow(B.NumberConc, g22.NumberConc - r22.NumberConc * Tumour.NumberConc / LT.NumberConc) - beta2.NumberConc * B.NumberConc";
+		VariableReferenceList
+			[ B      Variable:/Compartment:B        1 ]
+			[ alpha2 Variable:/SBMLParameter:alpha2 0 ]
+			[ C      Variable:/Compartment:C        0 ]
+			[ g12    Variable:/SBMLParameter:g12    0 ]
+			[ r12    Variable:/SBMLParameter:r12    0 ]
+			[ Tumour Variable:/Compartment:Tumour   0 ]
+			[ LT     Variable:/SBMLParameter:LT     0 ]
+			[ g22    Variable:/SBMLParameter:g22    0 ]
+			[ r22    Variable:/SBMLParameter:r22    0 ]
+			[ beta2  Variable:/SBMLParameter:beta2  0 ];
 	}
 	
-	Process ExpressionFluxProcess( Rule3 )
+	Process ExpressionFluxProcess( Rate_z )
 	{
-		Expression	"P0.Value * P1.Value - P2.Value * P3.Value";
-		VariableReferenceList	
-			[ V0 Variable:/Compartment:z 1 ]
-			[ Compartment Variable:/Compartment:SIZE 0 ]
-			[ P0 Variable:/SBMLParameter:k2 0 ]
-			[ P1 Variable:/SBMLParameter:y2 0 ]
-			[ P2 Variable:/SBMLParameter:k1 0 ]
-			[ P3 Variable:/SBMLParameter:y1 0 ];
+		Name	"Rate rule for 'z'";
+		Expression	"k2.NumberConc * y2.NumberConc - k1.NumberConc * y1.NumberConc";
+		VariableReferenceList
+			[ z  Variable:/Compartment:z    1 ]
+			[ k2 Variable:/SBMLParameter:k2 0 ]
+			[ y2 Variable:/SBMLParameter:y2 0 ]
+			[ k1 Variable:/SBMLParameter:k1 0 ]
+			[ y1 Variable:/SBMLParameter:y1 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule4 )
+	Process ExpressionAssignmentProcess( Assignment_y1 )
 	{
-		StepperID	DT;
-		Expression	"gt(C0.Value, C1.Value)* (C0.Value - C1.Value)";
-		VariableReferenceList	
-			[ C0 Variable:/Compartment:C 0 ]
-			[ C1 Variable:/SBMLParameter:C_bar 0 ]
-			[ P0 Variable:/SBMLParameter:y1 1 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'y1'";
+		Expression	"piecewise(C.NumberConc - C_bar.NumberConc, gt(C.NumberConc, C_bar.NumberConc), 0)";
+		VariableReferenceList
+			[ y1    Variable:/SBMLParameter:y1    1 ]
+			[ C     Variable:/Compartment:C       0 ]
+			[ C_bar Variable:/SBMLParameter:C_bar 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule5 )
+	Process ExpressionAssignmentProcess( Assignment_y2 )
 	{
-		StepperID	DT;
-		Expression	"gt(C0.Value, C1.Value)* (C0.Value - C1.Value)";
-		VariableReferenceList	
-			[ C0 Variable:/Compartment:B 0 ]
-			[ C1 Variable:/SBMLParameter:B_bar 0 ]
-			[ P0 Variable:/SBMLParameter:y2 1 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'y2'";
+		Expression	"piecewise(B.NumberConc - B_bar.NumberConc, gt(B.NumberConc, B_bar.NumberConc), 0)";
+		VariableReferenceList
+			[ y2    Variable:/SBMLParameter:y2    1 ]
+			[ B     Variable:/Compartment:B       0 ]
+			[ B_bar Variable:/SBMLParameter:B_bar 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule6 )
+	Process ExpressionAssignmentProcess( Assignment_C_bar )
 	{
-		StepperID	DT;
-		Expression	"pow(P1.Value / P2.Value, (1 - P3.Value + P4.Value) / P5.Value) * pow(P6.Value / P7.Value, P8.Value * (1 + P9.Value) / P5.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:C_bar 1 ]
-			[ P1 Variable:/SBMLParameter:beta1 0 ]
-			[ P2 Variable:/SBMLParameter:alpha1 0 ]
-			[ P3 Variable:/SBMLParameter:g22 0 ]
-			[ P4 Variable:/SBMLParameter:r22 0 ]
-			[ P5 Variable:/SBMLParameter:gamma 0 ]
-			[ P6 Variable:/SBMLParameter:beta2 0 ]
-			[ P7 Variable:/SBMLParameter:alpha2 0 ]
-			[ P8 Variable:/SBMLParameter:g21 0 ]
-			[ P9 Variable:/SBMLParameter:r21 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'C_bar'";
+		Expression	"pow(beta1.NumberConc / alpha1.NumberConc, (1 - g22.NumberConc + r22.NumberConc) / gamma.NumberConc) * pow(beta2.NumberConc / alpha2.NumberConc, g21.NumberConc * (1 + r21.NumberConc) / gamma.NumberConc)";
+		VariableReferenceList
+			[ C_bar  Variable:/SBMLParameter:C_bar  1 ]
+			[ beta1  Variable:/SBMLParameter:beta1  0 ]
+			[ alpha1 Variable:/SBMLParameter:alpha1 0 ]
+			[ g22    Variable:/SBMLParameter:g22    0 ]
+			[ r22    Variable:/SBMLParameter:r22    0 ]
+			[ gamma  Variable:/SBMLParameter:gamma  0 ]
+			[ beta2  Variable:/SBMLParameter:beta2  0 ]
+			[ alpha2 Variable:/SBMLParameter:alpha2 0 ]
+			[ g21    Variable:/SBMLParameter:g21    0 ]
+			[ r21    Variable:/SBMLParameter:r21    0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule7 )
+	Process ExpressionAssignmentProcess( Assignment_B_bar )
 	{
-		StepperID	DT;
-		Expression	"pow(P1.Value / P2.Value, P3.Value / (1 + P4.Value) / P5.Value) * pow(P6.Value / P7.Value, (1 - P8.Value * (1 + P9.Value)) / P5.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:B_bar 1 ]
-			[ P1 Variable:/SBMLParameter:beta1 0 ]
-			[ P2 Variable:/SBMLParameter:alpha1 0 ]
-			[ P3 Variable:/SBMLParameter:g12 0 ]
-			[ P4 Variable:/SBMLParameter:r12 0 ]
-			[ P5 Variable:/SBMLParameter:gamma 0 ]
-			[ P6 Variable:/SBMLParameter:beta2 0 ]
-			[ P7 Variable:/SBMLParameter:alpha2 0 ]
-			[ P8 Variable:/SBMLParameter:g11 0 ]
-			[ P9 Variable:/SBMLParameter:r11 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'B_bar'";
+		Expression	"pow(beta1.NumberConc / alpha1.NumberConc, g12.NumberConc / (1 + r12.NumberConc) / gamma.NumberConc) * pow(beta2.NumberConc / alpha2.NumberConc, (1 - g11.NumberConc * (1 + r11.NumberConc)) / gamma.NumberConc)";
+		VariableReferenceList
+			[ B_bar  Variable:/SBMLParameter:B_bar  1 ]
+			[ beta1  Variable:/SBMLParameter:beta1  0 ]
+			[ alpha1 Variable:/SBMLParameter:alpha1 0 ]
+			[ g12    Variable:/SBMLParameter:g12    0 ]
+			[ r12    Variable:/SBMLParameter:r12    0 ]
+			[ gamma  Variable:/SBMLParameter:gamma  0 ]
+			[ beta2  Variable:/SBMLParameter:beta2  0 ]
+			[ alpha2 Variable:/SBMLParameter:alpha2 0 ]
+			[ g11    Variable:/SBMLParameter:g11    0 ]
+			[ r11    Variable:/SBMLParameter:r11    0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule8 )
+	Process ExpressionAssignmentProcess( Assignment_gamma )
 	{
-		StepperID	DT;
-		Expression	"P1.Value / (1 + P2.Value) * P3.Value * (1 + P4.Value) - (1 - P5.Value * (1 + P6.Value)) * (1 - P7.Value + P8.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:gamma 1 ]
-			[ P1 Variable:/SBMLParameter:g12 0 ]
-			[ P2 Variable:/SBMLParameter:r12 0 ]
-			[ P3 Variable:/SBMLParameter:g21 0 ]
-			[ P4 Variable:/SBMLParameter:r21 0 ]
-			[ P5 Variable:/SBMLParameter:g11 0 ]
-			[ P6 Variable:/SBMLParameter:r11 0 ]
-			[ P7 Variable:/SBMLParameter:g22 0 ]
-			[ P8 Variable:/SBMLParameter:r22 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'gamma'";
+		Expression	"g12.NumberConc / (1 + r12.NumberConc) * g21.NumberConc * (1 + r21.NumberConc) - (1 - g11.NumberConc * (1 + r11.NumberConc)) * (1 - g22.NumberConc + r22.NumberConc)";
+		VariableReferenceList
+			[ gamma Variable:/SBMLParameter:gamma 1 ]
+			[ g12   Variable:/SBMLParameter:g12   0 ]
+			[ r12   Variable:/SBMLParameter:r12   0 ]
+			[ g21   Variable:/SBMLParameter:g21   0 ]
+			[ r21   Variable:/SBMLParameter:r21   0 ]
+			[ g11   Variable:/SBMLParameter:g11   0 ]
+			[ r11   Variable:/SBMLParameter:r11   0 ]
+			[ g22   Variable:/SBMLParameter:g22   0 ]
+			[ r22   Variable:/SBMLParameter:r22   0 ];
 	}
 	
-	Process ExpressionFluxProcess( Rule9 )
+	Process ExpressionFluxProcess( Rate_Tumour )
 	{
-		Expression	"P0.Value * (V0.Value / Compartment.Value) * log(P1.Value / (V0.Value / Compartment.Value))";
-		VariableReferenceList	
-			[ V0 Variable:/Compartment:Tumour 1 ]
-			[ Compartment Variable:/Compartment:SIZE 0 ]
-			[ P0 Variable:/SBMLParameter:gammaT 0 ]
-			[ P1 Variable:/SBMLParameter:LT 0 ];
+		Name	"Rate rule for 'Tumour'";
+		Expression	"gammaT.NumberConc * Tumour.NumberConc * log(LT.NumberConc / Tumour.NumberConc)";
+		VariableReferenceList
+			[ Tumour Variable:/Compartment:Tumour   1 ]
+			[ gammaT Variable:/SBMLParameter:gammaT 0 ]
+			[ LT     Variable:/SBMLParameter:LT     0 ];
 	}
 	
 	

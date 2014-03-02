@@ -1,95 +1,86 @@
 
 # created by eml2em program
-# from file: ../BIOMD0000000098/BIOMD0000000098.eml, date: Mon Dec 16 22:55:14 2013
+# from file: BIOMD0000000098.eml, date: Sun Mar  2 01:32:20 2014
 #
-# BIOMD0000000098 - Goldbeter1990_CalciumSpike_CICR
-# 
-# Goldbeter A, Dupont G, Berridge MJ. 
-# Minimal model for signal-induced Ca2+ oscillations and for their frequency encoding through protein phosphorylation. 
-# Proc. Natl. Acad. Sci. U.S.A. 1990 Feb; 87(4): 1461-1465 
-# Faculté des Sciences, Université Libre de Bruxelles, Belgium.
 
-
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE ) {}
-# Stepper DiscreteTimeStepper( DT ) {}
-
-##### Model Entities #####
+Stepper ODEStepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 
 	Process ExpressionFluxProcess( R0 )
 	{
 		Name	"Ca influx";
-		Expression	"cytosol.Value * Param0.Value";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:Z 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:v0 0 ];
+		Expression	"cytosol.Value * v0.Value";
+		VariableReferenceList
+			[ Z       Variable:/cytosol:Z        1 ]
+			[ cytosol Variable:/cytosol:SIZE     0 ]
+			[ v0      Variable:/SBMLParameter:v0 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R1 )
 	{
 		Name	"InsP3 dependent Ca influx";
-		Expression	"cytosol.Value * Param0.Value * Param1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:Z 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:v1 0 ]
-			[ Param1 Variable:/SBMLParameter:beta 0 ];
+		Expression	"cytosol.Value * v1.Value * beta.Value";
+		VariableReferenceList
+			[ Z       Variable:/cytosol:Z          1 ]
+			[ cytosol Variable:/cytosol:SIZE       0 ]
+			[ v1      Variable:/SBMLParameter:v1   0 ]
+			[ beta    Variable:/SBMLParameter:beta 0 ];
 	}
 	
 	Process ExpressionFluxProcess( R2 )
 	{
 		Name	"ATP driven Ca pumping into store";
-		Expression	"cytosol.Value * (Param0.Value * pow(S0.Value / cytosol.Value, Param1.Value) / (pow(Param2.Value, Param1.Value) + pow(S0.Value / cytosol.Value, Param1.Value)))";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Z -1 ]
-			[ P0 Variable:/store:Y 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:Vm2 0 ]
-			[ Param1 Variable:/SBMLParameter:n 0 ]
-			[ Param2 Variable:/SBMLParameter:K2 0 ];
+		Expression	"cytosol.Value * (Vm2.Value * pow(Z.NumberConc, n.Value) / (pow(K2.Value, n.Value) + pow(Z.NumberConc, n.Value)))";
+		VariableReferenceList
+			[ Z       Variable:/cytosol:Z         -1 ]
+			[ Y       Variable:/store:Y           1  ]
+			[ cytosol Variable:/cytosol:SIZE      0  ]
+			[ Vm2     Variable:/SBMLParameter:Vm2 0  ]
+			[ n       Variable:/SBMLParameter:n   0  ]
+			[ K2      Variable:/SBMLParameter:K2  0  ];
 	}
 	
 	Process ExpressionFluxProcess( R3 )
 	{
 		Name	"ATP driven pumping into cytosol";
-		Expression	"store.Value * (Param0.Value * pow(S0.Value / store.Value, Param1.Value) * pow(P0.Value / store.Value, Param2.Value) / ((pow(Param3.Value, Param1.Value) + pow(S0.Value / store.Value, Param1.Value)) * (pow(Param4.Value, Param2.Value) + pow(P0.Value / store.Value, Param2.Value))))";
-		VariableReferenceList	
-			[ S0 Variable:/store:Y -1 ]
-			[ P0 Variable:/cytosol:Z 1 ]
-			[ store Variable:/store:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:Vm3 0 ]
-			[ Param1 Variable:/SBMLParameter:m 0 ]
-			[ Param2 Variable:/SBMLParameter:p 0 ]
-			[ Param3 Variable:/SBMLParameter:Kr 0 ]
-			[ Param4 Variable:/SBMLParameter:Ka 0 ];
+		Expression	"store.Value * (Vm3.Value * pow(Y.NumberConc, m.Value) * pow(Z.NumberConc, p.Value) / ((pow(Kr.Value, m.Value) + pow(Y.NumberConc, m.Value)) * (pow(Ka.Value, p.Value) + pow(Z.NumberConc, p.Value))))";
+		VariableReferenceList
+			[ Y     Variable:/store:Y           -1 ]
+			[ Z     Variable:/cytosol:Z         1  ]
+			[ store Variable:/store:SIZE        0  ]
+			[ Vm3   Variable:/SBMLParameter:Vm3 0  ]
+			[ m     Variable:/SBMLParameter:m   0  ]
+			[ p     Variable:/SBMLParameter:p   0  ]
+			[ Kr    Variable:/SBMLParameter:Kr  0  ]
+			[ Ka    Variable:/SBMLParameter:Ka  0  ];
 	}
 	
 	Process ExpressionFluxProcess( Rf )
 	{
 		Name	"Ca leak";
-		Expression	"store.Value * Param0.Value * (S0.Value / store.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/store:Y -1 ]
-			[ P0 Variable:/cytosol:Z 1 ]
-			[ store Variable:/store:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:kf 0 ];
+		Expression	"store.Value * kf.Value * Y.NumberConc";
+		VariableReferenceList
+			[ Y     Variable:/store:Y          -1 ]
+			[ Z     Variable:/cytosol:Z        1  ]
+			[ store Variable:/store:SIZE       0  ]
+			[ kf    Variable:/SBMLParameter:kf 0  ];
 	}
 	
 	Process ExpressionFluxProcess( R_eff )
 	{
 		Name	"Ca efflux";
-		Expression	"cytosol.Value * Param0.Value * (S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Z -1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:k 0 ];
+		Expression	"cytosol.Value * k.Value * Z.NumberConc";
+		VariableReferenceList
+			[ Z       Variable:/cytosol:Z       -1 ]
+			[ cytosol Variable:/cytosol:SIZE    0  ]
+			[ k       Variable:/SBMLParameter:k 0  ];
 	}
 	
 	
@@ -97,7 +88,7 @@ System System( / )
 
 System System( /cytosol )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	cytosol;
 
 	Variable Variable( Dimensions )
@@ -113,7 +104,7 @@ System System( /cytosol )
 	
 	Variable Variable( Z )
 	{
-		Value	0.15;
+		NumberConc	0.15;
 		Fixed	0;
 	}
 	
@@ -122,7 +113,7 @@ System System( /cytosol )
 
 System System( /store )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	store;
 
 	Variable Variable( Dimensions )
@@ -138,7 +129,7 @@ System System( /store )
 	
 	Variable Variable( Y )
 	{
-		Value	1.6;
+		NumberConc	1.6;
 		Fixed	0;
 	}
 	
@@ -147,7 +138,7 @@ System System( /store )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( v0 )

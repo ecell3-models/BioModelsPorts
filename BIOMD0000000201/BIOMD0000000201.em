@@ -1,419 +1,440 @@
 
 # created by eml2em program
-# from file: BIOMD0000000201.eml, date: Mon Dec 16 23:01:26 2013
+# from file: BIOMD0000000201.eml, date: Sun Mar  2 20:23:23 2014
 #
-# BIOMD0000000201 - Goldbeter2008_Somite_Segmentation_Clock_Notch_Wnt_FGF
-# 
-# Goldbeter A, Pourquié O. 
-# Modeling the segmentation clock as a network of coupled oscillations in the Notch, Wnt and FGF signaling pathways. 
-# J. Theor. Biol. 2008 Jun; 252(3): 574-585 
-# Faculté des Sciences, Université Libre de Bruxelles, Campus Plaine, C.P. 231, B-1050 Brussels, Belgium.
 
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE ) {}
-Stepper DiscreteTimeStepper( DT ) {}
-
-##### Model Entities #####
+Stepper ODEStepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 
 	Process ExpressionFluxProcess( n_synth )
 	{
 		Name	Notch_synthesis;
-		Expression	"cytosol.Value * Param0.Value * Param1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:N 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ Param1 Variable:/SBMLParameter:vsN 0 ];
+		Expression	"cytosol.Value * epsilon.Value * vsN.Value";
+		VariableReferenceList
+			[ N       Variable:/cytosol:N             1 ]
+			[ cytosol Variable:/cytosol:SIZE          0 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0 ]
+			[ vsN     Variable:/SBMLParameter:vsN     0 ];
 	}
 	
 	Process ExpressionFluxProcess( N_degradation )
 	{
 		Name	N_degradation;
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:N -1 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vdN 0 ]
-			[ Param2 Variable:/SBMLParameter:KdN 0 ];
+		Expression	"epsilon.Value * cytosol.Value * vdN.Value * N.NumberConc / (KdN.Value + N.NumberConc)";
+		VariableReferenceList
+			[ N       Variable:/cytosol:N             -1 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0  ]
+			[ cytosol Variable:/cytosol:SIZE          0  ]
+			[ vdN     Variable:/SBMLParameter:vdN     0  ]
+			[ KdN     Variable:/SBMLParameter:KdN     0  ];
 	}
 	
 	Process ExpressionFluxProcess( N_activation )
 	{
 		Name	Notch_activation;
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) * pow(Param2.Value, Param3.Value) / (pow(Param2.Value, Param3.Value) + pow(C0.Value / cytosol.Value, Param3.Value))";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:N -1 ]
-			[ P0 Variable:/cytosol:Na 1 ]
-			[ C0 Variable:/cytosol:F 0 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kc 0 ]
-			[ Param2 Variable:/SBMLParameter:KIF 0 ]
-			[ Param3 Variable:/SBMLParameter:j 0 ];
+		Expression	"epsilon.Value * cytosol.Value * kc.Value * N.NumberConc * pow(KIF.Value, j.Value) / (pow(KIF.Value, j.Value) + pow(F.NumberConc, j.Value))";
+		VariableReferenceList
+			[ N       Variable:/cytosol:N             -1 ]
+			[ Na      Variable:/cytosol:Na            1  ]
+			[ F       Variable:/cytosol:F             0  ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0  ]
+			[ cytosol Variable:/cytosol:SIZE          0  ]
+			[ kc      Variable:/SBMLParameter:kc      0  ]
+			[ KIF     Variable:/SBMLParameter:KIF     0  ]
+			[ j       Variable:/SBMLParameter:j       0  ];
 	}
 	
 	Process ExpressionFluxProcess( Na_degradation )
 	{
 		Name	Na_degradation;
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Na -1 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VdNa 0 ]
-			[ Param2 Variable:/SBMLParameter:KdNa 0 ];
+		Expression	"epsilon.Value * cytosol.Value * VdNa.Value * Na.NumberConc / (KdNa.Value + Na.NumberConc)";
+		VariableReferenceList
+			[ Na      Variable:/cytosol:Na            -1 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0  ]
+			[ cytosol Variable:/cytosol:SIZE          0  ]
+			[ VdNa    Variable:/SBMLParameter:VdNa    0  ]
+			[ KdNa    Variable:/SBMLParameter:KdNa    0  ];
 	}
 	
 	Process ExpressionFluxProcess( Na_transport )
 	{
-		Expression	"Param0.Value * cytosol.Value * (Param1.Value * (S0.Value / cytosol.Value) - Param2.Value * P0.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Na -1 ]
-			[ P0 Variable:/cytosol:Nan 1 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kt1 0 ]
-			[ Param2 Variable:/SBMLParameter:kt2 0 ];
+		Name	"[Na] <-> [Nan];";
+		Expression	"epsilon.Value * cytosol.Value * (kt1.Value * Na.NumberConc - kt2.Value * Nan.NumberConc)";
+		VariableReferenceList
+			[ Na      Variable:/cytosol:Na            -1 ]
+			[ Nan     Variable:/cytosol:Nan           1  ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0  ]
+			[ cytosol Variable:/cytosol:SIZE          0  ]
+			[ kt1     Variable:/SBMLParameter:kt1     0  ]
+			[ kt2     Variable:/SBMLParameter:kt2     0  ];
 	}
 	
 	Process ExpressionFluxProcess( Nan_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * S0.Value / (Param2.Value + S0.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Nan -1 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VdNan 0 ]
-			[ Param2 Variable:/SBMLParameter:KdNan 0 ];
+		Name	"[Nan] -> ;";
+		Expression	"epsilon.Value * cytosol.Value * VdNan.Value * Nan.NumberConc / (KdNan.Value + Nan.NumberConc)";
+		VariableReferenceList
+			[ Nan     Variable:/cytosol:Nan           -1 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0  ]
+			[ cytosol Variable:/cytosol:SIZE          0  ]
+			[ VdNan   Variable:/SBMLParameter:VdNan   0  ]
+			[ KdNan   Variable:/SBMLParameter:KdNan   0  ];
 	}
 	
 	Process ExpressionFluxProcess( MF_transkription )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * pow(C0.Value, Param2.Value) / (pow(Param3.Value, Param2.Value) + pow(C0.Value, Param2.Value))";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:MF 1 ]
-			[ C0 Variable:/cytosol:Nan 0 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vsFK 0 ]
-			[ Param2 Variable:/SBMLParameter:p 0 ]
-			[ Param3 Variable:/SBMLParameter:KA 0 ];
+		Name	"-> [MF]; { Nan };";
+		Expression	"epsilon.Value * cytosol.Value * vsFK.Value * pow(Nan.NumberConc, p.Value) / (pow(KA.Value, p.Value) + pow(Nan.NumberConc, p.Value))";
+		VariableReferenceList
+			[ MF      Variable:/cytosol:MF            1 ]
+			[ Nan     Variable:/cytosol:Nan           0 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0 ]
+			[ cytosol Variable:/cytosol:SIZE          0 ]
+			[ vsFK    Variable:/SBMLParameter:vsFK    0 ]
+			[ p       Variable:/SBMLParameter:p       0 ]
+			[ KA      Variable:/SBMLParameter:KA      0 ];
 	}
 	
 	Process ExpressionFluxProcess( MF_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:MF -1 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vmF 0 ]
-			[ Param2 Variable:/SBMLParameter:KdMF 0 ];
+		Name	"[MF] -> ;";
+		Expression	"epsilon.Value * cytosol.Value * vmF.Value * MF.NumberConc / (KdMF.Value + MF.NumberConc)";
+		VariableReferenceList
+			[ MF      Variable:/cytosol:MF            -1 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0  ]
+			[ cytosol Variable:/cytosol:SIZE          0  ]
+			[ vmF     Variable:/SBMLParameter:vmF     0  ]
+			[ KdMF    Variable:/SBMLParameter:KdMF    0  ];
 	}
 	
 	Process ExpressionFluxProcess( F_translation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (C0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:F 1 ]
-			[ C0 Variable:/cytosol:MF 0 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:ksF 0 ];
+		Name	"-> [F]; { MF };";
+		Expression	"epsilon.Value * cytosol.Value * ksF.Value * MF.NumberConc";
+		VariableReferenceList
+			[ F       Variable:/cytosol:F             1 ]
+			[ MF      Variable:/cytosol:MF            0 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0 ]
+			[ cytosol Variable:/cytosol:SIZE          0 ]
+			[ ksF     Variable:/SBMLParameter:ksF     0 ];
 	}
 	
 	Process ExpressionFluxProcess( F_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:F -1 ]
-			[ Param0 Variable:/SBMLParameter:epsilon 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vdF 0 ]
-			[ Param2 Variable:/SBMLParameter:KdF 0 ];
+		Name	"[F] -> ;";
+		Expression	"epsilon.Value * cytosol.Value * vdF.Value * F.NumberConc / (KdF.Value + F.NumberConc)";
+		VariableReferenceList
+			[ F       Variable:/cytosol:F             -1 ]
+			[ epsilon Variable:/SBMLParameter:epsilon 0  ]
+			[ cytosol Variable:/cytosol:SIZE          0  ]
+			[ vdF     Variable:/SBMLParameter:vdF     0  ]
+			[ KdF     Variable:/SBMLParameter:KdF     0  ];
 	}
 	
 	Process ExpressionFluxProcess( AK_dissoc )
 	{
-		Expression	"Param0.Value * cytosol.Value * (Param1.Value * (S0.Value / cytosol.Value) - Param2.Value * (P0.Value / cytosol.Value) * (P1.Value / cytosol.Value))";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:AK -1 ]
-			[ P0 Variable:/cytosol:A 1 ]
-			[ P1 Variable:/cytosol:K 1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:d1 0 ]
-			[ Param2 Variable:/SBMLParameter:a1 0 ];
+		Name	"[AK] <-> [A] + [K];";
+		Expression	"theta.Value * cytosol.Value * (d1.Value * AK.NumberConc - a1.Value * A.NumberConc * K.NumberConc)";
+		VariableReferenceList
+			[ AK      Variable:/cytosol:AK          -1 ]
+			[ A       Variable:/cytosol:A           1  ]
+			[ K       Variable:/cytosol:K           1  ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ d1      Variable:/SBMLParameter:d1    0  ]
+			[ a1      Variable:/SBMLParameter:a1    0  ];
 	}
 	
 	Process ExpressionFluxProcess( B_synth )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:B 1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vsB 0 ];
+		Name	"-> [B];";
+		Expression	"theta.Value * cytosol.Value * vsB.Value";
+		VariableReferenceList
+			[ B       Variable:/cytosol:B           1 ]
+			[ theta   Variable:/SBMLParameter:theta 0 ]
+			[ cytosol Variable:/cytosol:SIZE        0 ]
+			[ vsB     Variable:/SBMLParameter:vsB   0 ];
 	}
 	
 	Process ExpressionFluxProcess( B_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:B -1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kd1 0 ];
+		Name	"[B] -> ;";
+		Expression	"theta.Value * cytosol.Value * kd1.Value * B.NumberConc";
+		VariableReferenceList
+			[ B       Variable:/cytosol:B           -1 ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ kd1     Variable:/SBMLParameter:kd1   0  ];
 	}
 	
 	Process ExpressionFluxProcess( B_phosphorylation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * Param2.Value / (Param2.Value + C1.Value / cytosol.Value) * (S0.Value / cytosol.Value) / (Param3.Value + S0.Value / cytosol.Value) * (C0.Value / cytosol.Value) / (C2.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:B -1 ]
-			[ P0 Variable:/cytosol:Bp 1 ]
-			[ C0 Variable:/cytosol:AK 0 ]
-			[ C1 Variable:/cytosol:D 0 ]
-			[ C2 Variable:/cytosol:Kt 0 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMK 0 ]
-			[ Param2 Variable:/SBMLParameter:KID 0 ]
-			[ Param3 Variable:/SBMLParameter:K1 0 ];
+		Name	"[B] -> [Bp]; { AK, D, Kt };";
+		Expression	"theta.Value * cytosol.Value * VMK.Value * KID.Value / (KID.Value + D.NumberConc) * B.NumberConc / (K1.Value + B.NumberConc) * AK.NumberConc / Kt.NumberConc";
+		VariableReferenceList
+			[ B       Variable:/cytosol:B           -1 ]
+			[ Bp      Variable:/cytosol:Bp          1  ]
+			[ AK      Variable:/cytosol:AK          0  ]
+			[ D       Variable:/cytosol:D           0  ]
+			[ Kt      Variable:/cytosol:Kt          0  ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ VMK     Variable:/SBMLParameter:VMK   0  ]
+			[ KID     Variable:/SBMLParameter:KID   0  ]
+			[ K1      Variable:/SBMLParameter:K1    0  ];
 	}
 	
 	Process ExpressionFluxProcess( BP_dephosphorylation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Bp -1 ]
-			[ P0 Variable:/cytosol:B 1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMP 0 ]
-			[ Param2 Variable:/SBMLParameter:K2 0 ];
+		Name	"[Bp] -> [B];";
+		Expression	"theta.Value * cytosol.Value * VMP.Value * Bp.NumberConc / (K2.Value + Bp.NumberConc)";
+		VariableReferenceList
+			[ Bp      Variable:/cytosol:Bp          -1 ]
+			[ B       Variable:/cytosol:B           1  ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ VMP     Variable:/SBMLParameter:VMP   0  ]
+			[ K2      Variable:/SBMLParameter:K2    0  ];
 	}
 	
 	Process ExpressionFluxProcess( B_shuttling )
 	{
-		Expression	"Param0.Value * cytosol.Value * (Param1.Value * (S0.Value / cytosol.Value) - Param2.Value * (P0.Value / cytosol.Value))";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:BN -1 ]
-			[ P0 Variable:/cytosol:B 1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kt4 0 ]
-			[ Param2 Variable:/SBMLParameter:kt3 0 ];
+		Name	"[BN] <-> [B];";
+		Expression	"theta.Value * cytosol.Value * (kt4.Value * BN.NumberConc - kt3.Value * B.NumberConc)";
+		VariableReferenceList
+			[ BN      Variable:/cytosol:BN          -1 ]
+			[ B       Variable:/cytosol:B           1  ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ kt4     Variable:/SBMLParameter:kt4   0  ]
+			[ kt3     Variable:/SBMLParameter:kt3   0  ];
 	}
 	
 	Process ExpressionFluxProcess( Bp_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Bp -1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kd2 0 ];
+		Name	"[Bp] -> ;";
+		Expression	"theta.Value * cytosol.Value * kd2.Value * Bp.NumberConc";
+		VariableReferenceList
+			[ Bp      Variable:/cytosol:Bp          -1 ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ kd2     Variable:/SBMLParameter:kd2   0  ];
 	}
 	
 	Process ExpressionFluxProcess( MAx_trans_basal )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:MAx 1 ]
-			[ C0 Variable:/cytosol:BN 0 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:v0 0 ];
+		Name	"-> [MAx]; { BN };";
+		Expression	"theta.Value * cytosol.Value * v0.Value";
+		VariableReferenceList
+			[ MAx     Variable:/cytosol:MAx         1 ]
+			[ BN      Variable:/cytosol:BN          0 ]
+			[ theta   Variable:/SBMLParameter:theta 0 ]
+			[ cytosol Variable:/cytosol:SIZE        0 ]
+			[ v0      Variable:/SBMLParameter:v0    0 ];
 	}
 	
 	Process ExpressionFluxProcess( MAx_trans_BN )
 	{
-		Expression	"Param0.Value * cytosol.Value * (Param1.Value * pow(C0.Value / cytosol.Value, Param2.Value) / (pow(Param3.Value, Param2.Value) + pow(C0.Value / cytosol.Value, Param2.Value)))";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:MAx 1 ]
-			[ C0 Variable:/cytosol:BN 0 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vMB 0 ]
-			[ Param2 Variable:/SBMLParameter:n 0 ]
-			[ Param3 Variable:/SBMLParameter:KaB 0 ];
+		Name	"-> [MAx]; { BN };";
+		Expression	"theta.Value * cytosol.Value * (vMB.Value * pow(BN.NumberConc, n.Value) / (pow(KaB.Value, n.Value) + pow(BN.NumberConc, n.Value)))";
+		VariableReferenceList
+			[ MAx     Variable:/cytosol:MAx         1 ]
+			[ BN      Variable:/cytosol:BN          0 ]
+			[ theta   Variable:/SBMLParameter:theta 0 ]
+			[ cytosol Variable:/cytosol:SIZE        0 ]
+			[ vMB     Variable:/SBMLParameter:vMB   0 ]
+			[ n       Variable:/SBMLParameter:n     0 ]
+			[ KaB     Variable:/SBMLParameter:KaB   0 ];
 	}
 	
 	Process ExpressionFluxProcess( MAx_trans_Xa )
 	{
-		Expression	"Param0.Value * cytosol.Value * (Param1.Value * pow(C0.Value / cytosol.Value, Param2.Value) / (pow(Param3.Value, Param2.Value) + pow(C0.Value / cytosol.Value, Param2.Value)))";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:MAx 1 ]
-			[ C0 Variable:/cytosol:Xa 0 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vMXa 0 ]
-			[ Param2 Variable:/SBMLParameter:m 0 ]
-			[ Param3 Variable:/SBMLParameter:KaXa 0 ];
+		Name	"-> [MAx]; { Xa };";
+		Expression	"theta.Value * cytosol.Value * (vMXa.Value * pow(Xa.NumberConc, m.Value) / (pow(KaXa.Value, m.Value) + pow(Xa.NumberConc, m.Value)))";
+		VariableReferenceList
+			[ MAx     Variable:/cytosol:MAx         1 ]
+			[ Xa      Variable:/cytosol:Xa          0 ]
+			[ theta   Variable:/SBMLParameter:theta 0 ]
+			[ cytosol Variable:/cytosol:SIZE        0 ]
+			[ vMXa    Variable:/SBMLParameter:vMXa  0 ]
+			[ m       Variable:/SBMLParameter:m     0 ]
+			[ KaXa    Variable:/SBMLParameter:KaXa  0 ];
 	}
 	
 	Process ExpressionFluxProcess( MAx_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:MAx -1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vmd 0 ]
-			[ Param2 Variable:/SBMLParameter:Kmd 0 ];
+		Name	"[MAx] -> ;";
+		Expression	"theta.Value * cytosol.Value * vmd.Value * MAx.NumberConc / (Kmd.Value + MAx.NumberConc)";
+		VariableReferenceList
+			[ MAx     Variable:/cytosol:MAx         -1 ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ vmd     Variable:/SBMLParameter:vmd   0  ]
+			[ Kmd     Variable:/SBMLParameter:Kmd   0  ];
 	}
 	
 	Process ExpressionFluxProcess( A_translation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (C0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:A 1 ]
-			[ C0 Variable:/cytosol:MAx 0 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:ksAx 0 ];
+		Name	"-> [A]; { MAx };";
+		Expression	"theta.Value * cytosol.Value * ksAx.Value * MAx.NumberConc";
+		VariableReferenceList
+			[ A       Variable:/cytosol:A           1 ]
+			[ MAx     Variable:/cytosol:MAx         0 ]
+			[ theta   Variable:/SBMLParameter:theta 0 ]
+			[ cytosol Variable:/cytosol:SIZE        0 ]
+			[ ksAx    Variable:/SBMLParameter:ksAx  0 ];
 	}
 	
 	Process ExpressionFluxProcess( A_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:A -1 ]
-			[ Param0 Variable:/SBMLParameter:theta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vdAx 0 ]
-			[ Param2 Variable:/SBMLParameter:KdAx 0 ];
+		Name	"[A] -> ;";
+		Expression	"theta.Value * cytosol.Value * vdAx.Value * A.NumberConc / (KdAx.Value + A.NumberConc)";
+		VariableReferenceList
+			[ A       Variable:/cytosol:A           -1 ]
+			[ theta   Variable:/SBMLParameter:theta 0  ]
+			[ cytosol Variable:/cytosol:SIZE        0  ]
+			[ vdAx    Variable:/SBMLParameter:vdAx  0  ]
+			[ KdAx    Variable:/SBMLParameter:KdAx  0  ];
 	}
 	
 	Process ExpressionFluxProcess( Ras_activation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * pow(C1.Value / cytosol.Value, Param2.Value) / (pow(Param3.Value, Param2.Value) + pow(C1.Value / cytosol.Value, Param2.Value)) * (C0.Value / cytosol.Value) / (Param4.Value + C0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:Rasa 1 ]
-			[ C0 Variable:/cytosol:Rasi 0 ]
-			[ C1 Variable:/cytosol:Fgf 0 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMaRas 0 ]
-			[ Param2 Variable:/SBMLParameter:r 0 ]
-			[ Param3 Variable:/SBMLParameter:KaFgf 0 ]
-			[ Param4 Variable:/SBMLParameter:KaRas 0 ];
+		Name	"-> [Rasa]; { Rasi, Fgf };";
+		Expression	"eta.Value * cytosol.Value * VMaRas.Value * pow(Fgf.NumberConc, r.Value) / (pow(KaFgf.Value, r.Value) + pow(Fgf.NumberConc, r.Value)) * Rasi.NumberConc / (KaRas.Value + Rasi.NumberConc)";
+		VariableReferenceList
+			[ Rasa    Variable:/cytosol:Rasa         1 ]
+			[ Rasi    Variable:/cytosol:Rasi         0 ]
+			[ Fgf     Variable:/cytosol:Fgf          0 ]
+			[ eta     Variable:/SBMLParameter:eta    0 ]
+			[ cytosol Variable:/cytosol:SIZE         0 ]
+			[ VMaRas  Variable:/SBMLParameter:VMaRas 0 ]
+			[ r       Variable:/SBMLParameter:r      0 ]
+			[ KaFgf   Variable:/SBMLParameter:KaFgf  0 ]
+			[ KaRas   Variable:/SBMLParameter:KaRas  0 ];
 	}
 	
 	Process ExpressionFluxProcess( Ras_inactivation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Rasa -1 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMdRas 0 ]
-			[ Param2 Variable:/SBMLParameter:KdRas 0 ];
+		Name	"[Rasa] -> ;";
+		Expression	"eta.Value * cytosol.Value * VMdRas.Value * Rasa.NumberConc / (KdRas.Value + Rasa.NumberConc)";
+		VariableReferenceList
+			[ Rasa    Variable:/cytosol:Rasa         -1 ]
+			[ eta     Variable:/SBMLParameter:eta    0  ]
+			[ cytosol Variable:/cytosol:SIZE         0  ]
+			[ VMdRas  Variable:/SBMLParameter:VMdRas 0  ]
+			[ KdRas   Variable:/SBMLParameter:KdRas  0  ];
 	}
 	
 	Process ExpressionFluxProcess( Erk_activation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (C1.Value / cytosol.Value) / (C2.Value / cytosol.Value) * (C0.Value / cytosol.Value) / (Param2.Value + C0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:ERKa 1 ]
-			[ C0 Variable:/cytosol:ERKi 0 ]
-			[ C1 Variable:/cytosol:Rasa 0 ]
-			[ C2 Variable:/cytosol:Rast 0 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMaErk 0 ]
-			[ Param2 Variable:/SBMLParameter:KaErk 0 ];
+		Name	"-> [ERKa]; { ERKi, Rasa, Rast };";
+		Expression	"eta.Value * cytosol.Value * VMaErk.Value * Rasa.NumberConc / Rast.NumberConc * ERKi.NumberConc / (KaErk.Value + ERKi.NumberConc)";
+		VariableReferenceList
+			[ ERKa    Variable:/cytosol:ERKa         1 ]
+			[ ERKi    Variable:/cytosol:ERKi         0 ]
+			[ Rasa    Variable:/cytosol:Rasa         0 ]
+			[ Rast    Variable:/cytosol:Rast         0 ]
+			[ eta     Variable:/SBMLParameter:eta    0 ]
+			[ cytosol Variable:/cytosol:SIZE         0 ]
+			[ VMaErk  Variable:/SBMLParameter:VMaErk 0 ]
+			[ KaErk   Variable:/SBMLParameter:KaErk  0 ];
 	}
 	
 	Process ExpressionFluxProcess( Erk_inactivation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (C0.Value / cytosol.Value) * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:ERKa -1 ]
-			[ C0 Variable:/cytosol:Dusp 0 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kcDusp 0 ]
-			[ Param2 Variable:/SBMLParameter:KdErk 0 ];
+		Name	"[ERKa] -> ; { Dusp };";
+		Expression	"eta.Value * cytosol.Value * kcDusp.Value * Dusp.NumberConc * ERKa.NumberConc / (KdErk.Value + ERKa.NumberConc)";
+		VariableReferenceList
+			[ ERKa    Variable:/cytosol:ERKa         -1 ]
+			[ Dusp    Variable:/cytosol:Dusp         0  ]
+			[ eta     Variable:/SBMLParameter:eta    0  ]
+			[ cytosol Variable:/cytosol:SIZE         0  ]
+			[ kcDusp  Variable:/SBMLParameter:kcDusp 0  ]
+			[ KdErk   Variable:/SBMLParameter:KdErk  0  ];
 	}
 	
 	Process ExpressionFluxProcess( X_activation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (C0.Value / cytosol.Value) / (C1.Value / cytosol.Value) * (C2.Value / cytosol.Value) / (Param2.Value + C2.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:Xa 1 ]
-			[ C0 Variable:/cytosol:ERKa 0 ]
-			[ C1 Variable:/cytosol:ERKt 0 ]
-			[ C2 Variable:/cytosol:Xi 0 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMaX 0 ]
-			[ Param2 Variable:/SBMLParameter:KaX 0 ];
+		Name	"-> [Xa]; { ERKa, ERKt, Xi };";
+		Expression	"eta.Value * cytosol.Value * VMaX.Value * ERKa.NumberConc / ERKt.NumberConc * Xi.NumberConc / (KaX.Value + Xi.NumberConc)";
+		VariableReferenceList
+			[ Xa      Variable:/cytosol:Xa         1 ]
+			[ ERKa    Variable:/cytosol:ERKa       0 ]
+			[ ERKt    Variable:/cytosol:ERKt       0 ]
+			[ Xi      Variable:/cytosol:Xi         0 ]
+			[ eta     Variable:/SBMLParameter:eta  0 ]
+			[ cytosol Variable:/cytosol:SIZE       0 ]
+			[ VMaX    Variable:/SBMLParameter:VMaX 0 ]
+			[ KaX     Variable:/SBMLParameter:KaX  0 ];
 	}
 	
 	Process ExpressionFluxProcess( X_inactivation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Xa -1 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMdX 0 ]
-			[ Param2 Variable:/SBMLParameter:KdX 0 ];
+		Name	"[Xa] -> ;";
+		Expression	"eta.Value * cytosol.Value * VMdX.Value * Xa.NumberConc / (KdX.Value + Xa.NumberConc)";
+		VariableReferenceList
+			[ Xa      Variable:/cytosol:Xa         -1 ]
+			[ eta     Variable:/SBMLParameter:eta  0  ]
+			[ cytosol Variable:/cytosol:SIZE       0  ]
+			[ VMdX    Variable:/SBMLParameter:VMdX 0  ]
+			[ KdX     Variable:/SBMLParameter:KdX  0  ];
 	}
 	
 	Process ExpressionFluxProcess( MDusp_transkription )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * pow(C0.Value / cytosol.Value, Param2.Value) / (pow(Param3.Value, Param2.Value) + pow(C0.Value / cytosol.Value, Param2.Value))";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:MDusp 1 ]
-			[ C0 Variable:/cytosol:Xa 0 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMsMDusp 0 ]
-			[ Param2 Variable:/SBMLParameter:q 0 ]
-			[ Param3 Variable:/SBMLParameter:KaMDusp 0 ];
+		Name	"-> [MDusp]; { Xa };";
+		Expression	"eta.Value * cytosol.Value * VMsMDusp.Value * pow(Xa.NumberConc, q.Value) / (pow(KaMDusp.Value, q.Value) + pow(Xa.NumberConc, q.Value))";
+		VariableReferenceList
+			[ MDusp    Variable:/cytosol:MDusp          1 ]
+			[ Xa       Variable:/cytosol:Xa             0 ]
+			[ eta      Variable:/SBMLParameter:eta      0 ]
+			[ cytosol  Variable:/cytosol:SIZE           0 ]
+			[ VMsMDusp Variable:/SBMLParameter:VMsMDusp 0 ]
+			[ q        Variable:/SBMLParameter:q        0 ]
+			[ KaMDusp  Variable:/SBMLParameter:KaMDusp  0 ];
 	}
 	
 	Process ExpressionFluxProcess( MDusp_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:MDusp -1 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:VMdMDusp 0 ]
-			[ Param2 Variable:/SBMLParameter:KdMDusp 0 ];
+		Name	"[MDusp] -> ;";
+		Expression	"eta.Value * cytosol.Value * VMdMDusp.Value * MDusp.NumberConc / (KdMDusp.Value + MDusp.NumberConc)";
+		VariableReferenceList
+			[ MDusp    Variable:/cytosol:MDusp          -1 ]
+			[ eta      Variable:/SBMLParameter:eta      0  ]
+			[ cytosol  Variable:/cytosol:SIZE           0  ]
+			[ VMdMDusp Variable:/SBMLParameter:VMdMDusp 0  ]
+			[ KdMDusp  Variable:/SBMLParameter:KdMDusp  0  ];
 	}
 	
 	Process ExpressionFluxProcess( Dusp_translation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (C0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cytosol:Dusp 1 ]
-			[ C0 Variable:/cytosol:MDusp 0 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:ksDusp 0 ];
+		Name	"-> [Dusp]; { MDusp };";
+		Expression	"eta.Value * cytosol.Value * ksDusp.Value * MDusp.NumberConc";
+		VariableReferenceList
+			[ Dusp    Variable:/cytosol:Dusp         1 ]
+			[ MDusp   Variable:/cytosol:MDusp        0 ]
+			[ eta     Variable:/SBMLParameter:eta    0 ]
+			[ cytosol Variable:/cytosol:SIZE         0 ]
+			[ ksDusp  Variable:/SBMLParameter:ksDusp 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Dusp_degradation )
 	{
-		Expression	"Param0.Value * cytosol.Value * Param1.Value * (S0.Value / cytosol.Value) / (Param2.Value + S0.Value / cytosol.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cytosol:Dusp -1 ]
-			[ Param0 Variable:/SBMLParameter:eta 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:vdDusp 0 ]
-			[ Param2 Variable:/SBMLParameter:KdDusp 0 ];
+		Name	"[Dusp] -> ;";
+		Expression	"eta.Value * cytosol.Value * vdDusp.Value * Dusp.NumberConc / (KdDusp.Value + Dusp.NumberConc)";
+		VariableReferenceList
+			[ Dusp    Variable:/cytosol:Dusp         -1 ]
+			[ eta     Variable:/SBMLParameter:eta    0  ]
+			[ cytosol Variable:/cytosol:SIZE         0  ]
+			[ vdDusp  Variable:/SBMLParameter:vdDusp 0  ]
+			[ KdDusp  Variable:/SBMLParameter:KdDusp 0  ];
 	}
 	
 	
@@ -421,7 +442,7 @@ System System( / )
 
 System System( /cytosol )
 {
-	StepperID	DE;
+	StepperID	Default;
 
 	Variable Variable( Dimensions )
 	{
@@ -437,182 +458,182 @@ System System( /cytosol )
 	Variable Variable( N )
 	{
 		Name	"Notch protein";
-		Value	0.5;
+		NumberConc	0.5;
 		Fixed	0;
 	}
 	
 	Variable Variable( Na )
 	{
 		Name	"cytosolic NicD";
-		Value	0.2;
+		NumberConc	0.2;
 		Fixed	0;
 	}
 	
 	Variable Variable( Nan )
 	{
 		Name	"nuclear NicD";
-		Value	0.0;
+		NumberConc	0.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( MF )
 	{
 		Name	"Lunatic fringe mRNA";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( F )
 	{
 		Name	"Lunatic Fringe protein";
-		Value	0.001;
+		NumberConc	0.001;
 		Fixed	0;
 	}
 	
 	Variable Variable( Bp )
 	{
 		Name	"phosph. beta-catenin";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( BN )
 	{
 		Name	"nuclear beta-catenin";
-		Value	0.001;
+		NumberConc	0.001;
 		Fixed	0;
 	}
 	
 	Variable Variable( A )
 	{
 		Name	"Axin2 protein";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( K )
 	{
 		Name	Gsk3;
-		Value	3.0;
+		NumberConc	3.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( B )
 	{
 		Name	"beta-catenin";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( MAx )
 	{
 		Name	"Axin2 mRNA";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( Rasa )
 	{
 		Name	"active Ras";
-		Value	0.5;
+		NumberConc	0.5;
 		Fixed	0;
 	}
 	
 	Variable Variable( ERKa )
 	{
 		Name	"active ERK";
-		Value	0.2;
+		NumberConc	0.2;
 		Fixed	0;
 	}
 	
 	Variable Variable( Xa )
 	{
 		Name	"active TF X";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( MDusp )
 	{
 		Name	"Dusp6 mRNA";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( Dusp )
 	{
 		Name	"Dusp6 protein";
-		Value	0.1;
+		NumberConc	0.1;
 		Fixed	0;
 	}
 	
 	Variable Variable( Rasi )
 	{
 		Name	"inactive Ras";
-		Value	1.5001025;    ## Calcurated
+		Value	1.5;
 		Fixed	0;
 	}
 	
 	Variable Variable( ERKi )
 	{
 		Name	"inactive ERK";
-		Value	1.8000324;    ## Calcurated
+		Value	1.8;
 		Fixed	0;
 	}
 	
 	Variable Variable( Xi )
 	{
 		Name	"inactive TF X";
-		Value	1.9001;    ## Calcurated
+		Value	1.9;
 		Fixed	0;
 	}
 	
 	Variable Variable( Rast )
 	{
 		Name	"Ras total";
-		Value	2.0;
+		NumberConc	2.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( ERKt )
 	{
 		Name	"ERK total";
-		Value	2.0;
+		NumberConc	2.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( Xt )
 	{
 		Name	"X total";
-		Value	2.0;
+		NumberConc	2.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( D )
 	{
 		Name	"Dsh protein";
-		Value	2.0;
+		NumberConc	2.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( AK )
 	{
 		Name	"Axin2/Gsk3 destruction complex";
-		Value	0.00081;    ## Calcurated
+		Value	0.0;
 		Fixed	0;
 	}
 	
 	Variable Variable( Kt )
 	{
 		Name	Kt;
-		Value	3.0;
+		NumberConc	3.0;
 		Fixed	1;
 	}
 	
 	Variable Variable( Fgf )
 	{
 		Name	Fgf;
-		Value	1.0;
+		NumberConc	1.0;
 		Fixed	1;
 	}
 	
@@ -621,7 +642,7 @@ System System( /cytosol )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( KdN )
@@ -704,7 +725,7 @@ System System( /SBMLParameter )
 	Variable Variable( vsFK )
 	{
 		Name	vsFK;
-		Value	1.36383721966;    ## Calcurated
+		Value	1.36363636364;
 	}
 	
 	Variable Variable( vsF )
@@ -1126,57 +1147,62 @@ System System( /SBMLParameter )
 System System( /SBMLRule )
 {
 	Name	"System for SBML Rule";
-	StepperID	DT;
+	StepperID	Default;
 
-	Process ExpressionAssignmentProcess( Rule1 )
+	Process ExpressionAssignmentProcess( Assignment_vsFK )
 	{
-		Expression	"P1.Value * (P2.Value / (P2.Value + V0.Value / cytosol.Value))";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:vsFK 1 ]
-			[ P1 Variable:/SBMLParameter:vsF 0 ]
-			[ P2 Variable:/SBMLParameter:KIG1 0 ]
-			[ V0 Variable:/cytosol:K 0 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'vsFK'";
+		Expression	"vsF.NumberConc * (KIG1.NumberConc / (KIG1.NumberConc + K.NumberConc))";
+		VariableReferenceList
+			[ vsFK Variable:/SBMLParameter:vsFK 1 ]
+			[ vsF  Variable:/SBMLParameter:vsF  0 ]
+			[ KIG1 Variable:/SBMLParameter:KIG1 0 ]
+			[ K    Variable:/cytosol:K          0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule2 )
+	Process ExpressionAssignmentProcess( Assignment_AK )
 	{
-		Expression	"V1.Value / cytosol.Value - V2.Value / cytosol.Value";
-		VariableReferenceList	
-			[ V0 Variable:/cytosol:AK 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ V1 Variable:/cytosol:Kt 0 ]
-			[ V2 Variable:/cytosol:K 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'AK'";
+		Expression	"Kt.NumberConc - K.NumberConc";
+		VariableReferenceList
+			[ AK Variable:/cytosol:AK 1 ]
+			[ Kt Variable:/cytosol:Kt 0 ]
+			[ K  Variable:/cytosol:K  0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule3 )
+	Process ExpressionAssignmentProcess( Assignment_Rasi )
 	{
-		Expression	"V1.Value / cytosol.Value - V2.Value / cytosol.Value";
-		VariableReferenceList	
-			[ V0 Variable:/cytosol:Rasi 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ V1 Variable:/cytosol:Rast 0 ]
-			[ V2 Variable:/cytosol:Rasa 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'Rasi'";
+		Expression	"Rast.NumberConc - Rasa.NumberConc";
+		VariableReferenceList
+			[ Rasi Variable:/cytosol:Rasi 1 ]
+			[ Rast Variable:/cytosol:Rast 0 ]
+			[ Rasa Variable:/cytosol:Rasa 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule4 )
+	Process ExpressionAssignmentProcess( Assignment_ERKi )
 	{
-		Expression	"V1.Value / cytosol.Value - V2.Value / cytosol.Value";
-		VariableReferenceList	
-			[ V0 Variable:/cytosol:ERKi 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ V1 Variable:/cytosol:ERKt 0 ]
-			[ V2 Variable:/cytosol:ERKa 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'ERKi'";
+		Expression	"ERKt.NumberConc - ERKa.NumberConc";
+		VariableReferenceList
+			[ ERKi Variable:/cytosol:ERKi 1 ]
+			[ ERKt Variable:/cytosol:ERKt 0 ]
+			[ ERKa Variable:/cytosol:ERKa 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule5 )
+	Process ExpressionAssignmentProcess( Assignment_Xi )
 	{
-		Expression	"V1.Value / cytosol.Value - V2.Value / cytosol.Value";
-		VariableReferenceList	
-			[ V0 Variable:/cytosol:Xi 1 ]
-			[ cytosol Variable:/cytosol:SIZE 0 ]
-			[ V1 Variable:/cytosol:Xt 0 ]
-			[ V2 Variable:/cytosol:Xa 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'Xi'";
+		Expression	"Xt.NumberConc - Xa.NumberConc";
+		VariableReferenceList
+			[ Xi Variable:/cytosol:Xi 1 ]
+			[ Xt Variable:/cytosol:Xt 0 ]
+			[ Xa Variable:/cytosol:Xa 0 ];
 	}
 	
 	

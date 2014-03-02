@@ -1,246 +1,231 @@
 
 # created by eml2em program
-# from file: BIOMD0000000188.eml, date: Mon Dec 16 22:55:53 2013
+# from file: BIOMD0000000188.eml, date: Sun Mar  2 12:20:02 2014
 #
-# BIOMD0000000188 - Proctor2008_p53_Mdm2_ATM
-# 
-# Proctor CJ, Gray DA. 
-# Explaining oscillations and variability in the p53-Mdm2 system. 
-# BMC Syst Biol 2008; 2: 75 
-# Centre for Integrated Systems Biology of Ageing and Nutrition, Institute for Ageing and Health, Newcastle University, Newcastle upon Tyne, UK.
 
-
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE )    { StepInterval  0.001; }
-Stepper DiscreteTimeStepper( DT ) { StepInterval  0.001; }
-
-##### Model Entities #####
+Stepper FixedODE1Stepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 
 	Process ExpressionFluxProcess( p53mRNASynthesis )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Source 0 ]
-			[ P0 Variable:/cell:p53_mRNA 1 ]
-			[ Param0 Variable:/SBMLParameter:ksynp53mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[Source] -> [p53_mRNA];";
+		Expression	"ksynp53mRNA.Value * Source.NumberConc";
+		VariableReferenceList
+			[ Source      Variable:/cell:Source               0 ]
+			[ p53_mRNA    Variable:/cell:p53_mRNA             1 ]
+			[ ksynp53mRNA Variable:/SBMLParameter:ksynp53mRNA 0 ];
 	}
 	
 	Process ExpressionFluxProcess( p53mRNADegradation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:p53_mRNA -1 ]
-			[ P0 Variable:/cell:Sink 0 ]
-			[ Param0 Variable:/SBMLParameter:kdegp53mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[p53_mRNA] -> [Sink];";
+		Expression	"kdegp53mRNA.Value * p53_mRNA.NumberConc";
+		VariableReferenceList
+			[ p53_mRNA    Variable:/cell:p53_mRNA             -1 ]
+			[ Sink        Variable:/cell:Sink                 0  ]
+			[ kdegp53mRNA Variable:/SBMLParameter:kdegp53mRNA 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2Synthesis )
 	{
-		Expression	"Param0.Value * (P0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2_mRNA -1 ]
-			[ P0 Variable:/cell:Mdm2_mRNA 1 ]
-			[ P1 Variable:/cell:Mdm2 1 ]
-			[ P2 Variable:/cell:mdm2syn 1 ]
-			[ Param0 Variable:/SBMLParameter:ksynMdm2 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[Mdm2_mRNA] -> [Mdm2_mRNA] + [Mdm2] + [mdm2syn];";
+		Expression	"ksynMdm2.Value * Mdm2_mRNA.NumberConc";
+		VariableReferenceList
+			[ Mdm2_mRNA Variable:/cell:Mdm2_mRNA         0 ]
+			[ Mdm2      Variable:/cell:Mdm2              1 ]
+			[ mdm2syn   Variable:/cell:mdm2syn           1 ]
+			[ ksynMdm2  Variable:/SBMLParameter:ksynMdm2 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2mRNASynthesis1 )
 	{
-		Expression	"Param0.Value * (P0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:p53 -1 ]
-			[ P0 Variable:/cell:p53 1 ]
-			[ P1 Variable:/cell:Mdm2_mRNA 1 ]
-			[ P2 Variable:/cell:Mdm2mRNAsyn 1 ]
-			[ Param0 Variable:/SBMLParameter:ksynMdm2mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[p53] -> [p53] + [Mdm2_mRNA] + [Mdm2mRNAsyn];";
+		Expression	"ksynMdm2mRNA.Value * p53.NumberConc";
+		VariableReferenceList
+			[ p53          Variable:/cell:p53                   0 ]
+			[ Mdm2_mRNA    Variable:/cell:Mdm2_mRNA             1 ]
+			[ Mdm2mRNAsyn  Variable:/cell:Mdm2mRNAsyn           1 ]
+			[ ksynMdm2mRNA Variable:/SBMLParameter:ksynMdm2mRNA 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2mRNASynthesis2 )
 	{
-		Expression	"Param0.Value * (P0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:p53_P -1 ]
-			[ P0 Variable:/cell:p53_P 1 ]
-			[ P1 Variable:/cell:Mdm2_mRNA 1 ]
-			[ P2 Variable:/cell:Mdm2mRNAsyn 1 ]
-			[ Param0 Variable:/SBMLParameter:ksynMdm2mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[p53_P] -> [p53_P] + [Mdm2_mRNA] + [Mdm2mRNAsyn];";
+		Expression	"ksynMdm2mRNA.Value * p53_P.NumberConc";
+		VariableReferenceList
+			[ p53_P        Variable:/cell:p53_P                 0 ]
+			[ Mdm2_mRNA    Variable:/cell:Mdm2_mRNA             1 ]
+			[ Mdm2mRNAsyn  Variable:/cell:Mdm2mRNAsyn           1 ]
+			[ ksynMdm2mRNA Variable:/SBMLParameter:ksynMdm2mRNA 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2mRNADegradation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2_mRNA -1 ]
-			[ P0 Variable:/cell:Sink 0 ]
-			[ P1 Variable:/cell:Mdm2mRNAdeg 1 ]
-			[ Param0 Variable:/SBMLParameter:kdegMdm2mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[Mdm2_mRNA] -> [Sink] + [Mdm2mRNAdeg];";
+		Expression	"kdegMdm2mRNA.Value * Mdm2_mRNA.NumberConc";
+		VariableReferenceList
+			[ Mdm2_mRNA    Variable:/cell:Mdm2_mRNA             -1 ]
+			[ Sink         Variable:/cell:Sink                  0  ]
+			[ Mdm2mRNAdeg  Variable:/cell:Mdm2mRNAdeg           1  ]
+			[ kdegMdm2mRNA Variable:/SBMLParameter:kdegMdm2mRNA 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2Degradation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value) * Param1.Value";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2 -1 ]
-			[ P0 Variable:/cell:Sink 0 ]
-			[ P1 Variable:/cell:mdm2deg 1 ]
-			[ Param0 Variable:/SBMLParameter:kdegMdm2 0 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kproteff 0 ];
+		Name	"[Mdm2] -> [Sink] + [mdm2deg];";
+		Expression	"kdegMdm2.Value * Mdm2.NumberConc * kproteff.Value";
+		VariableReferenceList
+			[ Mdm2     Variable:/cell:Mdm2              -1 ]
+			[ Sink     Variable:/cell:Sink              0  ]
+			[ mdm2deg  Variable:/cell:mdm2deg           1  ]
+			[ kdegMdm2 Variable:/SBMLParameter:kdegMdm2 0  ]
+			[ kproteff Variable:/SBMLParameter:kproteff 0  ];
 	}
 	
 	Process ExpressionFluxProcess( p53Synthesis )
 	{
-		Expression	"Param0.Value * (P1.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:p53_mRNA -1 ]
-			[ P0 Variable:/cell:p53 1 ]
-			[ P1 Variable:/cell:p53_mRNA 1 ]
-			[ P2 Variable:/cell:p53syn 1 ]
-			[ Param0 Variable:/SBMLParameter:ksynp53 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[p53_mRNA] -> [p53] + [p53_mRNA] + [p53syn];";
+		Expression	"ksynp53.Value * p53_mRNA.NumberConc";
+		VariableReferenceList
+			[ p53_mRNA Variable:/cell:p53_mRNA         0 ]
+			[ p53      Variable:/cell:p53              1 ]
+			[ p53syn   Variable:/cell:p53syn           1 ]
+			[ ksynp53  Variable:/SBMLParameter:ksynp53 0 ];
 	}
 	
 	Process ExpressionFluxProcess( p53Degradation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value) * Param1.Value";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2_p53 -1 ]
-			[ P0 Variable:/cell:Mdm2 1 ]
-			[ P1 Variable:/cell:p53deg 1 ]
-			[ Param0 Variable:/SBMLParameter:kdegp53 0 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ Param1 Variable:/SBMLParameter:kproteff 0 ];
+		Name	"[Mdm2_p53] -> [Mdm2] + [p53deg];";
+		Expression	"kdegp53.Value * Mdm2_p53.NumberConc * kproteff.Value";
+		VariableReferenceList
+			[ Mdm2_p53 Variable:/cell:Mdm2_p53          -1 ]
+			[ Mdm2     Variable:/cell:Mdm2              1  ]
+			[ p53deg   Variable:/cell:p53deg            1  ]
+			[ kdegp53  Variable:/SBMLParameter:kdegp53  0  ]
+			[ kproteff Variable:/SBMLParameter:kproteff 0  ];
 	}
 	
 	Process ExpressionFluxProcess( P53_Mdm2Binding )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value) * (S1.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:p53 -1 ]
-			[ S1 Variable:/cell:Mdm2 -1 ]
-			[ P0 Variable:/cell:Mdm2_p53 1 ]
-			[ Param0 Variable:/SBMLParameter:kbinMdm2p53 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[p53] + [Mdm2] -> [Mdm2_p53];";
+		Expression	"kbinMdm2p53.Value * p53.NumberConc * Mdm2.NumberConc";
+		VariableReferenceList
+			[ p53         Variable:/cell:p53                  -1 ]
+			[ Mdm2        Variable:/cell:Mdm2                 -1 ]
+			[ Mdm2_p53    Variable:/cell:Mdm2_p53             1  ]
+			[ kbinMdm2p53 Variable:/SBMLParameter:kbinMdm2p53 0  ];
 	}
 	
 	Process ExpressionFluxProcess( P53_Mdm2Release )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2_p53 -1 ]
-			[ P0 Variable:/cell:p53 1 ]
-			[ P1 Variable:/cell:Mdm2 1 ]
-			[ Param0 Variable:/SBMLParameter:krelMdm2p53 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[Mdm2_p53] -> [p53] + [Mdm2];";
+		Expression	"krelMdm2p53.Value * Mdm2_p53.NumberConc";
+		VariableReferenceList
+			[ Mdm2_p53    Variable:/cell:Mdm2_p53             -1 ]
+			[ p53         Variable:/cell:p53                  1  ]
+			[ Mdm2        Variable:/cell:Mdm2                 1  ]
+			[ krelMdm2p53 Variable:/SBMLParameter:krelMdm2p53 0  ];
 	}
 	
 	Process ExpressionFluxProcess( DNAdamage )
 	{
-		Expression	"Param0.Value * Param1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/cell:damDNA 1 ]
-			[ Param0 Variable:/SBMLParameter:kdam 0 ]
-			[ Param1 Variable:/SBMLParameter:IR 0 ];
+		Name	"-> [damDNA];";
+		Expression	"kdam.Value * IR.Value";
+		VariableReferenceList
+			[ damDNA Variable:/cell:damDNA        1 ]
+			[ kdam   Variable:/SBMLParameter:kdam 0 ]
+			[ IR     Variable:/SBMLParameter:IR   0 ];
 	}
 	
 	Process ExpressionFluxProcess( DNArepair )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:damDNA -1 ]
-			[ P0 Variable:/cell:Sink 0 ]
-			[ Param0 Variable:/SBMLParameter:krepair 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[damDNA] -> [Sink];";
+		Expression	"krepair.Value * damDNA.NumberConc";
+		VariableReferenceList
+			[ damDNA  Variable:/cell:damDNA           -1 ]
+			[ Sink    Variable:/cell:Sink             0  ]
+			[ krepair Variable:/SBMLParameter:krepair 0  ];
 	}
 	
 	Process ExpressionFluxProcess( ATMactivation )
 	{
-		Expression	"Param0.Value * (P0.Value / cell.Value) * (S1.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:damDNA -1 ]
-			[ S1 Variable:/cell:ATMI -1 ]
-			[ P0 Variable:/cell:damDNA 1 ]
-			[ P1 Variable:/cell:ATMA 1 ]
-			[ Param0 Variable:/SBMLParameter:kactATM 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[damDNA] + [ATMI] -> [damDNA] + [ATMA];";
+		Expression	"kactATM.Value * damDNA.NumberConc * ATMI.NumberConc";
+		VariableReferenceList
+			[ damDNA  Variable:/cell:damDNA           0  ]
+			[ ATMI    Variable:/cell:ATMI             -1 ]
+			[ ATMA    Variable:/cell:ATMA             1  ]
+			[ kactATM Variable:/SBMLParameter:kactATM 0  ];
 	}
 	
 	Process ExpressionFluxProcess( p53phoshorylation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value) * (P1.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:p53 -1 ]
-			[ S1 Variable:/cell:ATMA -1 ]
-			[ P0 Variable:/cell:p53_P 1 ]
-			[ P1 Variable:/cell:ATMA 1 ]
-			[ Param0 Variable:/SBMLParameter:kphosp53 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[p53] + [ATMA] -> [p53_P] + [ATMA];";
+		Expression	"kphosp53.Value * p53.NumberConc * ATMA.NumberConc";
+		VariableReferenceList
+			[ p53      Variable:/cell:p53               -1 ]
+			[ ATMA     Variable:/cell:ATMA              0  ]
+			[ p53_P    Variable:/cell:p53_P             1  ]
+			[ kphosp53 Variable:/SBMLParameter:kphosp53 0  ];
 	}
 	
 	Process ExpressionFluxProcess( p53dephosorylation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:p53_P -1 ]
-			[ P0 Variable:/cell:p53 1 ]
-			[ Param0 Variable:/SBMLParameter:kdephosp53 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[p53_P] -> [p53];";
+		Expression	"kdephosp53.Value * p53_P.NumberConc";
+		VariableReferenceList
+			[ p53_P      Variable:/cell:p53_P               -1 ]
+			[ p53        Variable:/cell:p53                 1  ]
+			[ kdephosp53 Variable:/SBMLParameter:kdephosp53 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2phoshorylation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value) * (P1.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2 -1 ]
-			[ S1 Variable:/cell:ATMA -1 ]
-			[ P0 Variable:/cell:Mdm2_P 1 ]
-			[ P1 Variable:/cell:ATMA 1 ]
-			[ Param0 Variable:/SBMLParameter:kphosMdm2 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[Mdm2] + [ATMA] -> [Mdm2_P] + [ATMA];";
+		Expression	"kphosMdm2.Value * Mdm2.NumberConc * ATMA.NumberConc";
+		VariableReferenceList
+			[ Mdm2      Variable:/cell:Mdm2               -1 ]
+			[ ATMA      Variable:/cell:ATMA               0  ]
+			[ Mdm2_P    Variable:/cell:Mdm2_P             1  ]
+			[ kphosMdm2 Variable:/SBMLParameter:kphosMdm2 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2dephosorylation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2_P -1 ]
-			[ P0 Variable:/cell:Mdm2 1 ]
-			[ Param0 Variable:/SBMLParameter:kdephosMdm2 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[Mdm2_P] -> [Mdm2];";
+		Expression	"kdephosMdm2.Value * Mdm2_P.NumberConc";
+		VariableReferenceList
+			[ Mdm2_P      Variable:/cell:Mdm2_P               -1 ]
+			[ Mdm2        Variable:/cell:Mdm2                 1  ]
+			[ kdephosMdm2 Variable:/SBMLParameter:kdephosMdm2 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Mdm2Pdegradation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Mdm2_P -1 ]
-			[ P0 Variable:/cell:Sink 0 ]
-			[ P1 Variable:/cell:mdm2deg 1 ]
-			[ Param0 Variable:/SBMLParameter:kdegATMMdm2 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[Mdm2_P] -> [Sink] + [mdm2deg];";
+		Expression	"kdegATMMdm2.Value * Mdm2_P.NumberConc";
+		VariableReferenceList
+			[ Mdm2_P      Variable:/cell:Mdm2_P               -1 ]
+			[ Sink        Variable:/cell:Sink                 0  ]
+			[ mdm2deg     Variable:/cell:mdm2deg              1  ]
+			[ kdegATMMdm2 Variable:/SBMLParameter:kdegATMMdm2 0  ];
 	}
 	
 	Process ExpressionFluxProcess( ATMInactivation )
 	{
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:ATMA -1 ]
-			[ P0 Variable:/cell:ATMI 1 ]
-			[ Param0 Variable:/SBMLParameter:kinactATM 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Name	"[ATMA] -> [ATMI];";
+		Expression	"kinactATM.Value * ATMA.NumberConc";
+		VariableReferenceList
+			[ ATMA      Variable:/cell:ATMA               -1 ]
+			[ ATMI      Variable:/cell:ATMI               1  ]
+			[ kinactATM Variable:/SBMLParameter:kinactATM 0  ];
 	}
 	
 	
@@ -248,7 +233,7 @@ System System( / )
 
 System System( /cell )
 {
-	StepperID	DE;
+	StepperID	Default;
 
 	Variable Variable( Dimensions )
 	{
@@ -386,7 +371,7 @@ System System( /cell )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( IR )
@@ -520,28 +505,30 @@ System System( /SBMLParameter )
 System System( /SBMLRule )
 {
 	Name	"System for SBML Rule";
-	StepperID	DT;
+	StepperID	Default;
 
-	Process ExpressionAssignmentProcess( Rule1 )
+	Process ExpressionAssignmentProcess( Assignment_totp53 )
 	{
-		Expression	"V1.Value / cell.Value + V2.Value / cell.Value + V3.Value / cell.Value";
-		VariableReferenceList	
-			[ V0 Variable:/cell:totp53 1 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ V1 Variable:/cell:p53 0 ]
-			[ V2 Variable:/cell:Mdm2_p53 0 ]
-			[ V3 Variable:/cell:p53_P 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'totp53'";
+		Expression	"p53.NumberConc + Mdm2_p53.NumberConc + p53_P.NumberConc";
+		VariableReferenceList
+			[ totp53   Variable:/cell:totp53   1 ]
+			[ p53      Variable:/cell:p53      0 ]
+			[ Mdm2_p53 Variable:/cell:Mdm2_p53 0 ]
+			[ p53_P    Variable:/cell:p53_P    0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule2 )
+	Process ExpressionAssignmentProcess( Assignment_totMdm2 )
 	{
-		Expression	"V1.Value / cell.Value + V2.Value / cell.Value + V3.Value / cell.Value";
-		VariableReferenceList	
-			[ V0 Variable:/cell:totMdm2 1 ]
-			[ cell Variable:/cell:SIZE 0 ]
-			[ V1 Variable:/cell:Mdm2 0 ]
-			[ V2 Variable:/cell:Mdm2_p53 0 ]
-			[ V3 Variable:/cell:Mdm2_P 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'totMdm2'";
+		Expression	"Mdm2.NumberConc + Mdm2_p53.NumberConc + Mdm2_P.NumberConc";
+		VariableReferenceList
+			[ totMdm2  Variable:/cell:totMdm2  1 ]
+			[ Mdm2     Variable:/cell:Mdm2     0 ]
+			[ Mdm2_p53 Variable:/cell:Mdm2_p53 0 ]
+			[ Mdm2_P   Variable:/cell:Mdm2_P   0 ];
 	}
 	
 	
@@ -550,28 +537,32 @@ System System( /SBMLRule )
 System System( /SBMLEvent )
 {
 	Name	"System for SBML Event";
-	StepperID	DE;
+	StepperID	Default;
 
-	Variable Variable( time )
+	Process ExpressionEventProcess( stressCell )
 	{
-		Value	0.0;
-	}
-
-	Process ExpressionFluxProcess( clock )
-	{
-		Expression	"1.0";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLEvent:time 1 ];
+		StepperID	Default;
+		Name	stressCell;
+		EventAssignmentList
+			[ IR 25 ];
+		Trigger	"geq(<t>, 3600)";
+		Delay	0.0;
+		VariableReferenceList
+			[ IR Variable:/SBMLParameter:IR 1 ];
 	}
 	
-	Process ExpressionAssignmentProcess( stressCell )
+	Process ExpressionEventProcess( stopStress )
 	{
-		StepperID	DT;
-		Expression	"and( geq( V1.Value, 3600 ), lt( V1.Value, 3660 )) * 25.0";
-		VariableReferenceList	
-			[ V0 Variable:/SBMLParameter:IR 1 ]
-			[ V1 Variable:/SBMLEvent:time 0 ];
+		StepperID	Default;
+		Name	stopStress;
+		EventAssignmentList
+			[ IR 0 ];
+		Trigger	"geq(<t>, 3660)";
+		Delay	0.0;
+		VariableReferenceList
+			[ IR Variable:/SBMLParameter:IR 1 ];
 	}
+	
 	
 }
 

@@ -1,165 +1,139 @@
 
 # created by eml2em program
-# from file: BIOMD0000000012.eml, date: Mon Dec 16 21:20:17 2013
+# from file: BIOMD0000000012.eml, date: Sat Mar  1 16:50:32 2014
 #
-# BIOMD0000000012 - Elowitz2000 - Repressilator
-# 
-# Goldbeter A. 
-# Elowitz MB, Leibler S. 
-# A synthetic oscillatory network of transcriptional regulators. 
-# Nature 2000 Jan; 403(6767): 335-338 
-# Department of Molecular Biology and Physics, Princeton University, New Jersey 08544, USA.
 
-
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE ) {}
-Stepper DiscreteTimeStepper( DT ) {}
-
-##### Model Entities #####
-Stepper ODEStepper( DE )
+Stepper ODEStepper( Default )
 {
 	# no property
 }
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 
 	Process ExpressionFluxProcess( Reaction1 )
 	{
 		Name	"degradation of LacI transcripts";
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:X -1 ]
-			[ Param0 Variable:/SBMLParameter:kd_mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"kd_mRNA.Value * X.NumberConc";
+		VariableReferenceList
+			[ X       Variable:/cell:X                -1 ]
+			[ kd_mRNA Variable:/SBMLParameter:kd_mRNA 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction2 )
 	{
 		Name	"degradation of TetR transcripts";
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Y -1 ]
-			[ Param0 Variable:/SBMLParameter:kd_mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"kd_mRNA.Value * Y.NumberConc";
+		VariableReferenceList
+			[ Y       Variable:/cell:Y                -1 ]
+			[ kd_mRNA Variable:/SBMLParameter:kd_mRNA 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction3 )
 	{
 		Name	"degradation of CI transcripts";
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:Z -1 ]
-			[ Param0 Variable:/SBMLParameter:kd_mRNA 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"kd_mRNA.Value * Z.NumberConc";
+		VariableReferenceList
+			[ Z       Variable:/cell:Z                -1 ]
+			[ kd_mRNA Variable:/SBMLParameter:kd_mRNA 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction4 )
 	{
 		Name	"translation of LacI";
-		Expression	"Param0.Value * (C0.Value / cell.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cell:PX 1 ]
-			[ C0 Variable:/cell:X 0 ]
-			[ Param0 Variable:/SBMLParameter:k_tl 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"k_tl.Value * X.NumberConc";
+		VariableReferenceList
+			[ PX   Variable:/cell:PX            1 ]
+			[ X    Variable:/cell:X             0 ]
+			[ k_tl Variable:/SBMLParameter:k_tl 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction5 )
 	{
 		Name	"translation of TetR";
-		Expression	"Param0.Value * (C0.Value / cell.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cell:PY 1 ]
-			[ C0 Variable:/cell:Y 0 ]
-			[ Param0 Variable:/SBMLParameter:k_tl 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"k_tl.Value * Y.NumberConc";
+		VariableReferenceList
+			[ PY   Variable:/cell:PY            1 ]
+			[ Y    Variable:/cell:Y             0 ]
+			[ k_tl Variable:/SBMLParameter:k_tl 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction6 )
 	{
 		Name	"translation of CI";
-		Expression	"Param0.Value * (C0.Value / cell.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/cell:PZ 1 ]
-			[ C0 Variable:/cell:Z 0 ]
-			[ Param0 Variable:/SBMLParameter:k_tl 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"k_tl.Value * Z.NumberConc";
+		VariableReferenceList
+			[ PZ   Variable:/cell:PZ            1 ]
+			[ Z    Variable:/cell:Z             0 ]
+			[ k_tl Variable:/SBMLParameter:k_tl 0 ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction7 )
 	{
 		Name	"degradation of LacI";
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:PX -1 ]
-			[ Param0 Variable:/SBMLParameter:kd_prot 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"kd_prot.Value * PX.NumberConc";
+		VariableReferenceList
+			[ PX      Variable:/cell:PX               -1 ]
+			[ kd_prot Variable:/SBMLParameter:kd_prot 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction8 )
 	{
 		Name	"degradation of TetR";
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:PY -1 ]
-			[ Param0 Variable:/SBMLParameter:kd_prot 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"kd_prot.Value * PY.NumberConc";
+		VariableReferenceList
+			[ PY      Variable:/cell:PY               -1 ]
+			[ kd_prot Variable:/SBMLParameter:kd_prot 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction9 )
 	{
 		Name	"degradation of CI";
-		Expression	"Param0.Value * (S0.Value / cell.Value)";
-		VariableReferenceList	
-			[ S0 Variable:/cell:PZ -1 ]
-			[ Param0 Variable:/SBMLParameter:kd_prot 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"kd_prot.Value * PZ.NumberConc";
+		VariableReferenceList
+			[ PZ      Variable:/cell:PZ               -1 ]
+			[ kd_prot Variable:/SBMLParameter:kd_prot 0  ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction10 )
 	{
 		Name	"transcription of LacI";
-		Expression	"Param0.Value + Param1.Value * pow(Param2.Value, Param3.Value) / (pow(Param2.Value, Param3.Value) + pow(C0.Value / cell.Value, Param3.Value))";
-		VariableReferenceList	
-			[ P0 Variable:/cell:X 1 ]
-			[ C0 Variable:/cell:PZ 0 ]
-			[ Param0 Variable:/SBMLParameter:a0_tr 0 ]
-			[ Param1 Variable:/SBMLParameter:a_tr 0 ]
-			[ Param2 Variable:/SBMLParameter:KM 0 ]
-			[ Param3 Variable:/SBMLParameter:n 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"a0_tr.Value + a_tr.Value * pow(KM.Value, n.Value) / (pow(KM.Value, n.Value) + pow(PZ.NumberConc, n.Value))";
+		VariableReferenceList
+			[ X     Variable:/cell:X              1 ]
+			[ PZ    Variable:/cell:PZ             0 ]
+			[ a0_tr Variable:/SBMLParameter:a0_tr 0 ]
+			[ a_tr  Variable:/SBMLParameter:a_tr  0 ]
+			[ KM    Variable:/SBMLParameter:KM    0 ]
+			[ n     Variable:/SBMLParameter:n     0 ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction11 )
 	{
 		Name	"transcription of TetR";
-		Expression	"Param0.Value + Param1.Value * pow(Param2.Value, Param3.Value) / (pow(Param2.Value, Param3.Value) + pow(C0.Value / cell.Value, Param3.Value))";
-		VariableReferenceList	
-			[ P0 Variable:/cell:Y 1 ]
-			[ C0 Variable:/cell:PX 0 ]
-			[ Param0 Variable:/SBMLParameter:a0_tr 0 ]
-			[ Param1 Variable:/SBMLParameter:a_tr 0 ]
-			[ Param2 Variable:/SBMLParameter:KM 0 ]
-			[ Param3 Variable:/SBMLParameter:n 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"a0_tr.Value + a_tr.Value * pow(KM.Value, n.Value) / (pow(KM.Value, n.Value) + pow(PX.NumberConc, n.Value))";
+		VariableReferenceList
+			[ Y     Variable:/cell:Y              1 ]
+			[ PX    Variable:/cell:PX             0 ]
+			[ a0_tr Variable:/SBMLParameter:a0_tr 0 ]
+			[ a_tr  Variable:/SBMLParameter:a_tr  0 ]
+			[ KM    Variable:/SBMLParameter:KM    0 ]
+			[ n     Variable:/SBMLParameter:n     0 ];
 	}
 	
 	Process ExpressionFluxProcess( Reaction12 )
 	{
 		Name	"transcription of CI";
-		Expression	"Param0.Value + Param1.Value * pow(Param2.Value, Param3.Value) / (pow(Param2.Value, Param3.Value) + pow(C0.Value / cell.Value, Param3.Value))";
-		VariableReferenceList	
-			[ P0 Variable:/cell:Z 1 ]
-			[ C0 Variable:/cell:PY 0 ]
-			[ Param0 Variable:/SBMLParameter:a0_tr 0 ]
-			[ Param1 Variable:/SBMLParameter:a_tr 0 ]
-			[ Param2 Variable:/SBMLParameter:KM 0 ]
-			[ Param3 Variable:/SBMLParameter:n 0 ]
-			[ cell Variable:/cell:SIZE 0 ];
+		Expression	"a0_tr.Value + a_tr.Value * pow(KM.Value, n.Value) / (pow(KM.Value, n.Value) + pow(PY.NumberConc, n.Value))";
+		VariableReferenceList
+			[ Z     Variable:/cell:Z              1 ]
+			[ PY    Variable:/cell:PY             0 ]
+			[ a0_tr Variable:/SBMLParameter:a0_tr 0 ]
+			[ a_tr  Variable:/SBMLParameter:a_tr  0 ]
+			[ KM    Variable:/SBMLParameter:KM    0 ]
+			[ n     Variable:/SBMLParameter:n     0 ];
 	}
 	
 	
@@ -167,7 +141,7 @@ System System( / )
 
 System System( /cell )
 {
-	StepperID	DE;
+	StepperID	Default;
 
 	Variable Variable( Dimensions )
 	{
@@ -227,7 +201,7 @@ System System( /cell )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( beta )
@@ -286,31 +260,31 @@ System System( /SBMLParameter )
 	Variable Variable( t_ave )
 	{
 		Name	"average mRNA life time";
-		Value	2.88539008178;  ## Calculated
+		Value	2.88539008178;
 	}
 	
 	Variable Variable( kd_mRNA )
 	{
 		Name	kd_mRNA;
-		Value	0.34657359028;  ## Calculated
+		Value	0.34657359028;
 	}
 	
 	Variable Variable( kd_prot )
 	{
 		Name	kd_prot;
-		Value	0.069314718056;  ## Calculated
+		Value	0.069314718056;
 	}
 	
 	Variable Variable( k_tl )
 	{
 		Name	k_tl;
-		Value	6.9314718056;  ## Calculated
+		Value	6.9314718056;
 	}
 	
 	Variable Variable( a_tr )
 	{
 		Name	a_tr;
-		Value	29.97;  ## Calculated
+		Value	29.97;
 	}
 	
 	Variable Variable( ps_a )
@@ -330,7 +304,7 @@ System System( /SBMLParameter )
 	Variable Variable( a0_tr )
 	{
 		Name	a0_tr;
-		Value	0.03;  ## Calculated
+		Value	0.03;
 	}
 	
 	
@@ -339,87 +313,105 @@ System System( /SBMLParameter )
 System System( /SBMLRule )
 {
 	Name	"System for SBML Rule";
-	StepperID	DT;
+	StepperID	Default;
 
-	Process ExpressionAssignmentProcess( Rule1 )
+	Process ExpressionAssignmentProcess( Assignment_t_ave )
 	{
-		Expression	"P1.Value / log(2)";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:t_ave 1 ]
-			[ P1 Variable:/SBMLParameter:tau_mRNA 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 't_ave'";
+		Expression	"tau_mRNA.NumberConc / log(2)";
+		VariableReferenceList
+			[ t_ave    Variable:/SBMLParameter:t_ave    1 ]
+			[ tau_mRNA Variable:/SBMLParameter:tau_mRNA 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule2 )
+	Process ExpressionAssignmentProcess( Assignment_beta )
 	{
-		Expression	"P1.Value / P2.Value";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:beta 1 ]
-			[ P1 Variable:/SBMLParameter:tau_mRNA 0 ]
-			[ P2 Variable:/SBMLParameter:tau_prot 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'beta'";
+		Expression	"tau_mRNA.NumberConc / tau_prot.NumberConc";
+		VariableReferenceList
+			[ beta     Variable:/SBMLParameter:beta     1 ]
+			[ tau_mRNA Variable:/SBMLParameter:tau_mRNA 0 ]
+			[ tau_prot Variable:/SBMLParameter:tau_prot 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule3 )
+	Process ExpressionAssignmentProcess( Assignment_k_tl )
 	{
-		Expression	"P1.Value / P2.Value";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:k_tl 1 ]
-			[ P1 Variable:/SBMLParameter:eff 0 ]
-			[ P2 Variable:/SBMLParameter:t_ave 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'k_tl'";
+		Expression	"eff.NumberConc / t_ave.NumberConc";
+		VariableReferenceList
+			[ k_tl  Variable:/SBMLParameter:k_tl  1 ]
+			[ eff   Variable:/SBMLParameter:eff   0 ]
+			[ t_ave Variable:/SBMLParameter:t_ave 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule4 )
+	Process ExpressionAssignmentProcess( Assignment_a_tr )
 	{
-		Expression	"(P1.Value - P2.Value) * 60";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:a_tr 1 ]
-			[ P1 Variable:/SBMLParameter:ps_a 0 ]
-			[ P2 Variable:/SBMLParameter:ps_0 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'a_tr'";
+		Expression	"(ps_a.NumberConc - ps_0.NumberConc) * 60";
+		VariableReferenceList
+			[ a_tr Variable:/SBMLParameter:a_tr 1 ]
+			[ ps_a Variable:/SBMLParameter:ps_a 0 ]
+			[ ps_0 Variable:/SBMLParameter:ps_0 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule5 )
+	Process ExpressionAssignmentProcess( Assignment_a0_tr )
 	{
-		Expression	"P1.Value * 60";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:a0_tr 1 ]
-			[ P1 Variable:/SBMLParameter:ps_0 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'a0_tr'";
+		Expression	"ps_0.NumberConc * 60";
+		VariableReferenceList
+			[ a0_tr Variable:/SBMLParameter:a0_tr 1 ]
+			[ ps_0  Variable:/SBMLParameter:ps_0  0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule6 )
+	Process ExpressionAssignmentProcess( Assignment_kd_prot )
 	{
-		Expression	"log(2) / P1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:kd_prot 1 ]
-			[ P1 Variable:/SBMLParameter:tau_prot 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'kd_prot'";
+		Expression	"log(2) / tau_prot.NumberConc";
+		VariableReferenceList
+			[ kd_prot  Variable:/SBMLParameter:kd_prot  1 ]
+			[ tau_prot Variable:/SBMLParameter:tau_prot 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule7 )
+	Process ExpressionAssignmentProcess( Assignment_kd_mRNA )
 	{
-		Expression	"log(2) / P1.Value";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:kd_mRNA 1 ]
-			[ P1 Variable:/SBMLParameter:tau_mRNA 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'kd_mRNA'";
+		Expression	"log(2) / tau_mRNA.NumberConc";
+		VariableReferenceList
+			[ kd_mRNA  Variable:/SBMLParameter:kd_mRNA  1 ]
+			[ tau_mRNA Variable:/SBMLParameter:tau_mRNA 0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule8 )
+	Process ExpressionAssignmentProcess( Assignment_alpha )
 	{
-		Expression	"P1.Value * P2.Value * P3.Value / (log(2) * P4.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:alpha 1 ]
-			[ P1 Variable:/SBMLParameter:a_tr 0 ]
-			[ P2 Variable:/SBMLParameter:eff 0 ]
-			[ P3 Variable:/SBMLParameter:tau_prot 0 ]
-			[ P4 Variable:/SBMLParameter:KM 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'alpha'";
+		Expression	"a_tr.NumberConc * eff.NumberConc * tau_prot.NumberConc / (log(2) * KM.NumberConc)";
+		VariableReferenceList
+			[ alpha    Variable:/SBMLParameter:alpha    1 ]
+			[ a_tr     Variable:/SBMLParameter:a_tr     0 ]
+			[ eff      Variable:/SBMLParameter:eff      0 ]
+			[ tau_prot Variable:/SBMLParameter:tau_prot 0 ]
+			[ KM       Variable:/SBMLParameter:KM       0 ];
 	}
 	
-	Process ExpressionAssignmentProcess( Rule9 )
+	Process ExpressionAssignmentProcess( Assignment_alpha0 )
 	{
-		Expression	"P1.Value * P2.Value * P3.Value / (log(2) * P4.Value)";
-		VariableReferenceList	
-			[ P0 Variable:/SBMLParameter:alpha0 1 ]
-			[ P1 Variable:/SBMLParameter:a0_tr 0 ]
-			[ P2 Variable:/SBMLParameter:eff 0 ]
-			[ P3 Variable:/SBMLParameter:tau_prot 0 ]
-			[ P4 Variable:/SBMLParameter:KM 0 ];
+		StepperID	Default;
+		Name	"Assignment rule for 'alpha0'";
+		Expression	"a0_tr.NumberConc * eff.NumberConc * tau_prot.NumberConc / (log(2) * KM.NumberConc)";
+		VariableReferenceList
+			[ alpha0   Variable:/SBMLParameter:alpha0   1 ]
+			[ a0_tr    Variable:/SBMLParameter:a0_tr    0 ]
+			[ eff      Variable:/SBMLParameter:eff      0 ]
+			[ tau_prot Variable:/SBMLParameter:tau_prot 0 ]
+			[ KM       Variable:/SBMLParameter:KM       0 ];
 	}
 	
 	

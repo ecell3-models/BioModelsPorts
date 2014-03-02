@@ -1,42 +1,47 @@
 
 # created by eml2em program
-# from file: BIOMD0000000239.eml, date: Sun Dec 15 02:34:57 2013
+# from file: BIOMD0000000239.eml, date: Sun Mar  2 20:52:28 2014
 #
-# BIOMD0000000239 - Jiang2007 - GSIS system, Pancreatic Beta Cells
-# 
-# Jiang N, Cox RD, Hancock JM. 
-# A kinetic core model of the glucose-stimulated insulin secretion network of pancreatic beta cells. 
-# Mamm. Genome 2007 Jul; 18(6-7): 508-520 
-# Bioinformatics Group, MRC Mammalian Genetics Unit, Harwell, Oxfordshire, OX11 0RD, UK.
 
-##### Steppers #####
-
-Stepper FixedODE1Stepper( DE ) {}
-
-##### Model Entities #####
+Stepper ODEStepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID	DE;
-	Name	Default;
+	StepperID	Default;
+	Name	default;
 
 	Process ExpressionFluxProcess( GLCflow )
 	{
+		Name	"<-> [GLC];";
 		Glc_F	64.941;
-		Expression	"CYTOPLASM.Value * (Glc_F * pow(10, -3) - P0.Value / CYTOPLASM.Value) * Param0.Value";
-		VariableReferenceList	[ P0 Variable:/CYTOPLASM:GLC 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ] [ Param0 Variable:/SBMLParameter:flow 0 ];
+		Expression	"CYTOPLASM.Value * (Glc_F * pow(10, -3) - GLC.NumberConc) * flow.Value";
+		VariableReferenceList
+			[ GLC       Variable:/CYTOPLASM:GLC      1 ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE     0 ]
+			[ flow      Variable:/SBMLParameter:flow 0 ];
 	}
 	
 	Process ExpressionFluxProcess( LACflow )
 	{
-		Expression	"CYTOPLASM.Value * (S0.Value / CYTOPLASM.Value) * Param0.Value";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:LAC -1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ] [ Param0 Variable:/SBMLParameter:flow 0 ];
+		Name	"[LAC] -> ;";
+		Expression	"CYTOPLASM.Value * LAC.NumberConc * flow.Value";
+		VariableReferenceList
+			[ LAC       Variable:/CYTOPLASM:LAC      -1 ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE     0  ]
+			[ flow      Variable:/SBMLParameter:flow 0  ];
 	}
 	
 	Process ExpressionFluxProcess( GAPflow )
 	{
-		Expression	"CYTOPLASM.Value * (S0.Value / CYTOPLASM.Value) * Param0.Value";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:GAP -1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ] [ Param0 Variable:/SBMLParameter:flow 0 ];
+		Name	"[GAP] -> ;";
+		Expression	"CYTOPLASM.Value * GAP.NumberConc * flow.Value";
+		VariableReferenceList
+			[ GAP       Variable:/CYTOPLASM:GAP      -1 ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE     0  ]
+			[ flow      Variable:/SBMLParameter:flow 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v1 )
@@ -45,8 +50,13 @@ System System( / )
 		V1	0.0005;
 		K1GLC	0.0001;
 		K1ATP	6.3e-05;
-		Expression	"CYTOPLASM.Value * (V1 * (S1.Value / CYTOPLASM.Value) * (S0.Value / CYTOPLASM.Value) / ((K1GLC + S0.Value / CYTOPLASM.Value) * (K1ATP + S1.Value / CYTOPLASM.Value)))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:GLC -1 ] [ S1 Variable:/CYTOPLASM:ATP_cyt -1 ] [ P0 Variable:/CYTOPLASM:F6P 1 ] [ P1 Variable:/CYTOPLASM:ADP_cyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (V1 * ATP_cyt.NumberConc * GLC.NumberConc / ((K1GLC + GLC.NumberConc) * (K1ATP + ATP_cyt.NumberConc)))";
+		VariableReferenceList
+			[ GLC       Variable:/CYTOPLASM:GLC     -1 ]
+			[ ATP_cyt   Variable:/CYTOPLASM:ATP_cyt -1 ]
+			[ F6P       Variable:/CYTOPLASM:F6P     1  ]
+			[ ADP_cyt   Variable:/CYTOPLASM:ADP_cyt 1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE    0  ];
 	}
 	
 	Process ExpressionFluxProcess( v2 )
@@ -56,8 +66,14 @@ System System( / )
 		K2	1.6e-09;
 		k2	0.017;
 		K2ATP	1e-05;
-		Expression	"CYTOPLASM.Value * (V2 * (S1.Value / CYTOPLASM.Value) * pow(S0.Value / CYTOPLASM.Value, 2) / ((K2 * (1 + k2 * pow(S1.Value / CYTOPLASM.Value / (C0.Value / CYTOPLASM.Value), 2)) + pow(S0.Value / CYTOPLASM.Value, 2)) * (K2ATP + S1.Value / CYTOPLASM.Value)))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:F6P -1 ] [ S1 Variable:/CYTOPLASM:ATP_cyt -1 ] [ P0 Variable:/CYTOPLASM:FBP 1 ] [ P1 Variable:/CYTOPLASM:ADP_cyt 1 ] [ C0 Variable:/CYTOPLASM:AMP 0 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (V2 * ATP_cyt.NumberConc * pow(F6P.NumberConc, 2) / ((K2 * (1 + k2 * pow(ATP_cyt.NumberConc / AMP.NumberConc, 2)) + pow(F6P.NumberConc, 2)) * (K2ATP + ATP_cyt.NumberConc)))";
+		VariableReferenceList
+			[ F6P       Variable:/CYTOPLASM:F6P     -1 ]
+			[ ATP_cyt   Variable:/CYTOPLASM:ATP_cyt -1 ]
+			[ FBP       Variable:/CYTOPLASM:FBP     1  ]
+			[ ADP_cyt   Variable:/CYTOPLASM:ADP_cyt 1  ]
+			[ AMP       Variable:/CYTOPLASM:AMP     0  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE    0  ];
 	}
 	
 	Process ExpressionFluxProcess( v3 )
@@ -65,8 +81,11 @@ System System( / )
 		Name	"fructose-bisphosphate aldolase";
 		k3f	1.0;
 		k3b	0.05;
-		Expression	"CYTOPLASM.Value * (k3f * (S0.Value / CYTOPLASM.Value) - k3b * pow(P0.Value / CYTOPLASM.Value, 2))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:FBP -1 ] [ P0 Variable:/CYTOPLASM:GAP 2 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (k3f * FBP.NumberConc - k3b * pow(GAP.NumberConc, 2))";
+		VariableReferenceList
+			[ FBP       Variable:/CYTOPLASM:FBP  -1 ]
+			[ GAP       Variable:/CYTOPLASM:GAP  2  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v4 )
@@ -75,8 +94,13 @@ System System( / )
 		V4	0.01;
 		K4GAP	0.001;
 		K4NAD	0.001;
-		Expression	"CYTOPLASM.Value * (V4 * (S1.Value / CYTOPLASM.Value) * (S0.Value / CYTOPLASM.Value) / ((K4GAP + S0.Value / CYTOPLASM.Value) * (K4NAD + S1.Value / CYTOPLASM.Value)))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:GAP -1 ] [ S1 Variable:/CYTOPLASM:NAD -1 ] [ P0 Variable:/CYTOPLASM:DPG 1 ] [ P1 Variable:/CYTOPLASM:NADH_cyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (V4 * NAD.NumberConc * GAP.NumberConc / ((K4GAP + GAP.NumberConc) * (K4NAD + NAD.NumberConc)))";
+		VariableReferenceList
+			[ GAP       Variable:/CYTOPLASM:GAP      -1 ]
+			[ NAD       Variable:/CYTOPLASM:NAD      -1 ]
+			[ DPG       Variable:/CYTOPLASM:DPG      1  ]
+			[ NADH_cyt  Variable:/CYTOPLASM:NADH_cyt 1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE     0  ];
 	}
 	
 	Process ExpressionFluxProcess( v5 )
@@ -84,8 +108,13 @@ System System( / )
 		Name	"bisphosphoglycerate phosphotase (1/2)";
 		k5f	1000.0;
 		k5b	500.0;
-		Expression	"CYTOPLASM.Value * (k5f * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) - k5b * (P0.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:DPG -1 ] [ S1 Variable:/CYTOPLASM:ADP_cyt -1 ] [ P0 Variable:/CYTOPLASM:PEP 1 ] [ P1 Variable:/CYTOPLASM:ATP_cyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (k5f * DPG.NumberConc * ADP_cyt.NumberConc - k5b * PEP.NumberConc * ATP_cyt.NumberConc)";
+		VariableReferenceList
+			[ DPG       Variable:/CYTOPLASM:DPG     -1 ]
+			[ ADP_cyt   Variable:/CYTOPLASM:ADP_cyt -1 ]
+			[ PEP       Variable:/CYTOPLASM:PEP     1  ]
+			[ ATP_cyt   Variable:/CYTOPLASM:ATP_cyt 1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE    0  ];
 	}
 	
 	Process ExpressionFluxProcess( v6 )
@@ -94,8 +123,13 @@ System System( / )
 		V6	0.01;
 		K6PEP	0.0002;
 		K6ADP	0.0003;
-		Expression	"CYTOPLASM.Value * (V6 * (S1.Value / CYTOPLASM.Value) * (S0.Value / CYTOPLASM.Value) / ((K6PEP + S0.Value / CYTOPLASM.Value) * (K6ADP + S1.Value / CYTOPLASM.Value)))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:PEP -1 ] [ S1 Variable:/CYTOPLASM:ADP_cyt -1 ] [ P0 Variable:/CYTOPLASM:PYR_cyt 1 ] [ P1 Variable:/CYTOPLASM:ATP_cyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (V6 * ADP_cyt.NumberConc * PEP.NumberConc / ((K6PEP + PEP.NumberConc) * (K6ADP + ADP_cyt.NumberConc)))";
+		VariableReferenceList
+			[ PEP       Variable:/CYTOPLASM:PEP     -1 ]
+			[ ADP_cyt   Variable:/CYTOPLASM:ADP_cyt -1 ]
+			[ PYR_cyt   Variable:/CYTOPLASM:PYR_cyt 1  ]
+			[ ATP_cyt   Variable:/CYTOPLASM:ATP_cyt 1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE    0  ];
 	}
 	
 	Process ExpressionFluxProcess( v7 )
@@ -103,16 +137,26 @@ System System( / )
 		Name	"lactate dehydrogenase";
 		k8f	1000.0;
 		k8b	0.143;
-		Expression	"CYTOPLASM.Value * (k8f * (S1.Value / CYTOPLASM.Value) * (S0.Value / CYTOPLASM.Value) - k8b * (P1.Value / CYTOPLASM.Value) * (P0.Value / CYTOPLASM.Value))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:PYR_cyt -1 ] [ S1 Variable:/CYTOPLASM:NADH_cyt -1 ] [ P0 Variable:/CYTOPLASM:LAC 1 ] [ P1 Variable:/CYTOPLASM:NAD 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (k8f * NADH_cyt.NumberConc * PYR_cyt.NumberConc - k8b * NAD.NumberConc * LAC.NumberConc)";
+		VariableReferenceList
+			[ PYR_cyt   Variable:/CYTOPLASM:PYR_cyt  -1 ]
+			[ NADH_cyt  Variable:/CYTOPLASM:NADH_cyt -1 ]
+			[ LAC       Variable:/CYTOPLASM:LAC      1  ]
+			[ NAD       Variable:/CYTOPLASM:NAD      1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE     0  ];
 	}
 	
 	Process ExpressionFluxProcess( hidden_1 )
 	{
+		Name	"[AMP] + [ATP_cyt] <-> 2 x [ADP_cyt];";
 		k9f	10000.0;
 		k9b	10000.0;
-		Expression	"CYTOPLASM.Value * (k9f * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) - k9b * pow(P0.Value / CYTOPLASM.Value, 2))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:AMP -1 ] [ S1 Variable:/CYTOPLASM:ATP_cyt -1 ] [ P0 Variable:/CYTOPLASM:ADP_cyt 2 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (k9f * AMP.NumberConc * ATP_cyt.NumberConc - k9b * pow(ADP_cyt.NumberConc, 2))";
+		VariableReferenceList
+			[ AMP       Variable:/CYTOPLASM:AMP     -1 ]
+			[ ATP_cyt   Variable:/CYTOPLASM:ATP_cyt -1 ]
+			[ ADP_cyt   Variable:/CYTOPLASM:ADP_cyt 2  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE    0  ];
 	}
 	
 	Process ExpressionFluxProcess( v8 )
@@ -121,8 +165,11 @@ System System( / )
 		V	1e-08;
 		K	1.5e-07;
 		v8_PYC	0.00033211;
-		Expression	"MATRIX.Value * (V * (S0.Value / MATRIX.Value) * v8_PYC / (K + S0.Value / MATRIX.Value))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:PYR_cyt -1 ] [ P0 Variable:/MATRIX:Pyr 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (V * PYR_cyt.NumberConc * v8_PYC / (K + PYR_cyt.NumberConc))";
+		VariableReferenceList
+			[ PYR_cyt Variable:/CYTOPLASM:PYR_cyt -1 ]
+			[ Pyr     Variable:/MATRIX:Pyr        1  ]
+			[ MATRIX  Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v9 )
@@ -141,8 +188,15 @@ System System( / )
 		Kir	3.6e-05;
 		KcF	856.0;
 		v9_PDC	3.8617e-07;
-		Expression	"MATRIX.Value * (KcF * v9_PDC * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) / (KmC * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KmB * (S0.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + KmA * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + KmA * KmP * Kib * Kic / KmR / Kip / Kiq * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) + KmC / Kir * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) + KmB / Kiq * (S0.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) + KmA * KmP * Kib * Kic / KmR / Kip / Kia / Kiq * (S0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value)))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:Pyr -1 ] [ S1 Variable:/MATRIX:CoA -1 ] [ S2 Variable:/MATRIX:NAD_p -1 ] [ P0 Variable:/MATRIX:CO2 1 ] [ P1 Variable:/MATRIX:Acetyl_CoA 1 ] [ P2 Variable:/MATRIX:NADH 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * v9_PDC * Pyr.NumberConc * CoA.NumberConc * NAD_p.NumberConc / (KmC * Pyr.NumberConc * CoA.NumberConc + KmB * Pyr.NumberConc * NAD_p.NumberConc + KmA * CoA.NumberConc * NAD_p.NumberConc + Pyr.NumberConc * CoA.NumberConc * NAD_p.NumberConc + KmA * KmP * Kib * Kic / KmR / Kip / Kiq * Acetyl_CoA.NumberConc * NADH.NumberConc + KmC / Kir * Pyr.NumberConc * CoA.NumberConc * NADH.NumberConc + KmB / Kiq * Pyr.NumberConc * NAD_p.NumberConc * Acetyl_CoA.NumberConc + KmA * KmP * Kib * Kic / KmR / Kip / Kia / Kiq * Pyr.NumberConc * Acetyl_CoA.NumberConc * NADH.NumberConc))";
+		VariableReferenceList
+			[ Pyr        Variable:/MATRIX:Pyr        -1 ]
+			[ CoA        Variable:/MATRIX:CoA        -1 ]
+			[ NAD_p      Variable:/MATRIX:NAD_p      -1 ]
+			[ CO2        Variable:/MATRIX:CO2        1  ]
+			[ Acetyl_CoA Variable:/MATRIX:Acetyl_CoA 1  ]
+			[ NADH       Variable:/MATRIX:NADH       1  ]
+			[ MATRIX     Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v10 )
@@ -154,8 +208,13 @@ System System( / )
 		Kia	1e-05;
 		Kib	4e-06;
 		v10_CS	3.8617e-07;
-		Expression	"MATRIX.Value * (V * (S1.Value / MATRIX.Value) * (S0.Value / MATRIX.Value) * v10_CS / (S1.Value / MATRIX.Value * (S0.Value / MATRIX.Value) + Ka * (S0.Value / MATRIX.Value) + Kb * (S1.Value / MATRIX.Value) + Kia * Kib))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:OXA -1 ] [ S1 Variable:/MATRIX:Acetyl_CoA -1 ] [ P0 Variable:/MATRIX:Cit 1 ] [ P1 Variable:/MATRIX:CoA 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (V * Acetyl_CoA.NumberConc * OXA.NumberConc * v10_CS / (Acetyl_CoA.NumberConc * OXA.NumberConc + Ka * OXA.NumberConc + Kb * Acetyl_CoA.NumberConc + Kia * Kib))";
+		VariableReferenceList
+			[ OXA        Variable:/MATRIX:OXA        -1 ]
+			[ Acetyl_CoA Variable:/MATRIX:Acetyl_CoA -1 ]
+			[ Cit        Variable:/MATRIX:Cit        1  ]
+			[ CoA        Variable:/MATRIX:CoA        1  ]
+			[ MATRIX     Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v11 )
@@ -166,8 +225,11 @@ System System( / )
 		KcF	20.47;
 		KcR	31.44;
 		v11_ACO	3.8617e-07;
-		Expression	"MATRIX.Value * ((KcF * Kp * (S0.Value / MATRIX.Value) - KcR * Ks * (P0.Value / MATRIX.Value)) * v11_ACO / (Ks * (P0.Value / MATRIX.Value) + Kp * (S0.Value / MATRIX.Value) + Ks * Kp))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:Cit -1 ] [ P0 Variable:/MATRIX:IsoCit 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((KcF * Kp * Cit.NumberConc - KcR * Ks * IsoCit.NumberConc) * v11_ACO / (Ks * IsoCit.NumberConc + Kp * Cit.NumberConc + Ks * Kp))";
+		VariableReferenceList
+			[ Cit    Variable:/MATRIX:Cit    -1 ]
+			[ IsoCit Variable:/MATRIX:IsoCit 1  ]
+			[ MATRIX Variable:/MATRIX:SIZE   0  ];
 	}
 	
 	Process ExpressionFluxProcess( v12 )
@@ -180,8 +242,14 @@ System System( / )
 		e	0.00064;
 		f	0.00036;
 		v12_IDHa	3.8617e-07;
-		Expression	"MATRIX.Value * (KcF * v12_IDHa * (S0.Value / MATRIX.Value * (S0.Value / MATRIX.Value) + b * (C0.Value / MATRIX.Value) * (S0.Value / MATRIX.Value)) / (S0.Value / MATRIX.Value * (S0.Value / MATRIX.Value) + c * (S0.Value / MATRIX.Value) + d * (C0.Value / MATRIX.Value) + e * (C0.Value / MATRIX.Value) * (S0.Value / MATRIX.Value) + f))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:IsoCit -1 ] [ S1 Variable:/MATRIX:NAD_p -1 ] [ P0 Variable:/MATRIX:OG 1 ] [ P1 Variable:/MATRIX:NADH 1 ] [ C0 Variable:/MATRIX:ADP 0 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * v12_IDHa * (IsoCit.NumberConc * IsoCit.NumberConc + b * ADP.NumberConc * IsoCit.NumberConc) / (IsoCit.NumberConc * IsoCit.NumberConc + c * IsoCit.NumberConc + d * ADP.NumberConc + e * ADP.NumberConc * IsoCit.NumberConc + f))";
+		VariableReferenceList
+			[ IsoCit Variable:/MATRIX:IsoCit -1 ]
+			[ NAD_p  Variable:/MATRIX:NAD_p  -1 ]
+			[ OG     Variable:/MATRIX:OG     1  ]
+			[ NADH   Variable:/MATRIX:NADH   1  ]
+			[ ADP    Variable:/MATRIX:ADP    0  ]
+			[ MATRIX Variable:/MATRIX:SIZE   0  ];
 	}
 	
 	Process ExpressionFluxProcess( v14 )
@@ -200,8 +268,15 @@ System System( / )
 		Kir	2.5e-05;
 		KcF	177.0;
 		v14_OGDC	3.8617e-07;
-		Expression	"MATRIX.Value * (KcF * v14_OGDC * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) / (KmC * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KmB * (S0.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + KmA * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + KmA * KmP * Kib * Kic / KmR / Kip / Kiq * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) + KmC / Kir * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) + KmB / Kiq * (S0.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) + KmA * KmP * Kib * Kic / KmR / Kip / Kia / Kiq * (S0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value)))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:OG -1 ] [ S1 Variable:/MATRIX:CoA -1 ] [ S2 Variable:/MATRIX:NAD_p -1 ] [ P0 Variable:/MATRIX:CO2 1 ] [ P1 Variable:/MATRIX:SCoA 1 ] [ P2 Variable:/MATRIX:NADH 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * v14_OGDC * OG.NumberConc * CoA.NumberConc * NAD_p.NumberConc / (KmC * OG.NumberConc * CoA.NumberConc + KmB * OG.NumberConc * NAD_p.NumberConc + KmA * CoA.NumberConc * NAD_p.NumberConc + OG.NumberConc * CoA.NumberConc * NAD_p.NumberConc + KmA * KmP * Kib * Kic / KmR / Kip / Kiq * SCoA.NumberConc * NADH.NumberConc + KmC / Kir * OG.NumberConc * CoA.NumberConc * NADH.NumberConc + KmB / Kiq * OG.NumberConc * NAD_p.NumberConc * SCoA.NumberConc + KmA * KmP * Kib * Kic / KmR / Kip / Kia / Kiq * OG.NumberConc * SCoA.NumberConc * NADH.NumberConc))";
+		VariableReferenceList
+			[ OG     Variable:/MATRIX:OG    -1 ]
+			[ CoA    Variable:/MATRIX:CoA   -1 ]
+			[ NAD_p  Variable:/MATRIX:NAD_p -1 ]
+			[ CO2    Variable:/MATRIX:CO2   1  ]
+			[ SCoA   Variable:/MATRIX:SCoA  1  ]
+			[ NADH   Variable:/MATRIX:NADH  1  ]
+			[ MATRIX Variable:/MATRIX:SIZE  0  ];
 	}
 	
 	Process ExpressionFluxProcess( v15 )
@@ -224,8 +299,15 @@ System System( / )
 		Kc1	100.0;
 		Kc2	100.0;
 		v15_SCS	3.8617e-07;
-		Expression	"MATRIX.Value * ((S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) * pi - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Keq) * (Kc1 * v15_SCS + Kc2 * v15_SCS * (KmC * (P0.Value / MATRIX.Value) / KmC2 * Kip + pi / KmC2)) / (Kia * KmB * pi + KmB * (S0.Value / MATRIX.Value) * pi + KmA * (S1.Value / MATRIX.Value) * pi + KmC * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) * pi + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) * pi * pi / KmC2 + Kia * KmB * KmC * (P0.Value / MATRIX.Value) / Kip + Kia * KmB * KmC * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Kip / Kiq + Kia * KmB * KmC * (P0.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kip / Kir + Kia * KmB * Kic * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / KmQ / Kir + Kia * KmB * KmC * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kip / KmQ / Kir + Kia * KmB * KmC * (P0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kip / KmP2 / KmQ / Kir + Kia * KmB * pi * (P1.Value / MATRIX.Value) / Kiq + Kia * KmB * pi * (P2.Value / MATRIX.Value) / Kir + Kia * KmB * pi * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / KmQ / Kir + Kia * KmB * pi * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / KmP2 / KmQ / Kir + KmB * KmC * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / Kip + KmA * KmC * (S1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / Kip + KmC * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / Kip + KmC * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * pi * (P0.Value / MATRIX.Value) / KmC2 / Kip + KmA * (S1.Value / MATRIX.Value) * pi * (P1.Value / MATRIX.Value) / Kiq + KmB * (S0.Value / MATRIX.Value) * pi * (P2.Value / MATRIX.Value) / Kir + KmA * KmC * (S1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Kip / Kiq + KmB * KmC * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kip / Kir))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:GDP -1 ] [ S1 Variable:/MATRIX:SCoA -1 ] [ S2 Variable:/MATRIX:Pi -1 ] [ P0 Variable:/MATRIX:Suc 1 ] [ P1 Variable:/MATRIX:GTP 1 ] [ P2 Variable:/MATRIX:CoA 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((GDP.NumberConc * SCoA.NumberConc * 3.14159265358979 - Suc.NumberConc * GTP.NumberConc * CoA.NumberConc / Keq) * (Kc1 * v15_SCS + Kc2 * v15_SCS * (KmC * Suc.NumberConc / KmC2 * Kip + 3.14159265358979 / KmC2)) / (Kia * KmB * 3.14159265358979 + KmB * GDP.NumberConc * 3.14159265358979 + KmA * SCoA.NumberConc * 3.14159265358979 + KmC * GDP.NumberConc * SCoA.NumberConc + GDP.NumberConc * SCoA.NumberConc * 3.14159265358979 + GDP.NumberConc * SCoA.NumberConc * 3.14159265358979 * 3.14159265358979 / KmC2 + Kia * KmB * KmC * Suc.NumberConc / Kip + Kia * KmB * KmC * Suc.NumberConc * GTP.NumberConc / Kip / Kiq + Kia * KmB * KmC * Suc.NumberConc * CoA.NumberConc / Kip / Kir + Kia * KmB * Kic * GTP.NumberConc * CoA.NumberConc / KmQ / Kir + Kia * KmB * KmC * Suc.NumberConc * GTP.NumberConc * CoA.NumberConc / Kip / KmQ / Kir + Kia * KmB * KmC * Suc.NumberConc * Suc.NumberConc * GTP.NumberConc * CoA.NumberConc / Kip / KmP2 / KmQ / Kir + Kia * KmB * 3.14159265358979 * GTP.NumberConc / Kiq + Kia * KmB * 3.14159265358979 * CoA.NumberConc / Kir + Kia * KmB * 3.14159265358979 * GTP.NumberConc * CoA.NumberConc / KmQ / Kir + Kia * KmB * 3.14159265358979 * Suc.NumberConc * GTP.NumberConc * CoA.NumberConc / KmP2 / KmQ / Kir + KmB * KmC * GDP.NumberConc * Suc.NumberConc / Kip + KmA * KmC * SCoA.NumberConc * Suc.NumberConc / Kip + KmC * GDP.NumberConc * SCoA.NumberConc * Suc.NumberConc / Kip + KmC * GDP.NumberConc * SCoA.NumberConc * 3.14159265358979 * Suc.NumberConc / KmC2 / Kip + KmA * SCoA.NumberConc * 3.14159265358979 * GTP.NumberConc / Kiq + KmB * GDP.NumberConc * 3.14159265358979 * CoA.NumberConc / Kir + KmA * KmC * SCoA.NumberConc * Suc.NumberConc * GTP.NumberConc / Kip / Kiq + KmB * KmC * GDP.NumberConc * Suc.NumberConc * CoA.NumberConc / Kip / Kir))";
+		VariableReferenceList
+			[ GDP    Variable:/MATRIX:GDP  -1 ]
+			[ SCoA   Variable:/MATRIX:SCoA -1 ]
+			[ Pi     Variable:/MATRIX:Pi   -1 ]
+			[ Suc    Variable:/MATRIX:Suc  1  ]
+			[ GTP    Variable:/MATRIX:GTP  1  ]
+			[ CoA    Variable:/MATRIX:CoA  1  ]
+			[ MATRIX Variable:/MATRIX:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v16 )
@@ -241,8 +323,13 @@ System System( / )
 		KcF	69.3;
 		KcR	1.73;
 		v16_SDH	9.9211e-05;
-		Expression	"MATRIX.Value * (KcF * KcR * v16_SDH * (S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / Keq) / (KcR * KmS2 * (S0.Value / MATRIX.Value) + KcR * KmS1 * (S1.Value / MATRIX.Value) + KcF * KmP2 * (P0.Value / MATRIX.Value) / Keq + KcF * KmP1 * (P1.Value / MATRIX.Value) / Keq + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KcF * KmP2 * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / (Keq * KiS1) + KcF * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Keq + KcR * KmS1 * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiP2))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:Suc -1 ] [ S1 Variable:/MT_IMS:Q -1 ] [ P0 Variable:/MATRIX:Fum 1 ] [ P1 Variable:/MT_IMS:QH2 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * KcR * v16_SDH * (Suc.NumberConc * Q.NumberConc - Fum.NumberConc * QH2.NumberConc / Keq) / (KcR * KmS2 * Suc.NumberConc + KcR * KmS1 * Q.NumberConc + KcF * KmP2 * Fum.NumberConc / Keq + KcF * KmP1 * QH2.NumberConc / Keq + KcR * Suc.NumberConc * Q.NumberConc + KcF * KmP2 * Suc.NumberConc * Fum.NumberConc / (Keq * KiS1) + KcF * Fum.NumberConc * QH2.NumberConc / Keq + KcR * KmS1 * Q.NumberConc * QH2.NumberConc / KiP2))";
+		VariableReferenceList
+			[ Suc    Variable:/MATRIX:Suc  -1 ]
+			[ Q      Variable:/MT_IMS:Q    -1 ]
+			[ Fum    Variable:/MATRIX:Fum  1  ]
+			[ QH2    Variable:/MT_IMS:QH2  1  ]
+			[ MATRIX Variable:/MATRIX:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v17 )
@@ -253,8 +340,11 @@ System System( / )
 		KcF	800.0;
 		KcR	900.0;
 		v17_FM	3.8617e-07;
-		Expression	"MATRIX.Value * ((KcF * Kp * (S0.Value / MATRIX.Value) - KcR * Ks * (P0.Value / MATRIX.Value)) * v17_FM / (Ks * (P0.Value / MATRIX.Value) + Kp * (S0.Value / MATRIX.Value) + Ks * Kp))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:Fum -1 ] [ P0 Variable:/MATRIX:Mal 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((KcF * Kp * Fum.NumberConc - KcR * Ks * Mal.NumberConc) * v17_FM / (Ks * Mal.NumberConc + Kp * Fum.NumberConc + Ks * Kp))";
+		VariableReferenceList
+			[ Fum    Variable:/MATRIX:Fum  -1 ]
+			[ Mal    Variable:/MATRIX:Mal  1  ]
+			[ MATRIX Variable:/MATRIX:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v18 )
@@ -271,8 +361,13 @@ System System( / )
 		KcF	0.39;
 		KcR	0.04;
 		v18_MDH	3.8617e-07;
-		Expression	"MATRIX.Value * ((KcF * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) / KiS1 / KmS2 - KcR * (P1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / KmP1 / KiP2) * v18_MDH / (1 + S0.Value / MATRIX.Value / KiS1 + KmS1 * (S1.Value / MATRIX.Value) / KiS1 / KmS2 + KmP2 * (P1.Value / MATRIX.Value) / KmP1 / KiP2 + P0.Value / MATRIX.Value / KiP2 + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) / KiS1 / KmS2 + KmP2 * (S0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiS1 / KmP1 / KiP2 + KmS1 * (S1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / KiS1 / KmS2 / KiP2 + P1.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / KmP1 * KiP2 + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiS1 / KmS2 / KiP1 + S1.Value / MATRIX.Value * (P1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / KiS2 / KmP1 / KiP2))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:Mal -1 ] [ S1 Variable:/MATRIX:NAD_p -1 ] [ P0 Variable:/MATRIX:NADH 1 ] [ P1 Variable:/MATRIX:OXA 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((KcF * Mal.NumberConc * NAD_p.NumberConc / KiS1 / KmS2 - KcR * OXA.NumberConc * NADH.NumberConc / KmP1 / KiP2) * v18_MDH / (1 + Mal.NumberConc / KiS1 + KmS1 * NAD_p.NumberConc / KiS1 / KmS2 + KmP2 * OXA.NumberConc / KmP1 / KiP2 + NADH.NumberConc / KiP2 + Mal.NumberConc * NAD_p.NumberConc / KiS1 / KmS2 + KmP2 * Mal.NumberConc * OXA.NumberConc / KiS1 / KmP1 / KiP2 + KmS1 * NAD_p.NumberConc * NADH.NumberConc / KiS1 / KmS2 / KiP2 + OXA.NumberConc * NADH.NumberConc / KmP1 * KiP2 + Mal.NumberConc * NAD_p.NumberConc * OXA.NumberConc / KiS1 / KmS2 / KiP1 + NAD_p.NumberConc * OXA.NumberConc * NADH.NumberConc / KiS2 / KmP1 / KiP2))";
+		VariableReferenceList
+			[ Mal    Variable:/MATRIX:Mal   -1 ]
+			[ NAD_p  Variable:/MATRIX:NAD_p -1 ]
+			[ NADH   Variable:/MATRIX:NADH  1  ]
+			[ OXA    Variable:/MATRIX:OXA   1  ]
+			[ MATRIX Variable:/MATRIX:SIZE  0  ];
 	}
 	
 	Process ExpressionFluxProcess( v20 )
@@ -288,8 +383,13 @@ System System( / )
 		KcF	337.0;
 		KcR	0.15;
 		v20_AlaTA	3.8617e-07;
-		Expression	"MATRIX.Value * (KcF * KcR * v20_AlaTA * (S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / Keq) / (KcR * KmS2 * (S0.Value / MATRIX.Value) + KcR * KmS1 * (S1.Value / MATRIX.Value) + KcF * KmP2 * (P0.Value / MATRIX.Value) / Keq + KcF * KmP1 * (P1.Value / MATRIX.Value) / Keq + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KcF * KmP2 * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / (Keq * KiS1) + KcF * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Keq + KcR * KmS1 * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiP2))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:Ala -1 ] [ S1 Variable:/MATRIX:OG -1 ] [ P0 Variable:/MATRIX:Glu 1 ] [ P1 Variable:/MATRIX:Pyr 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * KcR * v20_AlaTA * (Ala.NumberConc * OG.NumberConc - Glu.NumberConc * Pyr.NumberConc / Keq) / (KcR * KmS2 * Ala.NumberConc + KcR * KmS1 * OG.NumberConc + KcF * KmP2 * Glu.NumberConc / Keq + KcF * KmP1 * Pyr.NumberConc / Keq + KcR * Ala.NumberConc * OG.NumberConc + KcF * KmP2 * Ala.NumberConc * Glu.NumberConc / (Keq * KiS1) + KcF * Glu.NumberConc * Pyr.NumberConc / Keq + KcR * KmS1 * OG.NumberConc * Pyr.NumberConc / KiP2))";
+		VariableReferenceList
+			[ Ala    Variable:/MATRIX:Ala  -1 ]
+			[ OG     Variable:/MATRIX:OG   -1 ]
+			[ Glu    Variable:/MATRIX:Glu  1  ]
+			[ Pyr    Variable:/MATRIX:Pyr  1  ]
+			[ MATRIX Variable:/MATRIX:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v21 )
@@ -305,8 +405,13 @@ System System( / )
 		KcF	300.0;
 		KcR	1000.0;
 		v21_AspTA	3.8617e-07;
-		Expression	"MATRIX.Value * (KcF * KcR * v21_AspTA * (S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / Keq) / (KcR * KmS2 * (S0.Value / MATRIX.Value) + KcR * KmS1 * (S1.Value / MATRIX.Value) + KcF * KmP2 * (P0.Value / MATRIX.Value) / Keq + KcF * KmP1 * (P1.Value / MATRIX.Value) / Keq + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KcF * KmP2 * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / (Keq * KiS1) + KcF * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Keq + KcR * KmS1 * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiP2))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:OXA -1 ] [ S1 Variable:/MATRIX:Glu -1 ] [ P0 Variable:/MATRIX:Asp 1 ] [ P1 Variable:/MATRIX:OG 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * KcR * v21_AspTA * (OXA.NumberConc * Glu.NumberConc - Asp.NumberConc * OG.NumberConc / Keq) / (KcR * KmS2 * OXA.NumberConc + KcR * KmS1 * Glu.NumberConc + KcF * KmP2 * Asp.NumberConc / Keq + KcF * KmP1 * OG.NumberConc / Keq + KcR * OXA.NumberConc * Glu.NumberConc + KcF * KmP2 * OXA.NumberConc * Asp.NumberConc / (Keq * KiS1) + KcF * Asp.NumberConc * OG.NumberConc / Keq + KcR * KmS1 * Glu.NumberConc * OG.NumberConc / KiP2))";
+		VariableReferenceList
+			[ OXA    Variable:/MATRIX:OXA  -1 ]
+			[ Glu    Variable:/MATRIX:Glu  -1 ]
+			[ Asp    Variable:/MATRIX:Asp  1  ]
+			[ OG     Variable:/MATRIX:OG   1  ]
+			[ MATRIX Variable:/MATRIX:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v22 )
@@ -323,8 +428,13 @@ System System( / )
 		gamma	1.0;
 		delta	1.0;
 		v22_AGC	0.00033211;
-		Expression	"MATRIX.Value * ((S1.Value / MATRIX.Value * (S0.Value / MATRIX.Value) / alpha / KiS1 / KiS2 * KcF - P1.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / beta / KiP1 / KiP2 * KcR) * v22_AGC / (1 + S1.Value / MATRIX.Value / KiS1 + S0.Value / MATRIX.Value / KiS2 + P1.Value / MATRIX.Value / KiP1 + P0.Value / MATRIX.Value / KiP2 + S1.Value / MATRIX.Value * (S0.Value / MATRIX.Value) / alpha / KiS1 / KiS2 + P1.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / beta / KiP1 / KiP2 + S0.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / gamma / KiS2 / KiP2 + S1.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / delta / KiS1 / KiP1))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:Glu_cyt -1 ] [ S1 Variable:/MATRIX:Asp -1 ] [ P0 Variable:/CYTOPLASM:Asp_cyt 1 ] [ P1 Variable:/MATRIX:Glu 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((Asp.NumberConc * Glu_cyt.NumberConc / alpha / KiS1 / KiS2 * KcF - Glu.NumberConc * Asp_cyt.NumberConc / beta / KiP1 / KiP2 * KcR) * v22_AGC / (1 + Asp.NumberConc / KiS1 + Glu_cyt.NumberConc / KiS2 + Glu.NumberConc / KiP1 + Asp_cyt.NumberConc / KiP2 + Asp.NumberConc * Glu_cyt.NumberConc / alpha / KiS1 / KiS2 + Glu.NumberConc * Asp_cyt.NumberConc / beta / KiP1 / KiP2 + Glu_cyt.NumberConc * Asp_cyt.NumberConc / gamma / KiS2 / KiP2 + Asp.NumberConc * Glu.NumberConc / delta / KiS1 / KiP1))";
+		VariableReferenceList
+			[ Glu_cyt Variable:/CYTOPLASM:Glu_cyt -1 ]
+			[ Asp     Variable:/MATRIX:Asp        -1 ]
+			[ Asp_cyt Variable:/CYTOPLASM:Asp_cyt 1  ]
+			[ Glu     Variable:/MATRIX:Glu        1  ]
+			[ MATRIX  Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v24 )
@@ -340,8 +450,13 @@ System System( / )
 		KcF	498.0;
 		KcR	229.0;
 		v24_Complex_I	0.00033211;
-		Expression	"MATRIX.Value * (KcF * KcR * v24_Complex_I * (S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / Keq) / (KcR * KmS2 * (S0.Value / MATRIX.Value) + KcR * KmS1 * (S1.Value / MATRIX.Value) + KcF * KmP2 * (P0.Value / MATRIX.Value) / Keq + KcF * KmP1 * (P1.Value / MATRIX.Value) / Keq + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KcF * KmP2 * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / (Keq * KiS1) + KcF * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Keq + KcR * KmS1 * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiP2))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:NADH -1 ] [ S1 Variable:/MT_IMS:Q -1 ] [ P0 Variable:/MATRIX:NAD_p 1 ] [ P1 Variable:/MT_IMS:QH2 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * KcR * v24_Complex_I * (NADH.NumberConc * Q.NumberConc - NAD_p.NumberConc * QH2.NumberConc / Keq) / (KcR * KmS2 * NADH.NumberConc + KcR * KmS1 * Q.NumberConc + KcF * KmP2 * NAD_p.NumberConc / Keq + KcF * KmP1 * QH2.NumberConc / Keq + KcR * NADH.NumberConc * Q.NumberConc + KcF * KmP2 * NADH.NumberConc * NAD_p.NumberConc / (Keq * KiS1) + KcF * NAD_p.NumberConc * QH2.NumberConc / Keq + KcR * KmS1 * Q.NumberConc * QH2.NumberConc / KiP2))";
+		VariableReferenceList
+			[ NADH   Variable:/MATRIX:NADH  -1 ]
+			[ Q      Variable:/MT_IMS:Q     -1 ]
+			[ NAD_p  Variable:/MATRIX:NAD_p 1  ]
+			[ QH2    Variable:/MT_IMS:QH2   1  ]
+			[ MATRIX Variable:/MATRIX:SIZE  0  ];
 	}
 	
 	Process ExpressionFluxProcess( v25 )
@@ -356,8 +471,13 @@ System System( / )
 		k8	622.1;
 		KcF	426.8;
 		v25_Complex_III	9.963e-09;
-		Expression	"MT_IMS.Value * (KcF * v25_Complex_III * (S0.Value / MT_IMS.Value) * (S1.Value / MT_IMS.Value) / ((KmA * Kq2 * Kb2 + KmA * Kq2 * (S1.Value / MT_IMS.Value) + KcF / k8 * Kq1 * (S0.Value / MT_IMS.Value) * Kb1 + KcF / k8 * Kq1 * (S0.Value / MT_IMS.Value) * (S1.Value / MT_IMS.Value)) * (P1.Value / MT_IMS.Value) + KmA * (S1.Value / MT_IMS.Value) + KmB * (S0.Value / MT_IMS.Value) + S0.Value / MT_IMS.Value * (S1.Value / MT_IMS.Value)))";
-		VariableReferenceList	[ S0 Variable:/MT_IMS:QH2 -1 ] [ S1 Variable:/MT_IMS:Cytc3p -2 ] [ P0 Variable:/MT_IMS:Q 1 ] [ P1 Variable:/MT_IMS:Cytc2p 2 ] [ MT_IMS Variable:/MT_IMS:SIZE 0 ];
+		Expression	"MT_IMS.Value * (KcF * v25_Complex_III * QH2.NumberConc * Cytc3p.NumberConc / ((KmA * Kq2 * Kb2 + KmA * Kq2 * Cytc3p.NumberConc + KcF / k8 * Kq1 * QH2.NumberConc * Kb1 + KcF / k8 * Kq1 * QH2.NumberConc * Cytc3p.NumberConc) * Cytc2p.NumberConc + KmA * Cytc3p.NumberConc + KmB * QH2.NumberConc + QH2.NumberConc * Cytc3p.NumberConc))";
+		VariableReferenceList
+			[ QH2    Variable:/MT_IMS:QH2    -1 ]
+			[ Cytc3p Variable:/MT_IMS:Cytc3p -2 ]
+			[ Q      Variable:/MT_IMS:Q      1  ]
+			[ Cytc2p Variable:/MT_IMS:Cytc2p 2  ]
+			[ MT_IMS Variable:/MT_IMS:SIZE   0  ];
 	}
 	
 	Process ExpressionFluxProcess( v26 )
@@ -366,8 +486,11 @@ System System( / )
 		Ks	0.00011;
 		KcF	0.000935;
 		v26_Complex_IV	0.002325;
-		Expression	"MT_IMS.Value * (KcF * v26_Complex_IV * (S0.Value / MT_IMS.Value) / (Ks + S0.Value / MT_IMS.Value))";
-		VariableReferenceList	[ S0 Variable:/MT_IMS:Cytc2p -1 ] [ P0 Variable:/MT_IMS:Cytc3p 1 ] [ MT_IMS Variable:/MT_IMS:SIZE 0 ];
+		Expression	"MT_IMS.Value * (KcF * v26_Complex_IV * Cytc2p.NumberConc / (Ks + Cytc2p.NumberConc))";
+		VariableReferenceList
+			[ Cytc2p Variable:/MT_IMS:Cytc2p -1 ]
+			[ Cytc3p Variable:/MT_IMS:Cytc3p 1  ]
+			[ MT_IMS Variable:/MT_IMS:SIZE   0  ];
 	}
 	
 	Process ExpressionFluxProcess( v27 )
@@ -382,8 +505,13 @@ System System( / )
 		Kid	0.0043;
 		Keq	18000000.0;
 		v10_CS	3.8617e-07;
-		Expression	"CYTOPLASM.Value * Kid * Kc * (V * (P1.Value / CYTOPLASM.Value) * (P0.Value / CYTOPLASM.Value) * v10_CS / (P1.Value / CYTOPLASM.Value * (P0.Value / CYTOPLASM.Value) + Ka * (P0.Value / CYTOPLASM.Value) + Kb * (P1.Value / CYTOPLASM.Value) + Kia * Kib)) / (Keq * Kia * Kb)";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:Cit_cyt -1 ] [ S1 Variable:/CYTOPLASM:CoA_cyt -1 ] [ P0 Variable:/CYTOPLASM:OXA_cyt 1 ] [ P1 Variable:/CYTOPLASM:Acetyl_CoA_cyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * Kid * Kc * (V * Acetyl_CoA_cyt.NumberConc * OXA_cyt.NumberConc * v10_CS / (Acetyl_CoA_cyt.NumberConc * OXA_cyt.NumberConc + Ka * OXA_cyt.NumberConc + Kb * Acetyl_CoA_cyt.NumberConc + Kia * Kib)) / (Keq * Kia * Kb)";
+		VariableReferenceList
+			[ Cit_cyt        Variable:/CYTOPLASM:Cit_cyt        -1 ]
+			[ CoA_cyt        Variable:/CYTOPLASM:CoA_cyt        -1 ]
+			[ OXA_cyt        Variable:/CYTOPLASM:OXA_cyt        1  ]
+			[ Acetyl_CoA_cyt Variable:/CYTOPLASM:Acetyl_CoA_cyt 1  ]
+			[ CYTOPLASM      Variable:/CYTOPLASM:SIZE           0  ];
 	}
 	
 	Process ExpressionFluxProcess( v28 )
@@ -393,8 +521,13 @@ System System( / )
 		Km	0.0045;
 		Ki	0.047;
 		v28_Complex_V	0.0033211;
-		Expression	"MATRIX.Value * v28_Complex_V * V * (S0.Value / MATRIX.Value) / (Km + S0.Value / MATRIX.Value + S0.Value / MATRIX.Value * (S0.Value / MATRIX.Value) / Ki)";
-		VariableReferenceList	[ S0 Variable:/MATRIX:ADP -1 ] [ S1 Variable:/MATRIX:Pi -1 ] [ P0 Variable:/MATRIX:ATP 1 ] [ P1 Variable:/MATRIX:H2O 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * v28_Complex_V * V * ADP.NumberConc / (Km + ADP.NumberConc + ADP.NumberConc * ADP.NumberConc / Ki)";
+		VariableReferenceList
+			[ ADP    Variable:/MATRIX:ADP  -1 ]
+			[ Pi     Variable:/MATRIX:Pi   -1 ]
+			[ ATP    Variable:/MATRIX:ATP  1  ]
+			[ H2O    Variable:/MATRIX:H2O  1  ]
+			[ MATRIX Variable:/MATRIX:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v29 )
@@ -405,8 +538,11 @@ System System( / )
 		KcF	20.47;
 		KcR	31.44;
 		v29_ACO	3.8617e-07;
-		Expression	"CYTOPLASM.Value * ((KcF * Kp * (S0.Value / CYTOPLASM.Value) - KcR * Ks * (P0.Value / CYTOPLASM.Value)) * v29_ACO / (Ks * (P0.Value / CYTOPLASM.Value) + Kp * (S0.Value / CYTOPLASM.Value) + Ks * Kp))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:Cit_cyt -1 ] [ P0 Variable:/CYTOPLASM:IsoCitcyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * ((KcF * Kp * Cit_cyt.NumberConc - KcR * Ks * IsoCitcyt.NumberConc) * v29_ACO / (Ks * IsoCitcyt.NumberConc + Kp * Cit_cyt.NumberConc + Ks * Kp))";
+		VariableReferenceList
+			[ Cit_cyt   Variable:/CYTOPLASM:Cit_cyt   -1 ]
+			[ IsoCitcyt Variable:/CYTOPLASM:IsoCitcyt 1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE      0  ];
 	}
 	
 	Process ExpressionFluxProcess( v30 )
@@ -423,8 +559,13 @@ System System( / )
 		gamma	1.0;
 		delta	1.0;
 		v30_OGC	0.00033211;
-		Expression	"MATRIX.Value * ((S1.Value / MATRIX.Value * (S0.Value / MATRIX.Value) / alpha / KiS1 / KiS2 * KcF - P1.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / beta / KiP1 / KiP2 * KcR) * v30_OGC / (1 + S1.Value / MATRIX.Value / KiS1 + S0.Value / MATRIX.Value / KiS2 + P1.Value / MATRIX.Value / KiP1 + P0.Value / MATRIX.Value / KiP2 + S1.Value / MATRIX.Value * (S0.Value / MATRIX.Value) / alpha / KiS1 / KiS2 + P1.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / beta / KiP1 / KiP2 + S0.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / gamma / KiS2 / KiP2 + S1.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / delta / KiS1 / KiP1))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:Mal_cyt -1 ] [ S1 Variable:/MATRIX:OG -1 ] [ P0 Variable:/CYTOPLASM:OG_cyt 1 ] [ P1 Variable:/MATRIX:Mal 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((OG.NumberConc * Mal_cyt.NumberConc / alpha / KiS1 / KiS2 * KcF - Mal.NumberConc * OG_cyt.NumberConc / beta / KiP1 / KiP2 * KcR) * v30_OGC / (1 + OG.NumberConc / KiS1 + Mal_cyt.NumberConc / KiS2 + Mal.NumberConc / KiP1 + OG_cyt.NumberConc / KiP2 + OG.NumberConc * Mal_cyt.NumberConc / alpha / KiS1 / KiS2 + Mal.NumberConc * OG_cyt.NumberConc / beta / KiP1 / KiP2 + Mal_cyt.NumberConc * OG_cyt.NumberConc / gamma / KiS2 / KiP2 + OG.NumberConc * Mal.NumberConc / delta / KiS1 / KiP1))";
+		VariableReferenceList
+			[ Mal_cyt Variable:/CYTOPLASM:Mal_cyt -1 ]
+			[ OG      Variable:/MATRIX:OG         -1 ]
+			[ OG_cyt  Variable:/CYTOPLASM:OG_cyt  1  ]
+			[ Mal     Variable:/MATRIX:Mal        1  ]
+			[ MATRIX  Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v31 )
@@ -439,8 +580,13 @@ System System( / )
 		kminus3	570000.0;
 		kminus4	260000.0;
 		v31_MDH	3.8617e-07;
-		Expression	"CYTOPLASM.Value * (v31_MDH * (k1 * k2 * k3 * k4 * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) - kminus1 * kminus2 * kminus3 * kminus4 * (P0.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value)) / (kminus1 * (kminus2 + k3) * k4 + k1 * (kminus2 + k3) * k4 * (S0.Value / CYTOPLASM.Value) + kminus1 * (kminus2 + k3) * kminus4 * (P1.Value / CYTOPLASM.Value) + k2 * k3 * k4 * (S1.Value / CYTOPLASM.Value) + kminus1 * kminus2 * kminus3 * (P0.Value / CYTOPLASM.Value) + k1 * k2 * (k3 + k4) * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) + (kminus1 + kminus2) * kminus3 * kminus4 * (P0.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value) + k1 + kminus2 + kminus3 * (S0.Value / CYTOPLASM.Value) * (P0.Value / CYTOPLASM.Value) + k1 * k2 * kminus3 * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) * (P0.Value / CYTOPLASM.Value) + k2 * k3 * kminus4 * (S1.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value) + k2 * kminus3 * kminus4 * (S1.Value / CYTOPLASM.Value) * (P0.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value)))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:NADH_cyt -1 ] [ S1 Variable:/CYTOPLASM:OXA_cyt -1 ] [ P0 Variable:/CYTOPLASM:Mal_cyt 1 ] [ P1 Variable:/CYTOPLASM:NAD 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (v31_MDH * (k1 * k2 * k3 * k4 * NADH_cyt.NumberConc * OXA_cyt.NumberConc - kminus1 * kminus2 * kminus3 * kminus4 * Mal_cyt.NumberConc * NAD.NumberConc) / (kminus1 * (kminus2 + k3) * k4 + k1 * (kminus2 + k3) * k4 * NADH_cyt.NumberConc + kminus1 * (kminus2 + k3) * kminus4 * NAD.NumberConc + k2 * k3 * k4 * OXA_cyt.NumberConc + kminus1 * kminus2 * kminus3 * Mal_cyt.NumberConc + k1 * k2 * (k3 + k4) * NADH_cyt.NumberConc * OXA_cyt.NumberConc + (kminus1 + kminus2) * kminus3 * kminus4 * Mal_cyt.NumberConc * NAD.NumberConc + k1 + kminus2 + kminus3 * NADH_cyt.NumberConc * Mal_cyt.NumberConc + k1 * k2 * kminus3 * NADH_cyt.NumberConc * OXA_cyt.NumberConc * Mal_cyt.NumberConc + k2 * k3 * kminus4 * OXA_cyt.NumberConc * NAD.NumberConc + k2 * kminus3 * kminus4 * OXA_cyt.NumberConc * Mal_cyt.NumberConc * NAD.NumberConc))";
+		VariableReferenceList
+			[ NADH_cyt  Variable:/CYTOPLASM:NADH_cyt -1 ]
+			[ OXA_cyt   Variable:/CYTOPLASM:OXA_cyt  -1 ]
+			[ Mal_cyt   Variable:/CYTOPLASM:Mal_cyt  1  ]
+			[ NAD       Variable:/CYTOPLASM:NAD      1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE     0  ];
 	}
 	
 	Process ExpressionFluxProcess( v32 )
@@ -456,8 +602,13 @@ System System( / )
 		KcF	300.0;
 		KcR	1000.0;
 		v32_AspTA	3.8617e-07;
-		Expression	"CYTOPLASM.Value * (KcF * KcR * v32_AspTA * (S0.Value / CYTOPLASM.Value * (S1.Value / CYTOPLASM.Value) - P0.Value / CYTOPLASM.Value * (P1.Value / CYTOPLASM.Value) / Keq) / (KcR * KmS2 * (S0.Value / CYTOPLASM.Value) + KcR * KmS1 * (S1.Value / CYTOPLASM.Value) + KcF * KmP2 * (P0.Value / CYTOPLASM.Value) / Keq + KcF * KmP1 * (P1.Value / CYTOPLASM.Value) / Keq + KcR * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) + KcF * KmP2 * (S0.Value / CYTOPLASM.Value) * (P0.Value / CYTOPLASM.Value) / (Keq * KiS1) + KcF * (P0.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value) / Keq + KcR * KmS1 * (S1.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value) / KiP2))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:Asp_cyt -1 ] [ S1 Variable:/CYTOPLASM:OG_cyt -1 ] [ P0 Variable:/CYTOPLASM:OXA_cyt 1 ] [ P1 Variable:/CYTOPLASM:Glu_cyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (KcF * KcR * v32_AspTA * (Asp_cyt.NumberConc * OG_cyt.NumberConc - OXA_cyt.NumberConc * Glu_cyt.NumberConc / Keq) / (KcR * KmS2 * Asp_cyt.NumberConc + KcR * KmS1 * OG_cyt.NumberConc + KcF * KmP2 * OXA_cyt.NumberConc / Keq + KcF * KmP1 * Glu_cyt.NumberConc / Keq + KcR * Asp_cyt.NumberConc * OG_cyt.NumberConc + KcF * KmP2 * Asp_cyt.NumberConc * OXA_cyt.NumberConc / (Keq * KiS1) + KcF * OXA_cyt.NumberConc * Glu_cyt.NumberConc / Keq + KcR * KmS1 * OG_cyt.NumberConc * Glu_cyt.NumberConc / KiP2))";
+		VariableReferenceList
+			[ Asp_cyt   Variable:/CYTOPLASM:Asp_cyt -1 ]
+			[ OG_cyt    Variable:/CYTOPLASM:OG_cyt  -1 ]
+			[ OXA_cyt   Variable:/CYTOPLASM:OXA_cyt 1  ]
+			[ Glu_cyt   Variable:/CYTOPLASM:Glu_cyt 1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE    0  ];
 	}
 	
 	Process ExpressionFluxProcess( v33 )
@@ -474,8 +625,13 @@ System System( / )
 		gamma	1.0;
 		delta	1.0;
 		v33_CIC	0.00033211;
-		Expression	"MATRIX.Value * ((S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) / alpha / KiS1 / KiS2 * KcF - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / beta / KiP1 / KiP2 * KcR) * v33_CIC / (1 + S0.Value / MATRIX.Value / KiS1 + S1.Value / MATRIX.Value / KiS2 + P0.Value / MATRIX.Value / KiP1 + P1.Value / MATRIX.Value / KiP2 + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) / alpha / KiS1 / KiS2 + P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / beta / KiP1 / KiP2 + S1.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / gamma / KiS2 / KiP2 + S0.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / delta / KiS1 / KiP1))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:Cit_cyt -1 ] [ S1 Variable:/MATRIX:Mal -1 ] [ P0 Variable:/CYTOPLASM:Mal_cyt 1 ] [ P1 Variable:/MATRIX:Cit 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((Cit_cyt.NumberConc * Mal.NumberConc / alpha / KiS1 / KiS2 * KcF - Mal_cyt.NumberConc * Cit.NumberConc / beta / KiP1 / KiP2 * KcR) * v33_CIC / (1 + Cit_cyt.NumberConc / KiS1 + Mal.NumberConc / KiS2 + Mal_cyt.NumberConc / KiP1 + Cit.NumberConc / KiP2 + Cit_cyt.NumberConc * Mal.NumberConc / alpha / KiS1 / KiS2 + Mal_cyt.NumberConc * Cit.NumberConc / beta / KiP1 / KiP2 + Mal.NumberConc * Cit.NumberConc / gamma / KiS2 / KiP2 + Cit_cyt.NumberConc * Mal_cyt.NumberConc / delta / KiS1 / KiP1))";
+		VariableReferenceList
+			[ Cit_cyt Variable:/CYTOPLASM:Cit_cyt -1 ]
+			[ Mal     Variable:/MATRIX:Mal        -1 ]
+			[ Mal_cyt Variable:/CYTOPLASM:Mal_cyt 1  ]
+			[ Cit     Variable:/MATRIX:Cit        1  ]
+			[ MATRIX  Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v34 )
@@ -491,8 +647,13 @@ System System( / )
 		KcF	78.0;
 		KcR	101.0;
 		v34_ETF_QO	3.3211e-05;
-		Expression	"MATRIX.Value * (KcF * KcR * v34_ETF_QO * (S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / Keq) / (KcR * KmS2 * (S0.Value / MATRIX.Value) + KcR * KmS1 * (S1.Value / MATRIX.Value) + KcF * KmP2 * (P0.Value / MATRIX.Value) / Keq + KcF * KmP1 * (P1.Value / MATRIX.Value) / Keq + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KcF * KmP2 * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / (Keq * KiS1) + KcF * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Keq + KcR * KmS1 * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiP2))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:ETFred -1 ] [ S1 Variable:/MT_IMS:Q -1 ] [ P0 Variable:/MATRIX:ETFox 1 ] [ P1 Variable:/MT_IMS:QH2 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * KcR * v34_ETF_QO * (ETFred.NumberConc * Q.NumberConc - ETFox.NumberConc * QH2.NumberConc / Keq) / (KcR * KmS2 * ETFred.NumberConc + KcR * KmS1 * Q.NumberConc + KcF * KmP2 * ETFox.NumberConc / Keq + KcF * KmP1 * QH2.NumberConc / Keq + KcR * ETFred.NumberConc * Q.NumberConc + KcF * KmP2 * ETFred.NumberConc * ETFox.NumberConc / (Keq * KiS1) + KcF * ETFox.NumberConc * QH2.NumberConc / Keq + KcR * KmS1 * Q.NumberConc * QH2.NumberConc / KiP2))";
+		VariableReferenceList
+			[ ETFred Variable:/MATRIX:ETFred -1 ]
+			[ Q      Variable:/MT_IMS:Q      -1 ]
+			[ ETFox  Variable:/MATRIX:ETFox  1  ]
+			[ QH2    Variable:/MT_IMS:QH2    1  ]
+			[ MATRIX Variable:/MATRIX:SIZE   0  ];
 	}
 	
 	Process ExpressionFluxProcess( v35 )
@@ -510,8 +671,13 @@ System System( / )
 		KcF	2.18;
 		KcR	0.3;
 		v35_ACD	3.3211e-05;
-		Expression	"MATRIX.Value * (KcF * KcR * v35_ACD * (S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / Keq) / (KcR * KiS1 * KmS2 + KcR * KmS2 * (S0.Value / MATRIX.Value) + KcR * KmS1 * (S1.Value / MATRIX.Value) + KcF * KmP2 * (P0.Value / MATRIX.Value) / Keq + KcF * KmP1 * (P1.Value / MATRIX.Value) / Keq + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KcF * KmP2 * (S0.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / (Keq * KiS1) + KcF * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Keq + KcR * KmS1 * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / KiP2 + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) / KiP1 + KcF * (S1.Value / MATRIX.Value) * (P0.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / (KiS2 * Keq)))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:FADH2 -1 ] [ S1 Variable:/MATRIX:ETFox -1 ] [ P0 Variable:/MATRIX:ETFred 1 ] [ P1 Variable:/MATRIX:FAD 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * KcR * v35_ACD * (FADH2.NumberConc * ETFox.NumberConc - ETFred.NumberConc * FAD.NumberConc / Keq) / (KcR * KiS1 * KmS2 + KcR * KmS2 * FADH2.NumberConc + KcR * KmS1 * ETFox.NumberConc + KcF * KmP2 * ETFred.NumberConc / Keq + KcF * KmP1 * FAD.NumberConc / Keq + KcR * FADH2.NumberConc * ETFox.NumberConc + KcF * KmP2 * FADH2.NumberConc * ETFred.NumberConc / (Keq * KiS1) + KcF * ETFred.NumberConc * FAD.NumberConc / Keq + KcR * KmS1 * ETFox.NumberConc * FAD.NumberConc / KiP2 + KcR * FADH2.NumberConc * ETFox.NumberConc * ETFred.NumberConc / KiP1 + KcF * ETFox.NumberConc * ETFred.NumberConc * FAD.NumberConc / (KiS2 * Keq)))";
+		VariableReferenceList
+			[ FADH2  Variable:/MATRIX:FADH2  -1 ]
+			[ ETFox  Variable:/MATRIX:ETFox  -1 ]
+			[ ETFred Variable:/MATRIX:ETFred 1  ]
+			[ FAD    Variable:/MATRIX:FAD    1  ]
+			[ MATRIX Variable:/MATRIX:SIZE   0  ];
 	}
 	
 	Process ExpressionFluxProcess( v36 )
@@ -533,8 +699,15 @@ System System( / )
 		KcF	200.0;
 		KcR	20.0;
 		v36_PC	3.8617e-07;
-		Expression	"MATRIX.Value * (KcF * KcR * v36_PC * (S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) - pi * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Keq) / (Kia * KmB * KcR * (S2.Value / MATRIX.Value) + KmC * KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) + KmA * KcR * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + KmB * KcR * (S0.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) + Kip * KmQ * KcF * (P2.Value / MATRIX.Value) / Keq + KmQ * KcF * pi * (P2.Value / MATRIX.Value) / Keq + KmP * KcF * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Keq + KmR * KcF * pi * (P1.Value / MATRIX.Value) / Keq + KcF * pi * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Keq + Kia * KmB * KcR * (S2.Value / MATRIX.Value) * pi / Kip + Kia * KmB * KcR * (S2.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Kia + Kiq * KmP * KcF * (S1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kib / Keq + Kia * KmP * KcF * (S0.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kia / Keq + KmA * KcR * (S0.Value / MATRIX.Value) * (S1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kir + KmR * KcF * (S2.Value / MATRIX.Value) * pi * (P1.Value / MATRIX.Value) / Kic / Keq + KmA * KcR * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) / Kiq + KmA * KcR * (S1.Value / MATRIX.Value) * (S2.Value / MATRIX.Value) * pi / Kip + KmP * KcF * (S1.Value / MATRIX.Value) * (P1.Value / MATRIX.Value) * (P2.Value / MATRIX.Value) / Kib / Keq + KmQ * KcF * (S1.Value / MATRIX.Value) * pi * (P2.Value / MATRIX.Value) / Kib / Keq))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:ATP -1 ] [ S1 Variable:/MATRIX:CO2 -1 ] [ S2 Variable:/MATRIX:Pyr -1 ] [ P0 Variable:/MATRIX:Pi 1 ] [ P1 Variable:/MATRIX:ADP 1 ] [ P2 Variable:/MATRIX:OXA 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (KcF * KcR * v36_PC * (ATP.NumberConc * CO2.NumberConc * Pyr.NumberConc - 3.14159265358979 * ADP.NumberConc * OXA.NumberConc / Keq) / (Kia * KmB * KcR * Pyr.NumberConc + KmC * KcR * ATP.NumberConc * CO2.NumberConc + KmA * KcR * CO2.NumberConc * Pyr.NumberConc + KmB * KcR * ATP.NumberConc * Pyr.NumberConc + KcR * ATP.NumberConc * CO2.NumberConc * Pyr.NumberConc + Kip * KmQ * KcF * OXA.NumberConc / Keq + KmQ * KcF * 3.14159265358979 * OXA.NumberConc / Keq + KmP * KcF * ADP.NumberConc * OXA.NumberConc / Keq + KmR * KcF * 3.14159265358979 * ADP.NumberConc / Keq + KcF * 3.14159265358979 * ADP.NumberConc * OXA.NumberConc / Keq + Kia * KmB * KcR * Pyr.NumberConc * 3.14159265358979 / Kip + Kia * KmB * KcR * Pyr.NumberConc * ADP.NumberConc / Kia + Kiq * KmP * KcF * CO2.NumberConc * OXA.NumberConc / Kib / Keq + Kia * KmP * KcF * ATP.NumberConc * OXA.NumberConc / Kia / Keq + KmA * KcR * ATP.NumberConc * CO2.NumberConc * OXA.NumberConc / Kir + KmR * KcF * Pyr.NumberConc * 3.14159265358979 * ADP.NumberConc / Kic / Keq + KmA * KcR * CO2.NumberConc * Pyr.NumberConc * ADP.NumberConc / Kiq + KmA * KcR * CO2.NumberConc * Pyr.NumberConc * 3.14159265358979 / Kip + KmP * KcF * CO2.NumberConc * ADP.NumberConc * OXA.NumberConc / Kib / Keq + KmQ * KcF * CO2.NumberConc * 3.14159265358979 * OXA.NumberConc / Kib / Keq))";
+		VariableReferenceList
+			[ ATP    Variable:/MATRIX:ATP  -1 ]
+			[ CO2    Variable:/MATRIX:CO2  -1 ]
+			[ Pyr    Variable:/MATRIX:Pyr  -1 ]
+			[ Pi     Variable:/MATRIX:Pi   1  ]
+			[ ADP    Variable:/MATRIX:ADP  1  ]
+			[ OXA    Variable:/MATRIX:OXA  1  ]
+			[ MATRIX Variable:/MATRIX:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v37 )
@@ -543,8 +716,13 @@ System System( / )
 		K	3.4e-05;
 		V	3.99e-08;
 		v37_GUT2P	0.001;
-		Expression	"CYTOPLASM.Value * (V * v37_GUT2P * (S0.Value / CYTOPLASM.Value) / (K + S0.Value / CYTOPLASM.Value))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:G3P -1 ] [ S1 Variable:/MATRIX:FAD -1 ] [ P0 Variable:/MATRIX:FADH2 1 ] [ P1 Variable:/CYTOPLASM:DHAP 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (V * v37_GUT2P * G3P.NumberConc / (K + G3P.NumberConc))";
+		VariableReferenceList
+			[ G3P       Variable:/CYTOPLASM:G3P  -1 ]
+			[ FAD       Variable:/MATRIX:FAD     -1 ]
+			[ FADH2     Variable:/MATRIX:FADH2   1  ]
+			[ DHAP      Variable:/CYTOPLASM:DHAP 1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE 0  ];
 	}
 	
 	Process ExpressionFluxProcess( v38 )
@@ -553,8 +731,13 @@ System System( / )
 		K	34.0;
 		V	0.0399;
 		v38_GUT2P	0.001;
-		Expression	"CYTOPLASM.Value * (V * v38_GUT2P * (S0.Value / CYTOPLASM.Value) / (K + S0.Value / CYTOPLASM.Value))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:NADH_cyt -1 ] [ S1 Variable:/CYTOPLASM:DHAP -1 ] [ P0 Variable:/CYTOPLASM:G3P 1 ] [ P1 Variable:/CYTOPLASM:NAD 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (V * v38_GUT2P * NADH_cyt.NumberConc / (K + NADH_cyt.NumberConc))";
+		VariableReferenceList
+			[ NADH_cyt  Variable:/CYTOPLASM:NADH_cyt -1 ]
+			[ DHAP      Variable:/CYTOPLASM:DHAP     -1 ]
+			[ G3P       Variable:/CYTOPLASM:G3P      1  ]
+			[ NAD       Variable:/CYTOPLASM:NAD      1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE     0  ];
 	}
 	
 	Process ExpressionFluxProcess( v40 )
@@ -563,8 +746,11 @@ System System( / )
 		V	0.1667;
 		K	0.012;
 		v40_AAC	0.00033211;
-		Expression	"MATRIX.Value * (V * v40_AAC * (S0.Value / MATRIX.Value) / (K + S0.Value / MATRIX.Value))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:ADP_cyt -1 ] [ P0 Variable:/MATRIX:ADP 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (V * v40_AAC * ADP_cyt.NumberConc / (K + ADP_cyt.NumberConc))";
+		VariableReferenceList
+			[ ADP_cyt Variable:/CYTOPLASM:ADP_cyt -1 ]
+			[ ADP     Variable:/MATRIX:ADP        1  ]
+			[ MATRIX  Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v41 )
@@ -583,8 +769,14 @@ System System( / )
 		phir23	9.4e-08;
 		phir123	4.6e-14;
 		v41_IDHc	3.8617e-07;
-		Expression	"CYTOPLASM.Value * v41_IDHc * (S0.Value / CYTOPLASM.Value * (S1.Value / CYTOPLASM.Value) / (phi0 * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) + phi1 * (S1.Value / CYTOPLASM.Value) + phi2 * (S0.Value / CYTOPLASM.Value) + phi12) - P0.Value / CYTOPLASM.Value * (P1.Value / CYTOPLASM.Value) * (C0.Value / CYTOPLASM.Value) / (phir0 * (P0.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value) * (C0.Value / CYTOPLASM.Value) + phir1 * (P1.Value / CYTOPLASM.Value) * (C0.Value / CYTOPLASM.Value) + phir2 * (P0.Value / CYTOPLASM.Value) * (C0.Value / CYTOPLASM.Value) + phir3 * (P0.Value / CYTOPLASM.Value) * (P1.Value / CYTOPLASM.Value) + phir12 * (C0.Value / CYTOPLASM.Value) + phir13 * (P1.Value / CYTOPLASM.Value) + phir23 * (P0.Value / CYTOPLASM.Value) + phir123))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:IsoCitcyt -1 ] [ S1 Variable:/CYTOPLASM:NADP_cyt -1 ] [ P0 Variable:/CYTOPLASM:OG_cyt 1 ] [ P1 Variable:/CYTOPLASM:NADPH_cyt 1 ] [ C0 Variable:/MATRIX:CO2 0 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * v41_IDHc * (IsoCitcyt.NumberConc * NADP_cyt.NumberConc / (phi0 * IsoCitcyt.NumberConc * NADP_cyt.NumberConc + phi1 * NADP_cyt.NumberConc + phi2 * IsoCitcyt.NumberConc + phi12) - OG_cyt.NumberConc * NADPH_cyt.NumberConc * CO2.NumberConc / (phir0 * OG_cyt.NumberConc * NADPH_cyt.NumberConc * CO2.NumberConc + phir1 * NADPH_cyt.NumberConc * CO2.NumberConc + phir2 * OG_cyt.NumberConc * CO2.NumberConc + phir3 * OG_cyt.NumberConc * NADPH_cyt.NumberConc + phir12 * CO2.NumberConc + phir13 * NADPH_cyt.NumberConc + phir23 * OG_cyt.NumberConc + phir123))";
+		VariableReferenceList
+			[ IsoCitcyt Variable:/CYTOPLASM:IsoCitcyt -1 ]
+			[ NADP_cyt  Variable:/CYTOPLASM:NADP_cyt  -1 ]
+			[ OG_cyt    Variable:/CYTOPLASM:OG_cyt    1  ]
+			[ NADPH_cyt Variable:/CYTOPLASM:NADPH_cyt 1  ]
+			[ CO2       Variable:/MATRIX:CO2          0  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE      0  ];
 	}
 	
 	Process ExpressionFluxProcess( v42 )
@@ -601,8 +793,13 @@ System System( / )
 		gamma	1.0;
 		delta	1.0;
 		v42_CIC	0.00033211;
-		Expression	"MATRIX.Value * ((S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) / alpha / KiS1 / KiS2 * KcF - P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / beta / KiP1 / KiP2 * KcR) * v42_CIC / (1 + S0.Value / MATRIX.Value / KiS1 + S1.Value / MATRIX.Value / KiS2 + P0.Value / MATRIX.Value / KiP1 + P1.Value / MATRIX.Value / KiP2 + S0.Value / MATRIX.Value * (S1.Value / MATRIX.Value) / alpha / KiS1 / KiS2 + P0.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / beta / KiP1 / KiP2 + S1.Value / MATRIX.Value * (P1.Value / MATRIX.Value) / gamma / KiS2 / KiP2 + S0.Value / MATRIX.Value * (P0.Value / MATRIX.Value) / delta / KiS1 / KiP1))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:IsoCitcyt -1 ] [ S1 Variable:/MATRIX:Mal -1 ] [ P0 Variable:/CYTOPLASM:Mal_cyt 1 ] [ P1 Variable:/MATRIX:IsoCit 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * ((IsoCitcyt.NumberConc * Mal.NumberConc / alpha / KiS1 / KiS2 * KcF - Mal_cyt.NumberConc * IsoCit.NumberConc / beta / KiP1 / KiP2 * KcR) * v42_CIC / (1 + IsoCitcyt.NumberConc / KiS1 + Mal.NumberConc / KiS2 + Mal_cyt.NumberConc / KiP1 + IsoCit.NumberConc / KiP2 + IsoCitcyt.NumberConc * Mal.NumberConc / alpha / KiS1 / KiS2 + Mal_cyt.NumberConc * IsoCit.NumberConc / beta / KiP1 / KiP2 + Mal.NumberConc * IsoCit.NumberConc / gamma / KiS2 / KiP2 + IsoCitcyt.NumberConc * Mal_cyt.NumberConc / delta / KiS1 / KiP1))";
+		VariableReferenceList
+			[ IsoCitcyt Variable:/CYTOPLASM:IsoCitcyt -1 ]
+			[ Mal       Variable:/MATRIX:Mal          -1 ]
+			[ Mal_cyt   Variable:/CYTOPLASM:Mal_cyt   1  ]
+			[ IsoCit    Variable:/MATRIX:IsoCit       1  ]
+			[ MATRIX    Variable:/MATRIX:SIZE         0  ];
 	}
 	
 	Process ExpressionFluxProcess( v43 )
@@ -611,8 +808,11 @@ System System( / )
 		V	1.11667;
 		K	0.005;
 		v43_AAC	0.00033211;
-		Expression	"MATRIX.Value * (V * v43_AAC * (S0.Value / MATRIX.Value) / (K + S0.Value / MATRIX.Value))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:ATP -1 ] [ P0 Variable:/CYTOPLASM:ATP_cyt 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (V * v43_AAC * ATP.NumberConc / (K + ATP.NumberConc))";
+		VariableReferenceList
+			[ ATP     Variable:/MATRIX:ATP        -1 ]
+			[ ATP_cyt Variable:/CYTOPLASM:ATP_cyt 1  ]
+			[ MATRIX  Variable:/MATRIX:SIZE       0  ];
 	}
 	
 	Process ExpressionFluxProcess( v39 )
@@ -622,8 +822,13 @@ System System( / )
 		Kmal	0.000125;
 		Knadp	0.011;
 		v39_MDH	3.8617e-07;
-		Expression	"CYTOPLASM.Value * (v39_MDH * Kcat * (S0.Value / CYTOPLASM.Value) * (S1.Value / CYTOPLASM.Value) / ((Kmal + S0.Value / CYTOPLASM.Value) * (Knadp + S1.Value / CYTOPLASM.Value)))";
-		VariableReferenceList	[ S0 Variable:/CYTOPLASM:Mal_cyt -1 ] [ S1 Variable:/CYTOPLASM:NADP_cyt -1 ] [ P0 Variable:/CYTOPLASM:NADPH_cyt 1 ] [ P1 Variable:/CYTOPLASM:PYR_cyt 1 ] [ CYTOPLASM Variable:/CYTOPLASM:SIZE 0 ];
+		Expression	"CYTOPLASM.Value * (v39_MDH * Kcat * Mal_cyt.NumberConc * NADP_cyt.NumberConc / ((Kmal + Mal_cyt.NumberConc) * (Knadp + NADP_cyt.NumberConc)))";
+		VariableReferenceList
+			[ Mal_cyt   Variable:/CYTOPLASM:Mal_cyt   -1 ]
+			[ NADP_cyt  Variable:/CYTOPLASM:NADP_cyt  -1 ]
+			[ NADPH_cyt Variable:/CYTOPLASM:NADPH_cyt 1  ]
+			[ PYR_cyt   Variable:/CYTOPLASM:PYR_cyt   1  ]
+			[ CYTOPLASM Variable:/CYTOPLASM:SIZE      0  ];
 	}
 	
 	Process ExpressionFluxProcess( v44 )
@@ -632,8 +837,13 @@ System System( / )
 		Kcat	130.5;
 		Km	0.01295;
 		v44_MDH	3.8617e-07;
-		Expression	"MATRIX.Value * (v44_MDH * Kcat * (S0.Value / MATRIX.Value) / (Km + S0.Value / MATRIX.Value))";
-		VariableReferenceList	[ S0 Variable:/MATRIX:Mal -1 ] [ S1 Variable:/MATRIX:NADP_p -1 ] [ P0 Variable:/MATRIX:NADPH 1 ] [ P1 Variable:/MATRIX:Pyr 1 ] [ MATRIX Variable:/MATRIX:SIZE 0 ];
+		Expression	"MATRIX.Value * (v44_MDH * Kcat * Mal.NumberConc / (Km + Mal.NumberConc))";
+		VariableReferenceList
+			[ Mal    Variable:/MATRIX:Mal    -1 ]
+			[ NADP_p Variable:/MATRIX:NADP_p -1 ]
+			[ NADPH  Variable:/MATRIX:NADPH  1  ]
+			[ Pyr    Variable:/MATRIX:Pyr    1  ]
+			[ MATRIX Variable:/MATRIX:SIZE   0  ];
 	}
 	
 	
@@ -641,7 +851,7 @@ System System( / )
 
 System System( /CYTOPLASM )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	cytoplasm;
 
 	Variable Variable( Dimensions )
@@ -658,182 +868,182 @@ System System( /CYTOPLASM )
 	Variable Variable( GLC )
 	{
 		Name	glucose;
-		Value	1.12817e-05;
+		NumberConc	1.12817e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( F6P )
 	{
 		Name	"fructose-6-phosphate";
-		Value	0.00065939;
+		NumberConc	0.00065939;
 		Fixed	0;
 	}
 	
 	Variable Variable( FBP )
 	{
 		Name	"fructose-1,6-bisphosphate";
-		Value	7.70135e-06;
+		NumberConc	7.70135e-06;
 		Fixed	0;
 	}
 	
 	Variable Variable( GAP )
 	{
 		Name	"glyceraldehyde 3-phosphate";
-		Value	1.90919e-06;
+		NumberConc	1.90919e-06;
 		Fixed	0;
 	}
 	
 	Variable Variable( DPG )
 	{
 		Name	"1,2-bisphospho-D-glycerate";
-		Value	0.000299109;
+		NumberConc	0.000299109;
 		Fixed	0;
 	}
 	
 	Variable Variable( PEP )
 	{
 		Name	phosphoenolpyruvate;
-		Value	2.1125e-06;
+		NumberConc	2.1125e-06;
 		Fixed	0;
 	}
 	
 	Variable Variable( PYR_cyt )
 	{
 		Name	pyruvate;
-		Value	4.22702e-06;
+		NumberConc	4.22702e-06;
 		Fixed	0;
 	}
 	
 	Variable Variable( AMP )
 	{
 		Name	"adenine monophosphate";
-		Value	2.61149e-06;
+		NumberConc	2.61149e-06;
 		Fixed	0;
 	}
 	
 	Variable Variable( LAC )
 	{
 		Name	lactate;
-		Value	0.00033981;
+		NumberConc	0.00033981;
 		Fixed	0;
 	}
 	
 	Variable Variable( G3P )
 	{
 		Name	"glycerol-3-phosphate";
-		Value	0.0076925;
+		NumberConc	0.0076925;
 		Fixed	0;
 	}
 	
 	Variable Variable( DHAP )
 	{
 		Name	"dihydrohxyacetone-phosphate";
-		Value	0.0076925;
+		NumberConc	0.0076925;
 		Fixed	0;
 	}
 	
 	Variable Variable( OXA_cyt )
 	{
 		Name	oxaloacetate;
-		Value	4e-06;
+		NumberConc	4e-06;
 		Fixed	0;
 	}
 	
 	Variable Variable( Asp_cyt )
 	{
 		Name	aspartate;
-		Value	0.00114;
+		NumberConc	0.00114;
 		Fixed	0;
 	}
 	
 	Variable Variable( Glu_cyt )
 	{
 		Name	glutamate;
-		Value	0.00303;
+		NumberConc	0.00303;
 		Fixed	0;
 	}
 	
 	Variable Variable( OG_cyt )
 	{
 		Name	oxoglutarate;
-		Value	2.1e-05;
+		NumberConc	2.1e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( Mal_cyt )
 	{
 		Name	malate;
-		Value	0.0005;
+		NumberConc	0.0005;
 		Fixed	0;
 	}
 	
 	Variable Variable( Acetyl_CoA_cyt )
 	{
 		Name	"acetyl CoA";
-		Value	3e-05;
+		NumberConc	3e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( CoA_cyt )
 	{
 		Name	"coenzyme A";
-		Value	0.000272;
+		NumberConc	0.000272;
 		Fixed	0;
 	}
 	
 	Variable Variable( IsoCitcyt )
 	{
 		Name	isocitrate;
-		Value	0.00042;
+		NumberConc	0.00042;
 		Fixed	0;
 	}
 	
 	Variable Variable( Cit_cyt )
 	{
 		Name	citrate;
-		Value	0.00042;
+		NumberConc	0.00042;
 		Fixed	0;
 	}
 	
 	Variable Variable( ATP_cyt )
 	{
 		Name	"adenine triphosphate";
-		Value	0.00449064;
+		NumberConc	0.00449064;
 		Fixed	0;
 	}
 	
 	Variable Variable( ADP_cyt )
 	{
 		Name	"adenine diphosphate";
-		Value	0.000108367;
+		NumberConc	0.000108367;
 		Fixed	0;
 	}
 	
 	Variable Variable( NAD )
 	{
 		Name	NAD;
-		Value	0.00362057;
+		NumberConc	0.00362057;
 		Fixed	0;
 	}
 	
 	Variable Variable( NADH_cyt )
 	{
 		Name	NADH;
-		Value	0.000616118;
+		NumberConc	0.000616118;
 		Fixed	0;
 	}
 	
 	Variable Variable( NADP_cyt )
 	{
 		Name	NADP;
-		Value	0.00362057;
+		NumberConc	0.00362057;
 		Fixed	0;
 	}
 	
 	Variable Variable( NADPH_cyt )
 	{
 		Name	NADPH;
-		Value	0.000616118;
+		NumberConc	0.000616118;
 		Fixed	0;
 	}
 	
@@ -842,7 +1052,7 @@ System System( /CYTOPLASM )
 
 System System( /MT_IMS )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"mitochondrial intermembrane space";
 
 	Variable Variable( Dimensions )
@@ -859,28 +1069,28 @@ System System( /MT_IMS )
 	Variable Variable( Q )
 	{
 		Name	ubiquinone;
-		Value	0.026;
+		NumberConc	0.026;
 		Fixed	0;
 	}
 	
 	Variable Variable( QH2 )
 	{
 		Name	ubiquinol;
-		Value	0.028;
+		NumberConc	0.028;
 		Fixed	0;
 	}
 	
 	Variable Variable( Cytc3p )
 	{
 		Name	"ferrocytochrome c";
-		Value	0.003;
+		NumberConc	0.003;
 		Fixed	0;
 	}
 	
 	Variable Variable( Cytc2p )
 	{
 		Name	"ferricytochrome c";
-		Value	0.00011;
+		NumberConc	0.00011;
 		Fixed	0;
 	}
 	
@@ -889,7 +1099,7 @@ System System( /MT_IMS )
 
 System System( /MT_IM )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"mitochondrial inner membrane";
 
 	Variable Variable( Dimensions )
@@ -908,7 +1118,7 @@ System System( /MT_IM )
 
 System System( /MATRIX )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"mitochondrial matrix";
 
 	Variable Variable( Dimensions )
@@ -925,203 +1135,203 @@ System System( /MATRIX )
 	Variable Variable( Pyr )
 	{
 		Name	pyruvate;
-		Value	0.001025;
+		NumberConc	0.001025;
 		Fixed	0;
 	}
 	
 	Variable Variable( CO2 )
 	{
 		Name	"carbon dioxide";
-		Value	0.00163;
+		NumberConc	0.00163;
 		Fixed	0;
 	}
 	
 	Variable Variable( CoA )
 	{
 		Name	"coenzyme A";
-		Value	0.000272;
+		NumberConc	0.000272;
 		Fixed	0;
 	}
 	
 	Variable Variable( Acetyl_CoA )
 	{
 		Name	"acetyl CoA";
-		Value	3e-05;
+		NumberConc	3e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( Pi )
 	{
 		Name	phosphate;
-		Value	0.004;
+		NumberConc	0.004;
 		Fixed	0;
 	}
 	
 	Variable Variable( Fum )
 	{
 		Name	fumarate;
-		Value	6.5e-05;
+		NumberConc	6.5e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( SCoA )
 	{
 		Name	"succinyl-CoA";
-		Value	0.0002941;
+		NumberConc	0.0002941;
 		Fixed	0;
 	}
 	
 	Variable Variable( Suc )
 	{
 		Name	succinate;
-		Value	0.00295;
+		NumberConc	0.00295;
 		Fixed	0;
 	}
 	
 	Variable Variable( GTP )
 	{
 		Name	"guanosine triphosphate";
-		Value	0.0045;
+		NumberConc	0.0045;
 		Fixed	0;
 	}
 	
 	Variable Variable( GDP )
 	{
 		Name	"guanosine diphosphate";
-		Value	0.00045;
+		NumberConc	0.00045;
 		Fixed	0;
 	}
 	
 	Variable Variable( Ala )
 	{
 		Name	slanine;
-		Value	0.00344;
+		NumberConc	0.00344;
 		Fixed	0;
 	}
 	
 	Variable Variable( Asp )
 	{
 		Name	aspartate;
-		Value	0.00114;
+		NumberConc	0.00114;
 		Fixed	0;
 	}
 	
 	Variable Variable( Glu )
 	{
 		Name	glutamate;
-		Value	0.00303;
+		NumberConc	0.00303;
 		Fixed	0;
 	}
 	
 	Variable Variable( H2O )
 	{
 		Name	water;
-		Value	0.001;
+		NumberConc	0.001;
 		Fixed	0;
 	}
 	
 	Variable Variable( ETFred )
 	{
 		Name	"electron transfer flavoprotein (reduced form)";
-		Value	0.00031;
+		NumberConc	0.00031;
 		Fixed	0;
 	}
 	
 	Variable Variable( ETFox )
 	{
 		Name	"electron transfer flavoprotein (oxidised form)";
-		Value	0.00032;
+		NumberConc	0.00032;
 		Fixed	0;
 	}
 	
 	Variable Variable( FADH2 )
 	{
 		Name	FADH2;
-		Value	7.2e-05;
+		NumberConc	7.2e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( FAD )
 	{
 		Name	FAD;
-		Value	0.00101;
+		NumberConc	0.00101;
 		Fixed	0;
 	}
 	
 	Variable Variable( OG )
 	{
 		Name	oxoglutarate;
-		Value	2.1e-05;
+		NumberConc	2.1e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( Mal )
 	{
 		Name	malate;
-		Value	0.0005;
+		NumberConc	0.0005;
 		Fixed	0;
 	}
 	
 	Variable Variable( OXA )
 	{
 		Name	oxaloacetate;
-		Value	4e-06;
+		NumberConc	4e-06;
 		Fixed	0;
 	}
 	
 	Variable Variable( Cit )
 	{
 		Name	citrate;
-		Value	0.00042;
+		NumberConc	0.00042;
 		Fixed	0;
 	}
 	
 	Variable Variable( IsoCit )
 	{
 		Name	isocitrate;
-		Value	0.00042;
+		NumberConc	0.00042;
 		Fixed	0;
 	}
 	
 	Variable Variable( ATP )
 	{
 		Name	"adenine triphosphate";
-		Value	0.0045;
+		NumberConc	0.0045;
 		Fixed	0;
 	}
 	
 	Variable Variable( ADP )
 	{
 		Name	"adenine diphosphate";
-		Value	0.00045;
+		NumberConc	0.00045;
 		Fixed	0;
 	}
 	
 	Variable Variable( NADP_p )
 	{
 		Name	"NADP+";
-		Value	0.0101;
+		NumberConc	0.0101;
 		Fixed	0;
 	}
 	
 	Variable Variable( NADPH )
 	{
 		Name	NADPH;
-		Value	7.2e-05;
+		NumberConc	7.2e-05;
 		Fixed	0;
 	}
 	
 	Variable Variable( NAD_p )
 	{
 		Name	"NAD+";
-		Value	0.0101;
+		NumberConc	0.0101;
 		Fixed	0;
 	}
 	
 	Variable Variable( NADH )
 	{
 		Name	NADH;
-		Value	0.00072;
+		NumberConc	0.00072;
 		Fixed	0;
 	}
 	
@@ -1130,7 +1340,7 @@ System System( /MATRIX )
 
 System System( /SBMLParameter )
 {
-	StepperID	DE;
+	StepperID	Default;
 	Name	"Global Parameter";
 
 	Variable Variable( flow )

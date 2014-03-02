@@ -1,339 +1,432 @@
-# BIOMD0000000236 - Westermark2003_Pancreatic_GlycOsc_extended
-# 
-# Westermark PO, Lansner A. 
-# A model of phosphofructokinase and glycolytic oscillations in the pancreatic beta-cell. 
-# Biophys. J. 2003 Jul; 85(1): 126-139 
-# PSCI/SANS, NADA, Royal Institute of Technology (KTH), SE-100 44 Stockholm, Sweden.
 
+# created by eml2em program
+# from file: BIOMD0000000236.eml, date: Sun Mar  2 20:24:07 2014
+#
 
-##### Steppers #####
-
-Stepper FixedODE1Stepper( ODE ) {}
-Stepper DiscreteTimeStepper( DT ) {}
-
-
-##### Model Entities #####
+Stepper ODEStepper( Default )
+{
+	# no property
+}
 
 System System( / )
 {
-	StepperID ODE;
+	StepperID	Default;
+	Name	default;
 
-	Variable Variable( SIZE ){ Value 1.0; }
-
-	#### Global Parameters (26) ####
-
-	Variable Variable( Vgk )       { Value 0.05555; }   # Vgk_min*dw_per_ml/min_to_sec = Vgk
-	Variable Variable( hGK )       { Value 1.7; }
-	Variable Variable( KeqGPI )    { Value 0.3; }
-	Variable Variable( KeqTPI )    { Value 0.045455; }
-	Variable Variable( Vpfk )      { Value 0.5555; }    # Vpfk_min*dw_per_ml/min_to_sec = Vpfk
-	Variable Variable( Vfba )      { Value 0.138875; }  # Vfba_min*dw_per_ml/min_to_sec = Vfba
-	Variable Variable( Vgapdh )    { Value 1.38875; }   # Vgapdh_min*dw_per_ml/min_to_sec = Vgapdh
-	Variable Variable( Sgk )       { Value 8.0; }
-	Variable Variable( Spfk )      { Value 4.0; }
-	Variable Variable( Sfba )      { Value 0.0050; }
-	Variable Variable( Sgapdh )    { Value 0.0050; }
-	Variable Variable( Xpfk )      { Value 0.01; }
-	Variable Variable( alpha )     { Value 5.0; }
-	Variable Variable( hx )        { Value 2.5; }
-	Variable Variable( hpfk )      { Value 2.5; }
-	Variable Variable( hact )      { Value 1.0; }
-	Variable Variable( dw_per_ml ) { Value 0.3333; }
-	Variable Variable( min_to_sec ){ Value 60.0; }
-	Variable Variable( Vgk_min )   { Value 10.0; }
-	Variable Variable( Vpfk_min )  { Value 100.0; }
-	Variable Variable( Vfba_min )  { Value 25.0; }
-	Variable Variable( Vgapdh_min ){ Value 250.0; }
-	Variable Variable( Pfba )      { Value 0.5; }
-	Variable Variable( Qfba )      { Value 0.275; }
-	Variable Variable( KeqFBA )    { Value 0.1; }
-	Variable Variable( sigma )     { Value 0.25; }      # fructose-6-phosphate/Spfk = sigma
+	Process ExpressionFluxProcess( vgk )
+	{
+		Name	vgk;
+		Expression	"cell.Value * Vgk.Value * pow(GLC.NumberConc / Sgk.Value, hGK.Value) / (1 + pow(GLC.NumberConc / Sgk.Value, hGK.Value))";
+		VariableReferenceList
+			[ GLC     Variable:/cell:GLC          0 ]
+			[ G6P_F6P Variable:/cell:G6P_F6P      1 ]
+			[ cell    Variable:/cell:SIZE         0 ]
+			[ Vgk     Variable:/SBMLParameter:Vgk 0 ]
+			[ Sgk     Variable:/SBMLParameter:Sgk 0 ]
+			[ hGK     Variable:/SBMLParameter:hGK 0 ];
+	}
+	
+	Process ExpressionFluxProcess( vpfk )
+	{
+		Name	vpfk;
+		Expression	"cell.Value * Vpfk.Value * pow(F6P.NumberConc / Spfk.Value, hpfk.Value - (hpfk.Value - hact.Value) * (FBP.NumberConc / Sfba.Value / (1 + FBP.NumberConc / Sfba.Value))) / (pow(F6P.NumberConc / Spfk.Value, hpfk.Value - (hpfk.Value - hact.Value) * (FBP.NumberConc / Sfba.Value / (1 + FBP.NumberConc / Sfba.Value))) + (1 + pow(FBP.NumberConc / Xpfk.Value, hx.Value)) / (1 + pow(alpha.Value, hpfk.Value - (hpfk.Value - hact.Value) * (FBP.NumberConc / Sfba.Value / (1 + FBP.NumberConc / Sfba.Value))) * pow(FBP.NumberConc / Xpfk.Value, hx.Value)))";
+		VariableReferenceList
+			[ G6P_F6P Variable:/cell:G6P_F6P        -1 ]
+			[ FBP     Variable:/cell:FBP            1  ]
+			[ F6P     Variable:/cell:F6P            0  ]
+			[ cell    Variable:/cell:SIZE           0  ]
+			[ Vpfk    Variable:/SBMLParameter:Vpfk  0  ]
+			[ Spfk    Variable:/SBMLParameter:Spfk  0  ]
+			[ hpfk    Variable:/SBMLParameter:hpfk  0  ]
+			[ hact    Variable:/SBMLParameter:hact  0  ]
+			[ Sfba    Variable:/SBMLParameter:Sfba  0  ]
+			[ Xpfk    Variable:/SBMLParameter:Xpfk  0  ]
+			[ hx      Variable:/SBMLParameter:hx    0  ]
+			[ alpha   Variable:/SBMLParameter:alpha 0  ];
+	}
+	
+	Process ExpressionFluxProcess( vfba )
+	{
+		Name	vfba;
+		Expression	"cell.Value * Vfba.Value * (FBP.NumberConc / Sfba.Value - G3P.NumberConc * DHAP.NumberConc / (Pfba.Value * Qfba.Value * KeqFBA.Value)) / (1 + FBP.NumberConc / Sfba.Value + DHAP.NumberConc / Qfba.Value + G3P.NumberConc * DHAP.NumberConc / (Pfba.Value * Qfba.Value))";
+		VariableReferenceList
+			[ FBP      Variable:/cell:FBP             -1 ]
+			[ DHAP_G3P Variable:/cell:DHAP_G3P        2  ]
+			[ G3P      Variable:/cell:G3P             0  ]
+			[ DHAP     Variable:/cell:DHAP            0  ]
+			[ cell     Variable:/cell:SIZE            0  ]
+			[ Vfba     Variable:/SBMLParameter:Vfba   0  ]
+			[ Sfba     Variable:/SBMLParameter:Sfba   0  ]
+			[ Pfba     Variable:/SBMLParameter:Pfba   0  ]
+			[ Qfba     Variable:/SBMLParameter:Qfba   0  ]
+			[ KeqFBA   Variable:/SBMLParameter:KeqFBA 0  ];
+	}
+	
+	Process ExpressionFluxProcess( vgapdh )
+	{
+		Name	vgapdh;
+		Expression	"cell.Value * Vgapdh.Value * G3P.NumberConc / (Sgapdh.Value + G3P.NumberConc)";
+		VariableReferenceList
+			[ DHAP_G3P Variable:/cell:DHAP_G3P        -1 ]
+			[ G3P      Variable:/cell:G3P             0  ]
+			[ cell     Variable:/cell:SIZE            0  ]
+			[ Vgapdh   Variable:/SBMLParameter:Vgapdh 0  ]
+			[ Sgapdh   Variable:/SBMLParameter:Sgapdh 0  ];
+	}
+	
 	
 }
 
 System System( /cell )
 {
-	StepperID ODE;
+	StepperID	Default;
+	Name	cell;
 
-	Variable Variable( SIZE ){ Value 1.0; }
-
-	Variable Variable( intracellular_glucose )
+	Variable Variable( Dimensions )
 	{
-		Name "intracellular glucose";
-		Value 1.0;
+		Value	3;
 	}
-
+	
+	Variable Variable( SIZE )
+	{
+		Value	1.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( GLC )
+	{
+		Name	"intracellular glucose";
+		NumberConc	10.0;
+		Fixed	1;
+	}
+	
 	Variable Variable( G6P_F6P )
 	{
-		Name "G6P_F6P";
-		Value 1.0;
-	}
-
-	Variable Variable( fructose_6_phosphate )
-	{
-		Name "fructose-6-phosphate";
-		Value 1.0;
-	}
-
-	Variable Variable( fructose_16_biphosphate )
-	{
-		Name "fructose-1,6-biphosphate";
-		Value 1.0;
+		Name	G6P_F6P;
+		NumberConc	3.71728;
+		Fixed	0;
 	}
 	
-	Variable Variable( glyceraldehyde__phosphate )
+	Variable Variable( F6P )
 	{
-		Name "glyceraldehyde--phosphate";
-		Value 1.0;
+		Name	"fructose-6-phosphate";
+		Value	0.857833846154;
+		Fixed	0;
 	}
 	
-	Variable Variable( dihydroxyacetone_phosphate )
+	Variable Variable( FBP )
 	{
-		Name "dihydroxyacetone-phosphate";
-		Value 1.0;
+		Name	"fructose-1,6-biphosphate";
+		NumberConc	0.00063612;
+		Fixed	0;
 	}
 	
-	Variable Variable( DHAP_G3P_pool )
+	Variable Variable( G3P )
 	{
-		Name "DHAP-G3P pool";
-		Value 1.0;
+		Name	"glyceraldehyde--phosphate";
+		Value	0.000114334137098;
+		Fixed	0;
 	}
-
-	##### Reactions (4) #####
-
-	Process ExpressionFluxProcess( vgk )
+	
+	Variable Variable( DHAP )
 	{
-		Name "hexokinase activity & glucose-6-phosphate isomerase activity";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vgk :/:Vgk 0 ]
-			[ Sgk :/:Sgk 0 ]
-			[ hGK :/:hGK 0 ]
-			
-			## Species ##
-			[ intracellular_glucose :.:intracellular_glucose -1 ]
-			[ G6P_F6P               :.:G6P_F6P                1 ];
-
-		Expression "Vgk.Value * pow( intracellular_glucose.Value / Sgk.Value, hGK.Value )/( 1.0 + pow( intracellular_glucose.Value / Sgk.Value, hGK.Value ))";
-
+		Name	"dihydroxyacetone-phosphate";
+		Value	0.0025153258629;
+		Fixed	0;
 	}
-
-	Process ExpressionFluxProcess( vpfk )
+	
+	Variable Variable( DHAP_G3P )
 	{
-		Name "6-phosphofructokinase activity";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vpfk  :/:Vpfk  0 ]
-			[ Spfk  :/:Spfk  0 ]
-			[ hpfk  :/:hpfk  0 ]
-			[ hact  :/:hact  0 ]
-			[ Sfba  :/:Sfba  0 ]
-			[ Xpfk  :/:Xpfk  0 ]
-			[ hx    :/:hx    0 ]
-			[ alpha :/:alpha 0 ]
-
-			## Species ##
-			[ G6P_F6P                 :.:G6P_F6P                 -1 ]
-			[ fructose_16_biphosphate :.:fructose_16_biphosphate  1 ]
-			[ fructose_6_phosphate    :.:fructose_6_phosphate     0 ];
-
-		Expression "Vpfk.Value *pow( fructose_6_phosphate.Value / Spfk.Value, hpfk.Value - ( hpfk.Value  - hact.Value  ) * fructose_16_biphosphate.Value / Sfba.Value /( 1.0 + fructose_16_biphosphate.Value / Sfba.Value )) / ( pow( fructose_6_phosphate.Value / Spfk.Value, hpfk.Value - ( hpfk.Value - hact.Value ) * fructose_16_biphosphate.Value / Sfba.Value /( 1.0 + fructose_16_biphosphate.Value / Sfba.Value ))+( 1.0 + pow( fructose_16_biphosphate.Value / Xpfk.Value, hx.Value ))/( 1.0 +pow( alpha.Value, hpfk.Value - ( hpfk.Value - hact.Value ) * fructose_16_biphosphate.Value / Sfba.Value /( 1.0 + fructose_16_biphosphate.Value /Sfba.Value )) * pow( fructose_16_biphosphate.Value / Xpfk.Value, hx.Value )))";
-
+		Name	"DHAP-G3P pool";
+		NumberConc	0.00262966;
+		Fixed	0;
 	}
-
-	Process ExpressionFluxProcess( vfba )
-	{
-		Name " fructose-bisphosphate aldolase activity";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vfba   :/:Vfba   0 ]
-			[ Sfba   :/:Sfba   0 ]
-			[ Pfba   :/:Pfba   0 ]
-			[ Qfba   :/:Qfba   0 ]
-			[ KeqFBA :/:KeqFBA 0 ]
-
-			## Species ##
-			[ fructose_16_biphosphate    :.:fructose_16_biphosphate    -1 ]
-			[ DHAP_G3P_pool              :.:DHAP_G3P_pool               2 ]
-			[ glyceraldehyde__phosphate  :.:glyceraldehyde__phosphate   0 ]
-			[ dihydroxyacetone_phosphate :.:dihydroxyacetone_phosphate  0 ];
-
-		Expression "Vfba.Value * ( fructose_16_biphosphate.Value / Sfba.Value - glyceraldehyde__phosphate.Value * dihydroxyacetone_phosphate.Value / ( Pfba.Value * Qfba.Value * KeqFBA.Value ))/( 1.0 + fructose_16_biphosphate.Value / Sfba.Value + dihydroxyacetone_phosphate.Value / Qfba.Value + glyceraldehyde__phosphate.Value * dihydroxyacetone_phosphate.Value / ( Pfba.Value * Qfba.Value ))";
-
-	}
-
-	Process ExpressionFluxProcess( vgapdh )
-	{
-		Name "glyceraldehyde-3-phosphate dehydrogenase (NAD+) (phosphorylating) activity";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vgapdh :/:Vgapdh 0 ]
-			[ Sgapdh :/:Sgapdh 0 ]
-
-			## Species ##
-			[ DHAP_G3P_pool             :.:DHAP_G3P_pool             -1 ]
-			[ glyceraldehyde__phosphate :.:glyceraldehyde__phosphate  0 ];
-
-		Expression "Vgapdh.Value * glyceraldehyde__phosphate.Value / ( Sgapdh.Value + glyceraldehyde__phosphate.Value )";
-
-	}
-
-	##### Rules (8) #####
-
-	Process ExpressionAssignmentProcess( sigma )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: sigma)";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Spfk  :/:Spfk  0 ]
-			[ sigma :/:sigma 1 ]
-
-			## Species ##
-			[ fructose_6_phosphate :.:fructose_6_phosphate  0 ];
-
-		Expression "fructose_6_phosphate.Value / Spfk.Value";
-
-	}
-
-	Process ExpressionAssignmentProcess( Vgk )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: Vgk)";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vgk_min    :/:Vgk_min    0 ]
-			[ dw_per_ml  :/:dw_per_ml  0 ]
-			[ min_to_sec :/:min_to_sec 0 ]
-			[ Vgk        :/:Vgk        1 ];
-
-		Expression "Vgk_min.Value * dw_per_ml.Value / min_to_sec.Value";
-
-	}
-
-	Process ExpressionAssignmentProcess( Vpfk )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: Vpfk)";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vpfk_min   :/:Vpfk_min   0 ]
-			[ dw_per_ml  :/:dw_per_ml  0 ]
-			[ min_to_sec :/:min_to_sec 0 ]
-			[ Vpfk       :/:Vpfk       1 ];
-
-		Expression "Vpfk_min.Value * dw_per_ml.Value / min_to_sec.Value";
-
-	}
-
-	Process ExpressionAssignmentProcess( Vfba )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: Vfba)";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vfba_min   :/:Vfba_min   0 ]
-			[ dw_per_ml  :/:dw_per_ml  0 ]
-			[ min_to_sec :/:min_to_sec 0 ]
-			[ Vfba       :/:Vfba       1 ];
-
-		Expression "Vfba_min.Value * dw_per_ml.Value / min_to_sec.Value";
-
-	}
-
-	Process ExpressionAssignmentProcess( Vgapdh )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: Vgapdh)";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ Vgapdh_min :/:Vgapdh_min 0 ]
-			[ dw_per_ml  :/:dw_per_ml  0 ]
-			[ min_to_sec :/:min_to_sec 0 ]
-			[ Vgapdh     :/:Vgapdh     1 ];
-
-		Expression "Vgapdh_min.Value * dw_per_ml.Value / min_to_sec.Value";
-
-	}
-
-	Process ExpressionAssignmentProcess( F6P )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: F6P)";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ KeqGPI :/:KeqGPI 0 ]
-
-			## Species ##
-			[ G6P_F6P              :.:G6P_F6P               0 ]
-			[ fructose_6_phosphate :.:fructose_6_phosphate  1 ];
-
-		Expression "G6P_F6P.Value * KeqGPI.Value /( 1.0 + KeqGPI.Value )";
-
-	}
-
-	Process ExpressionAssignmentProcess( G3P )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: G3P)";
-
-		VariableReferenceList
-
-			## Parameters ##
-			[ KeqTPI :/:KeqTPI 0 ]
-
-			## Species ##
-			[ DHAP_G3P_pool             :.:DHAP_G3P_pool              0 ]
-			[ glyceraldehyde__phosphate :.:glyceraldehyde__phosphate  1 ];
-
-		Expression "DHAP_G3P_pool.Value * KeqTPI.Value /( 1.0 + KeqTPI.Value )";
-
-	}
-
-	Process ExpressionAssignmentProcess( DHAP )
-	{
-		StepperID DT;
-
-		Name "Assignment Rule (name: DHAP)";
-
-		VariableReferenceList
-
-			## Species ##
-			[ DHAP_G3P_pool              :.:DHAP_G3P_pool               0 ]
-			[ glyceraldehyde__phosphate  :.:glyceraldehyde__phosphate   0 ]
-			[ dihydroxyacetone_phosphate :.:dihydroxyacetone_phosphate  1 ];
-
-		Expression "DHAP_G3P_pool.Value - glyceraldehyde__phosphate.Value";
-
-	}
-
+	
+	
 }
 
-# Originally Ported by Yasuhiro Naito 2013/12/14
+System System( /SBMLParameter )
+{
+	StepperID	Default;
+	Name	"Global Parameter";
+
+	Variable Variable( Vgk )
+	{
+		Name	Vgk;
+		Value	0.05555;
+	}
+	
+	Variable Variable( hGK )
+	{
+		Name	hGK;
+		Value	1.7;
+		Fixed	1;
+	}
+	
+	Variable Variable( KeqGPI )
+	{
+		Name	KeqGPI;
+		Value	0.3;
+		Fixed	1;
+	}
+	
+	Variable Variable( KeqTPI )
+	{
+		Name	KeqTPI;
+		Value	0.045455;
+		Fixed	1;
+	}
+	
+	Variable Variable( Vpfk )
+	{
+		Name	Vpfk;
+		Value	0.5555;
+	}
+	
+	Variable Variable( Vfba )
+	{
+		Name	Vfba;
+		Value	0.138875;
+	}
+	
+	Variable Variable( Vgapdh )
+	{
+		Name	Vgapdh;
+		Value	1.38875;
+	}
+	
+	Variable Variable( Sgk )
+	{
+		Name	Sgk;
+		Value	8.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( Spfk )
+	{
+		Name	Spfk;
+		Value	4.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( Sfba )
+	{
+		Name	Sfba;
+		Value	0.005;
+		Fixed	1;
+	}
+	
+	Variable Variable( Sgapdh )
+	{
+		Name	Sgapdh;
+		Value	0.005;
+		Fixed	1;
+	}
+	
+	Variable Variable( Xpfk )
+	{
+		Name	Xpfk;
+		Value	0.01;
+		Fixed	1;
+	}
+	
+	Variable Variable( alpha )
+	{
+		Name	alpha;
+		Value	5.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( hx )
+	{
+		Name	hx;
+		Value	2.5;
+		Fixed	1;
+	}
+	
+	Variable Variable( hpfk )
+	{
+		Name	hpfk;
+		Value	2.5;
+		Fixed	1;
+	}
+	
+	Variable Variable( hact )
+	{
+		Name	hact;
+		Value	1.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( dw_per_ml )
+	{
+		Name	dw_per_ml;
+		Value	0.3333;
+		Fixed	1;
+	}
+	
+	Variable Variable( min_to_sec )
+	{
+		Name	min_to_sec;
+		Value	60.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( Vgk_min )
+	{
+		Name	Vgk_min;
+		Value	10.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( Vpfk_min )
+	{
+		Name	Vpfk_min;
+		Value	100.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( Vfba_min )
+	{
+		Name	Vfba_min;
+		Value	25.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( Vgapdh_min )
+	{
+		Name	Vgapdh_min;
+		Value	250.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( Pfba )
+	{
+		Name	Pfba;
+		Value	0.5;
+		Fixed	1;
+	}
+	
+	Variable Variable( Qfba )
+	{
+		Name	Qfba;
+		Value	0.275;
+		Fixed	1;
+	}
+	
+	Variable Variable( KeqFBA )
+	{
+		Name	KeqFBA;
+		Value	0.1;
+		Fixed	1;
+	}
+	
+	Variable Variable( sigma )
+	{
+		Name	sigma;
+		Value	0.214458461538;
+	}
+	
+	
+}
+
+System System( /SBMLRule )
+{
+	Name	"System for SBML Rule";
+	StepperID	Default;
+
+	Process ExpressionAssignmentProcess( Assignment_sigma )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'sigma'";
+		Expression	"F6P.NumberConc / Spfk.NumberConc";
+		VariableReferenceList
+			[ sigma Variable:/SBMLParameter:sigma 1 ]
+			[ F6P   Variable:/cell:F6P            0 ]
+			[ Spfk  Variable:/SBMLParameter:Spfk  0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_Vgk )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'Vgk'";
+		Expression	"Vgk_min.NumberConc * dw_per_ml.NumberConc / min_to_sec.NumberConc";
+		VariableReferenceList
+			[ Vgk        Variable:/SBMLParameter:Vgk        1 ]
+			[ Vgk_min    Variable:/SBMLParameter:Vgk_min    0 ]
+			[ dw_per_ml  Variable:/SBMLParameter:dw_per_ml  0 ]
+			[ min_to_sec Variable:/SBMLParameter:min_to_sec 0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_Vpfk )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'Vpfk'";
+		Expression	"Vpfk_min.NumberConc * dw_per_ml.NumberConc / min_to_sec.NumberConc";
+		VariableReferenceList
+			[ Vpfk       Variable:/SBMLParameter:Vpfk       1 ]
+			[ Vpfk_min   Variable:/SBMLParameter:Vpfk_min   0 ]
+			[ dw_per_ml  Variable:/SBMLParameter:dw_per_ml  0 ]
+			[ min_to_sec Variable:/SBMLParameter:min_to_sec 0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_Vfba )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'Vfba'";
+		Expression	"Vfba_min.NumberConc * dw_per_ml.NumberConc / min_to_sec.NumberConc";
+		VariableReferenceList
+			[ Vfba       Variable:/SBMLParameter:Vfba       1 ]
+			[ Vfba_min   Variable:/SBMLParameter:Vfba_min   0 ]
+			[ dw_per_ml  Variable:/SBMLParameter:dw_per_ml  0 ]
+			[ min_to_sec Variable:/SBMLParameter:min_to_sec 0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_Vgapdh )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'Vgapdh'";
+		Expression	"Vgapdh_min.NumberConc * dw_per_ml.NumberConc / min_to_sec.NumberConc";
+		VariableReferenceList
+			[ Vgapdh     Variable:/SBMLParameter:Vgapdh     1 ]
+			[ Vgapdh_min Variable:/SBMLParameter:Vgapdh_min 0 ]
+			[ dw_per_ml  Variable:/SBMLParameter:dw_per_ml  0 ]
+			[ min_to_sec Variable:/SBMLParameter:min_to_sec 0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_F6P )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'F6P'";
+		Expression	"G6P_F6P.NumberConc * KeqGPI.NumberConc / (1 + KeqGPI.NumberConc)";
+		VariableReferenceList
+			[ F6P     Variable:/cell:F6P             1 ]
+			[ G6P_F6P Variable:/cell:G6P_F6P         0 ]
+			[ KeqGPI  Variable:/SBMLParameter:KeqGPI 0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_G3P )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'G3P'";
+		Expression	"DHAP_G3P.NumberConc * KeqTPI.NumberConc / (1 + KeqTPI.NumberConc)";
+		VariableReferenceList
+			[ G3P      Variable:/cell:G3P             1 ]
+			[ DHAP_G3P Variable:/cell:DHAP_G3P        0 ]
+			[ KeqTPI   Variable:/SBMLParameter:KeqTPI 0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_DHAP )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'DHAP'";
+		Expression	"DHAP_G3P.NumberConc - G3P.NumberConc";
+		VariableReferenceList
+			[ DHAP     Variable:/cell:DHAP     1 ]
+			[ DHAP_G3P Variable:/cell:DHAP_G3P 0 ]
+			[ G3P      Variable:/cell:G3P      0 ];
+	}
+	
+	
+}
+

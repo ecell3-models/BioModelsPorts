@@ -1,118 +1,286 @@
-# BIOMD0000000296 - Balagaddé2008_E_coli_Predator_Prey
-# 
-# Balagaddé FK, Song H, Ozaki J, Collins CH, Barnet M, Arnold FH, Quake SR, You L. 
-# A synthetic Escherichia coli predator-prey ecosystem. 
-# Mol. Syst. Biol. 2008; 4: 187 
-# Department of Bioengineering, Stanford University and Howard Hughes Medical Institute, Stanford, CA, USA.
 
-Stepper FixedODE1Stepper( ODE )
+# created by eml2em program
+# from file: BIOMD0000000296.eml, date: Sun Mar  2 20:55:44 2014
+#
+
+Stepper ODEStepper( Default )
 {
 	# no property
 }
-
-Stepper PassiveStepper( PSV )
-{
-	# no property
-}
-
 
 System System( / )
 {
-	StepperID ODE;
+	StepperID	Default;
+	Name	default;
 
-	Variable Variable( SIZE )
+	Process ExpressionFluxProcess( J0 )
 	{
-		Value	1.0;
+		Name	"predator growth";
+		Expression	"environment.Value * kc1.Value * C1.NumberConc * (1 - (C1.NumberConc + C2.NumberConc) / Cm.Value)";
+		VariableReferenceList
+			[ source      Variable:/environment:source -1 ]
+			[ C1          Variable:/environment:C1     1  ]
+			[ C2          Variable:/environment:C2     0  ]
+			[ environment Variable:/environment:SIZE   0  ]
+			[ kc1         Variable:/SBMLParameter:kc1  0  ]
+			[ Cm          Variable:/SBMLParameter:Cm   0  ];
 	}
+	
+	Process ExpressionFluxProcess( J1 )
+	{
+		Name	"predator death";
+		Expression	"environment.Value * (D.Value + d1.Value * K1.Value / (K1.Value + pow(A2.NumberConc, 2))) * C1.NumberConc";
+		VariableReferenceList
+			[ C1          Variable:/environment:C1   -1 ]
+			[ sink        Variable:/environment:sink 1  ]
+			[ A2          Variable:/environment:A2   0  ]
+			[ environment Variable:/environment:SIZE 0  ]
+			[ D           Variable:/SBMLParameter:D  0  ]
+			[ d1          Variable:/SBMLParameter:d1 0  ]
+			[ K1          Variable:/SBMLParameter:K1 0  ];
+	}
+	
+	Process ExpressionFluxProcess( J2 )
+	{
+		Name	"prey growth";
+		Expression	"environment.Value * kc2.Value * C2.NumberConc * (1 - (C1.NumberConc + C2.NumberConc) / Cm.Value)";
+		VariableReferenceList
+			[ source      Variable:/environment:source -1 ]
+			[ C2          Variable:/environment:C2     1  ]
+			[ C1          Variable:/environment:C1     0  ]
+			[ environment Variable:/environment:SIZE   0  ]
+			[ kc2         Variable:/SBMLParameter:kc2  0  ]
+			[ Cm          Variable:/SBMLParameter:Cm   0  ];
+	}
+	
+	Process ExpressionFluxProcess( J3 )
+	{
+		Name	"prey death";
+		Expression	"environment.Value * (D.Value + d2.Value * pow(A1.NumberConc, 2) / (K2.Value + pow(A1.NumberConc, 2))) * C2.NumberConc";
+		VariableReferenceList
+			[ C2          Variable:/environment:C2   -1 ]
+			[ sink        Variable:/environment:sink 1  ]
+			[ A1          Variable:/environment:A1   0  ]
+			[ environment Variable:/environment:SIZE 0  ]
+			[ D           Variable:/SBMLParameter:D  0  ]
+			[ d2          Variable:/SBMLParameter:d2 0  ]
+			[ K2          Variable:/SBMLParameter:K2 0  ];
+	}
+	
+	Process ExpressionFluxProcess( J4 )
+	{
+		Name	"3OC12HSL synthesis";
+		Expression	"environment.Value * kA1.Value * C1.NumberConc";
+		VariableReferenceList
+			[ source      Variable:/environment:source -1 ]
+			[ A1          Variable:/environment:A1     1  ]
+			[ C1          Variable:/environment:C1     0  ]
+			[ environment Variable:/environment:SIZE   0  ]
+			[ kA1         Variable:/SBMLParameter:kA1  0  ];
+	}
+	
+	Process ExpressionFluxProcess( J5 )
+	{
+		Name	"3OC12HSL removal";
+		Expression	"environment.Value * (dAA1.Value + D.Value) * A1.NumberConc";
+		VariableReferenceList
+			[ A1          Variable:/environment:A1     -1 ]
+			[ sink        Variable:/environment:sink   1  ]
+			[ environment Variable:/environment:SIZE   0  ]
+			[ dAA1        Variable:/SBMLParameter:dAA1 0  ]
+			[ D           Variable:/SBMLParameter:D    0  ];
+	}
+	
+	Process ExpressionFluxProcess( J6 )
+	{
+		Name	"3OC6HSL synthesis";
+		Expression	"environment.Value * kA2.Value * C2.NumberConc";
+		VariableReferenceList
+			[ source      Variable:/environment:source -1 ]
+			[ A2          Variable:/environment:A2     1  ]
+			[ C2          Variable:/environment:C2     0  ]
+			[ environment Variable:/environment:SIZE   0  ]
+			[ kA2         Variable:/SBMLParameter:kA2  0  ];
+	}
+	
+	Process ExpressionFluxProcess( J7 )
+	{
+		Name	"3OC6HSL removal";
+		Expression	"environment.Value * (dAA2.Value + D.Value) * A2.NumberConc";
+		VariableReferenceList
+			[ A2          Variable:/environment:A2     -1 ]
+			[ sink        Variable:/environment:sink   1  ]
+			[ environment Variable:/environment:SIZE   0  ]
+			[ dAA2        Variable:/SBMLParameter:dAA2 0  ]
+			[ D           Variable:/SBMLParameter:D    0  ];
+	}
+	
+	
 }
 
-System System( /ENVIRONMENT )
+System System( /environment )
 {
-	StepperID ODE;
+	StepperID	Default;
 
+	Variable Variable( Dimensions )
+	{
+		Value	3;
+	}
+	
 	Variable Variable( SIZE )
 	{
 		Value	1.0;
-	}
-
-	Variable Variable( IPTG ){ Value 5.0; } #IPTG
-	Variable Variable( C1 ){ Value 20.0; } #Predator Cells
-	Variable Variable( C2 ){ Value 20.0; } #Prey Cells
-	Variable Variable( A1 ){ Value 0.1; } #3OC12HSL
-	Variable Variable( A2 ){ Value 0.1; } #3OC6HSL
-	Variable Variable( sink ){ Value 0.0; } #sink
-	Variable Variable( source ){ Value 0.0; } #source
-
-	Process ExpressionFluxProcess( R1 ) #Predator Growth
-	{
-		kc1 0.8;
-		Cm 100.0;
-		Expression "self.getSuperSystem().Size * kc1 * C1.Value * ( 1 - ( C1.Value + C2.Value ) / Cm )";
-
-		VariableReferenceList [ C1 :.:C1 1 ] [ C2 :.:C2 0 ] [ source :.:source -1];
+		Fixed	1;
 	}
 	
-	Process ExpressionFluxProcess( R2 ) #Predator Death 
+	Variable Variable( IPTG )
 	{
-		D 0.1125; 
-		K1 10.0;
-		Expression "self.getSuperSystem().Size * ( D + (0.5 + pow( IPTG.Value, 2) / ( 25 + pow( IPTG.Value, 2))) * K1 / ( K1 + pow( A2.Value, 2))) * C1.Value";
-
-		VariableReferenceList [ C1 :.:C1 -1 ] [ IPTG :.:IPTG 0 ] [ sink :.:sink +1 ] [ A2 :.:A2 0 ];
-	}	
-
-	Process ExpressionFluxProcess( R3 ) #Prey Growth
-	{
-		kc2 0.4;
-		Cm 100;
-		Expression "self.getSuperSystem().Size * kc2 * C2.Value * ( 1 - ( C1.Value + C2.Value ) / Cm )";
-		
-		VariableReferenceList [ source :.:source -1 ] [ C2 :.:C2 1 ] [ C1 :.:C1 0 ];				
-	}
-
-	Process ExpressionFluxProcess( R4 ) #Prey Death
-	{
-		D 0.1125;
-		d2 0.3;
-		K2 10.0;
-		
-		Expression "self.getSuperSystem().Size * ( D + d2 * pow(A1.Value, 2) / ( K2 + pow(A1.Value, 2))) * C2.Value";
-	
-		VariableReferenceList [ C2 :.:C2 -1 ] [ sink :.:sink 1 ] [ A1 :.:A1 0 ];
-	}
-
-	Process ExpressionFluxProcess( R5 ) #3OC12HSL Synthesis
-	{
-		kA1 0.1;
-		Expression "self.getSuperSystem().Size * kA1 * C1.Value";
-	
-		VariableReferenceList [ A1 :.:A1 1 ] [ source :.:source -1 ] [ C1 :.:C1 0 ];
+		NumberConc	5.0;
+		Fixed	1;
 	}
 	
-	Process ExpressionFluxProcess( R6 ) #3OC12HSL Removal
+	Variable Variable( C1 )
 	{
-		dAA1 0.017;
-		D 0.1125;
-		Expression "self.getSuperSystem().Size * ( dAA1 + D ) * A1.Value";
-	
-		VariableReferenceList [ A1 :.:A1 -1 ] [ sink :.:sink 1 ];
+		NumberConc	20.0;
+		Fixed	0;
 	}
 	
-	Process ExpressionFluxProcess( R7 ) #3OC6HSL Synthesis
+	Variable Variable( C2 )
 	{
-		Expression "self.getSuperSystem().Size * ( 0.02 + 0.03 * pow(IPTG.Value, 2) / ( 25 + pow(IPTG.Value, 2))) * C2.Value";
-	
-		VariableReferenceList [source :.:source -1 ] [A2 :.:A2 +1 ] [ C2 :.:C2 0 ] [ IPTG :.:IPTG 0];
+		NumberConc	20.0;
+		Fixed	0;
 	}
-
-	Process ExpressionFluxProcess( R8 ) #3OC6HSL Removal
+	
+	Variable Variable( A1 )
 	{
-		dAA2 0.11;
-		D 0.1125;
-		Expression "self.getSuperSystem().Size * (  dAA2 + D ) * A2.Value";
-	
-		VariableReferenceList [sink :.:sink +1 ] [A2 :.:A2 -1 ];
+		NumberConc	0.1;
+		Fixed	0;
 	}
+	
+	Variable Variable( A2 )
+	{
+		NumberConc	0.1;
+		Fixed	0;
+	}
+	
+	Variable Variable( sink )
+	{
+		NumberConc	0.0;
+		Fixed	0;
+	}
+	
+	Variable Variable( source )
+	{
+		NumberConc	0.0;
+		Fixed	0;
+	}
+	
+	
 }
 
-# Originally Ported by Kaito Kikuchi 2013/09/11 (E-Cell Sprint 2013)
+System System( /SBMLParameter )
+{
+	StepperID	Default;
+	Name	"Global Parameter";
+
+	Variable Variable( kc1 )
+	{
+		Value	0.8;
+		Fixed	1;
+	}
+	
+	Variable Variable( kc2 )
+	{
+		Value	0.4;
+		Fixed	1;
+	}
+	
+	Variable Variable( Cm )
+	{
+		Value	100.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( D )
+	{
+		Value	0.1125;
+		Fixed	1;
+	}
+	
+	Variable Variable( kA1 )
+	{
+		Value	0.1;
+		Fixed	1;
+	}
+	
+	Variable Variable( kA2 )
+	{
+		Value	0.035;
+	}
+	
+	Variable Variable( d2 )
+	{
+		Value	0.3;
+		Fixed	1;
+	}
+	
+	Variable Variable( K2 )
+	{
+		Value	10.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( d1 )
+	{
+		Value	1.0;
+	}
+	
+	Variable Variable( K1 )
+	{
+		Value	10.0;
+		Fixed	1;
+	}
+	
+	Variable Variable( dAA1 )
+	{
+		Value	0.017;
+		Fixed	1;
+	}
+	
+	Variable Variable( dAA2 )
+	{
+		Value	0.11;
+		Fixed	1;
+	}
+	
+	
+}
+
+System System( /SBMLRule )
+{
+	Name	"System for SBML Rule";
+	StepperID	Default;
+
+	Process ExpressionAssignmentProcess( Assignment_d1 )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'd1'";
+		Expression	"0.5 + pow(IPTG.NumberConc, 2) / (pow(5, 2) + pow(IPTG.NumberConc, 2))";
+		VariableReferenceList
+			[ d1   Variable:/SBMLParameter:d1 1 ]
+			[ IPTG Variable:/environment:IPTG 0 ];
+	}
+	
+	Process ExpressionAssignmentProcess( Assignment_kA2 )
+	{
+		StepperID	Default;
+		Name	"Assignment rule for 'kA2'";
+		Expression	"0.02 + 0.03 * (pow(IPTG.NumberConc, 2) / (pow(5, 2) + pow(IPTG.NumberConc, 2)))";
+		VariableReferenceList
+			[ kA2  Variable:/SBMLParameter:kA2 1 ]
+			[ IPTG Variable:/environment:IPTG  0 ];
+	}
+	
+	
+}
+

@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8' standalone='no'?>
 
 <!-- This model was downloaded from BioModels Database -->
-<!-- Sun Dec 15 06:33:52 GMT 2013                      -->
+<!-- Sun Mar 02 03:35:55 GMT 2014                      -->
 <!-- http://www.ebi.ac.uk/biomodels/                   -->
 
 <sbml xmlns="http://www.sbml.org/sbml/level2/version3" level="2" metaid="metaid_0000001" version="3">
@@ -415,7 +415,7 @@
           </rdf:RDF>
         </annotation>
       </species>
-      <species id="Rasi" initialConcentration="0.0" name="inactive Ras" metaid="metaid_0000113" boundaryCondition="true" sboTerm="SBO:0000252" compartment="cytosol">
+      <species id="Rasi" name="inactive Ras" metaid="metaid_0000113" boundaryCondition="true" sboTerm="SBO:0000252" compartment="cytosol">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqmodel="http://biomodels.net/model-qualifiers/" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#metaid_0000113">
@@ -429,7 +429,7 @@
           </rdf:RDF>
         </annotation>
       </species>
-      <species id="ERKi" initialConcentration="0.0" name="inactive ERK" metaid="metaid_0000114" boundaryCondition="true" sboTerm="SBO:0000252" compartment="cytosol">
+      <species id="ERKi" name="inactive ERK" metaid="metaid_0000114" boundaryCondition="true" sboTerm="SBO:0000252" compartment="cytosol">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqmodel="http://biomodels.net/model-qualifiers/" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#metaid_0000114">
@@ -442,7 +442,7 @@
           </rdf:RDF>
         </annotation>
       </species>
-      <species id="Xi" initialConcentration="0.0" name="inactive TF X" metaid="metaid_0000115" boundaryCondition="true" sboTerm="SBO:0000252" compartment="cytosol">
+      <species id="Xi" name="inactive TF X" metaid="metaid_0000115" boundaryCondition="true" sboTerm="SBO:0000252" compartment="cytosol">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqmodel="http://biomodels.net/model-qualifiers/" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#metaid_0000115">
@@ -512,7 +512,7 @@
           </rdf:RDF>
         </annotation>
       </species>
-      <species id="AK" initialConcentration="0.0" name="Axin2/Gsk3 destruction complex" metaid="metaid_0000120" boundaryCondition="true" sboTerm="SBO:0000297" compartment="cytosol">
+      <species id="AK" name="Axin2/Gsk3 destruction complex" metaid="metaid_0000120" boundaryCondition="true" sboTerm="SBO:0000297" compartment="cytosol">
         <annotation>
           <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:bqmodel="http://biomodels.net/model-qualifiers/" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/">
             <rdf:Description rdf:about="#metaid_0000120">
